@@ -1,8 +1,8 @@
 import { Modules } from "@medusajs/framework/utils";
-import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk";
+import { createStep, createWorkflow, StepResponse, WorkflowResponse } from "@medusajs/framework/workflows-sdk";
 import { v4 as uuidv4 } from 'uuid';
 
-type UploadDigitalAssetInput = {
+export type UploadDigitalAssetInput = {
   type: "digital-asset" | "digital-asset-thumbnail"
   mimeType: string,
   base64Content: string
@@ -32,3 +32,4 @@ export const uploadDigitalAssetStep = createStep(
     await fileModuleService.deleteFiles([uploadedFile.id])
   }
 )
+

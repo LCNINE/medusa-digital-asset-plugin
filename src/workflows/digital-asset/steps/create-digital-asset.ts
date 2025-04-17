@@ -3,7 +3,7 @@ import { DIGITAL_ASSET } from "../../../modules/digital-asset";
 import DigitalAssetService from "../../../modules/digital-asset/service";
 
 
-type Input = {
+export type CreateDigitalAssetInput = {
   name: string
   fileId: string,
   mimeType: string
@@ -11,9 +11,9 @@ type Input = {
   thumbnail_url?: string,
 }
 
-export const createDigitalAsset = createStep(
+export const createDigitalAssetStep = createStep(
   "create-digital-asset",
-  async (input: Input, { container }) => {
+  async (input: CreateDigitalAssetInput, { container }) => {
     const digitalAssetService: DigitalAssetService = container.resolve(DIGITAL_ASSET)
 
     const createdAsset = await digitalAssetService.createDigitalAssets({
