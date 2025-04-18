@@ -3,8 +3,6 @@ import { DIGITAL_ASSET } from "../../../modules/digital-asset"
 import DigitalAssetService from "../../../modules/digital-asset/service"
 import { container } from "@medusajs/framework"
 
-
-
 const retrieveDigitalAssetStep = createStep(
   "retrieve-digital-asset",
   async (id: string, { container }) => {
