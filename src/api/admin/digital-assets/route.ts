@@ -1,13 +1,9 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
 import { ContainerRegistrationKeys } from "@medusajs/utils";
 import { DIGITAL_ASSET } from "../../../modules/digital-asset";
-import { CreateDigitalAssetInput } from "../../../workflows/digital-asset/steps/create-digital-asset";
-import { UploadDigitalAssetInput } from "../../../workflows/digital-asset/steps/upload-digital-asset";
 import { createDigitalAssetsWorkFlow } from "../../../workflows/digital-asset/workflows/create-digital-asset";
 import { updateDigitalAssetWorkflow } from "../../../workflows/digital-asset/workflows/upload-digital-asset";
-
-
-type CreateDigitalAssetBody = UploadDigitalAssetInput & CreateDigitalAssetInput
+import { CreateDigitalAssetType, UpdateDigitalAssetType } from "./validators";
 
 export async function GET(
   req: MedusaRequest,
@@ -29,18 +25,18 @@ export async function GET(
   }
 }
 
-export async function POST(req: MedusaRequest<CreateDigitalAssetBody>, res: MedusaResponse) {
-  const input = req.body
+export async function POST(req: MedusaRequest<CreateDigitalAssetType>, res: MedusaResponse) {
+  const input = req.validatedBody
 
-  const {result} =await createDigitalAssetsWorkFlow(req.scope).run({input})
+  const {result} = await createDigitalAssetsWorkFlow(req.scope).run({input})
     
   res.status(200).json({ digital_asset: result })
 }
 
-export async function PATCH(req: MedusaRequest<CreateDigitalAssetBody>, res: MedusaResponse) {
-  const input = req.body
+export async function PATCH(req: MedusaRequest<UpdateDigitalAssetType>, res: MedusaResponse) {
+  const input = req.validatedBody
     
-  const {result} =await updateDigitalAssetWorkflow(req.scope).run({input})
+  const {result} = await updateDigitalAssetWorkflow(req.scope).run({input})
 
   res.status(200).json({ digital_asset: result })
 }

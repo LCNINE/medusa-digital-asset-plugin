@@ -38,25 +38,40 @@ export type UpdateDigitalAssetInput = {
   type: "digital-asset" | "digital-asset-thumbnail"
   mimeType: string,
   base64Content: string
+  
 }
-
 export const updateDigitalAssetStep = createStep(
   "update-digital-asset",
   async (input: UpdateDigitalAssetInput, { container }) => {
     const fileModuleService = container.resolve(Modules.FILE)
     
-    await fileModuleService.deleteFiles([input.fileId])
+    const tempFileId = uuidv4()
+    const tempFileName = `${input.type}/${tempFileId}`
     
     const uploadedFiles = await fileModuleService.createFiles([
       {
-        filename: `${input.type}/${input.fileId}`,
+        filename: tempFileName,
         mimeType: input.mimeType,
         content: input.base64Content
       }
     ])
 
-    const updatedFile = uploadedFiles[0]
-    return new StepResponse(updatedFile)
+    const newFile = uploadedFiles[0]
+    
+    if (!newFile) {
+      throw new Error("Failed to create the new file")
+    }
+    
+    try {
+      // 새 파일 생성 성공 후 기존 파일 삭제
+      await fileModuleService.deleteFiles([input.fileId])
+      
+      return new StepResponse(newFile)
+    } catch (error) {
+      // 기존 파일 삭제 실패 시 새로 만든 파일 삭제
+      await fileModuleService.deleteFiles([newFile.id])
+      throw error
+    }
   },
   async (updatedFile, { container }) => {
     if (!updatedFile) return;
