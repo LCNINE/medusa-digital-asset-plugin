@@ -33,3 +33,36 @@ export const uploadDigitalAssetStep = createStep(
   }
 )
 
+export type UpdateDigitalAssetInput = {
+  fileId: string
+  type: "digital-asset" | "digital-asset-thumbnail"
+  mimeType: string,
+  base64Content: string
+}
+
+export const updateDigitalAssetStep = createStep(
+  "update-digital-asset",
+  async (input: UpdateDigitalAssetInput, { container }) => {
+    const fileModuleService = container.resolve(Modules.FILE)
+    
+    await fileModuleService.deleteFiles([input.fileId])
+    
+    const uploadedFiles = await fileModuleService.createFiles([
+      {
+        filename: `${input.type}/${input.fileId}`,
+        mimeType: input.mimeType,
+        content: input.base64Content
+      }
+    ])
+
+    const updatedFile = uploadedFiles[0]
+    return new StepResponse(updatedFile)
+  },
+  async (updatedFile, { container }) => {
+    if (!updatedFile) return;
+
+    const fileModuleService = container.resolve(Modules.FILE)
+    await fileModuleService.deleteFiles([updatedFile.id])
+  }
+)
+
