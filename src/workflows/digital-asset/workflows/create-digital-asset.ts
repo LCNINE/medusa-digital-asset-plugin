@@ -6,17 +6,17 @@ type Input = UploadDigitalAssetInput & CreateDigitalAssetInput
 
 
 export const createDigitalAssetsWorkFlow = createWorkflow(
-    "create-digital-assets",
-    (input: Input) => {
-      const uploadedFile = uploadDigitalAssetStep(input)
+  "create-digital-assets",
+  (input: Input) => {
+    const uploadedFile = uploadDigitalAssetStep(input)
 
-      const createdAsset = createDigitalAssetStep({
-        ...input,
-        fileId: uploadedFile.id
-      })
-  
-      return new WorkflowResponse({
-        createdAsset,
-      })
-    }
-  )
+    const createdAsset = createDigitalAssetStep({
+      ...input,
+      fileId: uploadedFile.id
+    })
+
+    return new WorkflowResponse({
+      createdAsset,
+    })
+  }
+)

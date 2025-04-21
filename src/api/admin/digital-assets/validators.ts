@@ -20,5 +20,6 @@ export const UpdateDigitalAssetSchema = z.object({
   base64Content: z.string().min(1),
 }).strict()
 
+
 export type CreateDigitalAssetType = z.infer<typeof CreateDigitalAssetSchema>;
 export type UpdateDigitalAssetType = z.infer<typeof UpdateDigitalAssetSchema>; 

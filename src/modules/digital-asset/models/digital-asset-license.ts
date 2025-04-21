@@ -5,6 +5,7 @@ const DigitalAssetLicense = model.define("digital_asset_license", {
   id: model.id().primaryKey(),
   digital_asset_id: model.belongsTo(() => DigitalAsset, {
     mapped: "licenses",
+    cascade: ["delete"]
   }),
   customer_id: model.text(),
   order_item_id: model.text(),

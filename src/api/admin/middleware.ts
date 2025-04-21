@@ -1,10 +1,11 @@
 import {
-    authenticate,
-    defineMiddlewares,
-    validateAndTransformBody
+  authenticate,
+  defineMiddlewares,
+  validateAndTransformBody
 } from "@medusajs/framework/http"
+import { CreateDigitalAssetLicenseSchema } from "./digital-asset-licenses/validators"
 import { CreateDigitalAssetSchema, UpdateDigitalAssetSchema } from "./digital-assets/validators"
-  
+
 export default defineMiddlewares({
   routes: [
     {
@@ -25,6 +26,14 @@ export default defineMiddlewares({
       middlewares: [
         authenticate("admin", ["bearer"]),
         validateAndTransformBody(UpdateDigitalAssetSchema),
+      ],
+    },
+    {
+      matcher: "/admin/digital-asset-licenses",
+      method: "POST",
+      middlewares: [
+        authenticate("admin", ["bearer"]),
+        validateAndTransformBody(CreateDigitalAssetLicenseSchema),
       ],
     },
   ],
