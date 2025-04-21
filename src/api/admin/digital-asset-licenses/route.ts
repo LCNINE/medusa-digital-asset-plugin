@@ -7,21 +7,38 @@ import { updateDigitalAssetLicenseWorkFlow } from "../../../workflows/digital-as
 import { deleteDigitalAssetLicenseWorkFlow } from "../../../workflows/digital-asset-license/workflows/delete-digital-asset-licenses"
 
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
-  const { license_id, customer_id, order_item_id } = req.query
+  const { license_id, customer_id, order_item_id } = req.params
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
   try {
-    const { data: licenses } = await query.graph({
+    const limit = parseInt(req.query.limit as string) || 20
+    const offset = parseInt(req.query.offset as string) || 0
+
+    const {
+      data: licenses,
+      metadata: { count, skip, take } = {},
+    } = await query.graph({
       entity: "digital_asset_license",
-      fields: ["id", "digital_asset_id", "customer_id", "order_item_id", "is_exercised", "created_at", "updated_at", "customer.*", "line_item.*"],
+      fields: ["id", "digital_asset_id", "customer_id", "order_item_id", "is_exercised"],
       filters: {
         ...(license_id && { id: license_id }),
         ...(customer_id && { customer_id }),
-        ...(order_item_id && { order_item_id })
-      }
+        ...(order_item_id && { order_item_id }),
+      },
+      pagination: {
+        skip: offset,
+        take: limit,
+      },
     })
 
-    return res.status(200).json({ licenses })
+    return res.status(200).json({
+      licenses,
+      pagination: {
+        count,
+        skip,
+        take,
+      },
+    })
   } catch (error) {
     return res.status(400).json({ error: error.message })
   }
@@ -40,7 +57,7 @@ export async function POST(req: MedusaRequest<CreateDigitalAssetLicenseType>, re
 }
 
 export async function PATCH(req: MedusaRequest<UpdateDigitalAssetLicenseType>, res: MedusaResponse) {
-  const { license_id } = req.query
+  const { license_id } = req.params
   const updateData = req.body
 
   try {
@@ -56,7 +73,7 @@ export async function PATCH(req: MedusaRequest<UpdateDigitalAssetLicenseType>, r
 }
 
 export async function DELETE(req: MedusaRequest, res: MedusaResponse) {
-  const { license_id } = req.query
+  const { license_id } = req.params
 
   try {
     if (!license_id) {
