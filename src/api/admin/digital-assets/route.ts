@@ -25,18 +25,19 @@ export async function GET(
   }
 }
 
+// ToDO 디지털 에셋생성시 라이센스도 같이 생성되게 hook 사용 고려
 export async function POST(req: MedusaRequest<CreateDigitalAssetType>, res: MedusaResponse) {
   const input = req.validatedBody
 
-  const {result} = await createDigitalAssetsWorkFlow(req.scope).run({input})
-    
+  const { result } = await createDigitalAssetsWorkFlow(req.scope).run({ input })
+
   res.status(200).json({ digital_asset: result })
 }
 
 export async function PATCH(req: MedusaRequest<UpdateDigitalAssetType>, res: MedusaResponse) {
   const input = req.validatedBody
-    
-  const {result} = await updateDigitalAssetWorkflow(req.scope).run({input})
+
+  const { result } = await updateDigitalAssetWorkflow(req.scope).run({ input })
 
   res.status(200).json({ digital_asset: result })
 }
