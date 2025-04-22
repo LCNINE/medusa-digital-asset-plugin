@@ -21,15 +21,13 @@ export async function GET(
       fields: ["*"],
     };
 
-    const { data: [drivers] } = await query.graph(digitalAssetQuery);
+    const { data: [digitalAsset] } = await query.graph(digitalAssetQuery);
 
-    return res.status(200).json({ drivers });
+    return res.status(200).json({ digitalAsset });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 }
-
-
 
 export async function DELETE(
   req: MedusaRequest,
@@ -39,7 +37,7 @@ export async function DELETE(
   if (!digitalAssetId) return MedusaError.Types.INVALID_DATA;
 
   const digitalAssetService: DigitalAssetService = req.scope.resolve(DIGITAL_ASSET)
-  await digitalAssetService.deleteDigitalAssets(digitalAssetId)
+  await digitalAssetService.updateDigitalAssets(digitalAssetId,{ deleted_at: new Date().toISOString()})
 
   return res.status(200).json({ message: "digitalAsse deleted" });
 }

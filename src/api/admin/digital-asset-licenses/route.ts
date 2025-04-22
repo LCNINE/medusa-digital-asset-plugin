@@ -13,6 +13,10 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
   try {
     const limit = parseInt(req.query.limit as string) || 20
     const offset = parseInt(req.query.offset as string) || 0
+    const isExercisedRaw = req.query.is_exercised
+    const isExercised = isExercisedRaw === "true" ? true :
+                        isExercisedRaw === "false" ? false :
+                        undefined
 
     const {
       data: licenses,
@@ -24,6 +28,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
         ...(license_id && { id: license_id }),
         ...(customer_id && { customer_id }),
         ...(order_item_id && { order_item_id }),
+        ...(isExercised !== undefined && { is_exercised: isExercised }),
       },
       pagination: {
         skip: offset,

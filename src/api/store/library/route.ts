@@ -23,11 +23,8 @@ export async function GET(
   req: AuthenticatedMedusaRequest,
   res: MedusaResponse
 ) {
-  // URL 파라미터 사용
-  const digitalAssetId = req.params.digital_asset_id
   const limit = parseInt(req.query.limit as string) || 20
   const offset = parseInt(req.query.offset as string) || 0
-
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
   try {
@@ -37,7 +34,6 @@ export async function GET(
       return res.status(401).json({ message: "Unauthorized" })
     }
 
-    // 고객이 갖고있는 모든 라이센스 조회
     const {
       data: licenses,
       metadata: { count, skip, take } = {},
@@ -52,8 +48,7 @@ export async function GET(
         "digital_asset.*"
       ],
       filters: {
-        customer_id: customerId,
-        ...(digitalAssetId && { digital_asset_id: digitalAssetId })
+        customer_id: customerId, 
       },
       pagination: {
         skip: offset,
@@ -61,8 +56,22 @@ export async function GET(
       },
     })
 
+    const sanitizedLicenses = licenses.map((license: DigitalAssetLicense) => {
+      if (!license.is_exercised && license.digital_asset) {
+        return {
+          ...license,
+          digital_asset: {
+            ...license.digital_asset,
+            file_url: null,
+          },
+        }
+      }
+
+      return license
+    })
+
     return res.status(200).json({
-      licenses,
+      licenses: sanitizedLicenses,
       pagination: {
         count: count || 0,
         skip: skip || offset,
