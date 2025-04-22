@@ -9,7 +9,6 @@ const DigitalAsset = model.define("digital_asset", {
   file_url: model.text(),
   thumbnail_url: model.text().nullable(),
   licenses: model.hasMany(() => DigitalAssetLicense),
-  deleted_at:model.dateTime().nullable(),
 })
 
 export default DigitalAsset;

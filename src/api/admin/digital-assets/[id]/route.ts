@@ -37,7 +37,7 @@ export async function DELETE(
   if (!digitalAssetId) return MedusaError.Types.INVALID_DATA;
 
   const digitalAssetService: DigitalAssetService = req.scope.resolve(DIGITAL_ASSET)
-  await digitalAssetService.updateDigitalAssets(digitalAssetId,{ deleted_at: new Date().toISOString()})
+  await digitalAssetService.softDeleteDigitalAssets([digitalAssetId])
 
   return res.status(200).json({ message: "digitalAsse deleted" });
 }
