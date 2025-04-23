@@ -4,5 +4,6 @@ import DigitalAssetService from "./service"
 export const DIGITAL_ASSET = "digital_asset"
 
 export default Module(DIGITAL_ASSET, {
-  service: DigitalAssetService
+  service: DigitalAssetService,
+
 })
