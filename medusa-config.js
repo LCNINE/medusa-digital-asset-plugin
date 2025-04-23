@@ -6,4 +6,5 @@ module.exports = defineConfig({
       resolve: "./src/modules/digital-asset",
     },
   ],
+  
 })

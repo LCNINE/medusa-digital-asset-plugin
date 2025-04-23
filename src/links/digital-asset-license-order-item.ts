@@ -7,5 +7,5 @@ export default defineLink(
     linkable: DigitalAssetModule.linkable.digitalAssetLicense,
     isList: true,
   },
-  OrderModule.linkable.lineItem, 
+  OrderModule.linkable.orderLineItem, 
 )

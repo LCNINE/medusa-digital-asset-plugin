@@ -78,6 +78,7 @@
     "node": ">=20"
   },
   "dependencies": {
+    "medusa-digital-asset-plugin": "file:.yalc/medusa-digital-asset-plugin",
     "uuid": "^11.1.0"
   }
 }
