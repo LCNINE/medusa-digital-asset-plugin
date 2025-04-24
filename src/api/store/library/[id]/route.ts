@@ -3,33 +3,59 @@ import { ContainerRegistrationKeys, MedusaError } from "@medusajs/framework/util
 import DigitalAssetService from "../../../../modules/digital-asset/service";
 import zod from "zod";
 
+interface DigitalAsset {
+    id: string;
+    name: string;
+    mime_type: string;
+    file_url: string;
+    thumbnail_url: string | null;
+}
+
+interface DigitalAssetLicense {
+    id: string;
+    digital_asset_id: string;
+    customer_id: string;
+    order_item_id: string;
+    is_exercised: boolean;
+}
+
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
     const licenseId = req.params.fileId
 
     const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+    const digitalAssetService: DigitalAssetService = req.scope.resolve("digital_asset")
 
-
-    const { data: [license] } = await query.graph({
+    // 라이센스 조회
+    const result = await query.graph({
         entity: "digital_asset_license",
         filters: { id: licenseId },
-        fields: ["*", "digital_asset.*"] 
+        fields: ["*"]
     })
-
+    
+    const license = result.data[0] as any
     if (!license) {
         throw new MedusaError(MedusaError.Types.NOT_FOUND, "License not found")
     }
 
-    // 디지털에셋의 is_exercised에 따라서 fileURL 보여줌|
+    // 디지털 자산 조회
+    const assetResult = await query.graph({
+        entity: "digital_asset",
+        filters: { id: license.digital_asset_id },
+        fields: ["*"]
+    })
+    
+    const digital_asset = assetResult.data[0] as any
+
+    // 디지털에셋의 is_exercised에 따라서 fileURL 보여줌
     res.status(200).json({
         license: {
             ...license,
             digital_asset: {
-                ...license.digital_asset,
-                file_url: license.is_exercised ? license.digital_asset.file_url : null,
-            },
+                ...digital_asset,
+                file_url: license.is_exercised ? digital_asset.file_url : null,
+            }
         },
     })
-    
 }
 
 const schema = zod.object({

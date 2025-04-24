@@ -55,6 +55,10 @@ export async function GET(
         take: limit,
       },
     })
+    
+    if (licenses.length > 0) {
+      console.log("📦 [DEBUG] First license object:", JSON.stringify(licenses[0], null, 2))
+    }
 
     const sanitizedLicenses = licenses.map((license: DigitalAssetLicense) => {
       if (!license.is_exercised && license.digital_asset) {
@@ -82,5 +86,3 @@ export async function GET(
     return res.status(400).json({ error: error.message })
   }
 }
-
-
