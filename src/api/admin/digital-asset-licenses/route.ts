@@ -50,7 +50,8 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
 }
 
 export async function POST(req: MedusaRequest<CreateDigitalAssetLicenseType>, res: MedusaResponse) {
-  const input = req.validatedBody
+  const input = req.body
+  
 
   try {
     const { result } = await createDigitalAssetLicenseWorkFlow(req.scope).run({ input })
@@ -62,26 +63,32 @@ export async function POST(req: MedusaRequest<CreateDigitalAssetLicenseType>, re
 }
 
 export async function PATCH(req: MedusaRequest<UpdateDigitalAssetLicenseType>, res: MedusaResponse) {
-  const { license_id } = req.params
+  const { license_id } = req.query
   const updateData = req.body
 
   try {
-    if (!license_id) {
+    if (!license_id || typeof license_id !== "string" || license_id.trim() === "") {
       throw new Error("required license_id")
     }
 
-    const updatedLicense = await updateDigitalAssetLicenseWorkFlow(req.scope).run({ input: updateData })
-    return res.status(200).json({ license: updatedLicense })
+    const newLicense = {
+      ...updateData,
+      id: license_id,
+    }
+
+    const {result} = await updateDigitalAssetLicenseWorkFlow(req.scope).run({ input: newLicense })
+    
+    return res.status(200).json({ license: result })
   } catch (error) {
     return res.status(400).json({ error: error.message })
   }
 }
 
 export async function DELETE(req: MedusaRequest, res: MedusaResponse) {
-  const { license_id } = req.params
+  const { license_id } = req.query
 
   try {
-    if (!license_id) {
+    if (!license_id || typeof license_id !== "string" || license_id.trim() === "") {
       throw new Error("required license_id")
     }
 

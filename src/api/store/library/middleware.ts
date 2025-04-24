@@ -7,7 +7,7 @@ export default defineMiddlewares({
     routes: [
         {
             matcher: "/store/library/*",
-            middlewares: [authenticate("customer", ["session", "bearer"])],
+            middlewares: [authenticate("store", ["session", "bearer"])],
         },
     ],
 })

@@ -60,28 +60,30 @@ export async function GET(
       console.log("📦 [DEBUG] First license object:", JSON.stringify(licenses[0], null, 2))
     }
 
-    const sanitizedLicenses = licenses.map((license: DigitalAssetLicense) => {
-      if (!license.is_exercised && license.digital_asset) {
-        return {
-          ...license,
-          digital_asset: {
-            ...license.digital_asset,
-            file_url: null,
-          },
-        }
-      }
+    console.log('typeof licenses:',typeof licenses)
 
-      return license
-    })
+    // const sanitizedLicenses = licenses.map((license: DigitalAssetLicense) => {
+    //   if (!license.is_exercised && license.digital_asset) {
+    //     return {
+    //       ...license,
+    //       digital_asset: {
+    //         ...license.digital_asset,
+    //         file_url: null,
+    //       },
+    //     }
+    //   }
 
-    return res.status(200).json({
-      licenses: sanitizedLicenses,
-      pagination: {
-        count: count || 0,
-        skip: skip || offset,
-        take: take || limit,
-      }
-    })
+    //   return license
+    // })
+
+    // return res.status(200).json({
+    //   licenses: sanitizedLicenses,
+    //   pagination: {
+    //     count: count || 0,
+    //     skip: skip || offset,
+    //     take: take || limit,
+    //   }
+    // })
   } catch (error) {
     return res.status(400).json({ error: error.message })
   }
