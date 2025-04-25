@@ -7997,6 +7997,11 @@ postgres-interval@4.0.2:
   resolved "https://registry.npmjs.org/postgres-interval/-/postgres-interval-4.0.2.tgz"
   integrity sha512-EMsphSQ1YkQqKZL2cuG0zHkmjCCzQqQ71l2GXITqRwjhRleCdv00bDk/ktaSi0LnlaPzAc3535KTrjXsTdtx7A==
 
+prettier@^3.5.3:
+  version "3.5.3"
+  resolved "https://registry.npmjs.org/prettier/-/prettier-3.5.3.tgz"
+  integrity sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw==
+
 prism-react-renderer@^2.0.6:
   version "2.4.1"
   resolved "https://registry.npmjs.org/prism-react-renderer/-/prism-react-renderer-2.4.1.tgz"
