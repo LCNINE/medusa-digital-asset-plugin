@@ -5,6 +5,7 @@ import { DIGITAL_ASSET } from "../../../../modules/digital-asset";
 import DigitalAssetService from "../../../../modules/digital-asset/service";
 import { UpdateDigitalAssetInput } from "../../../../workflows/digital-asset/steps/upload-digital-asset";
 import { updateDigitalAssetWorkflow } from "../../../../workflows/digital-asset/workflows/upload-digital-asset";
+import { UpdateDigitalAssetType } from "../validators";
 
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
   const digitalAssetId = req.params.id;
@@ -36,7 +37,7 @@ const upload = multer({ storage: multer.memoryStorage() }).fields([
   { name: "thumbnail", maxCount: 1 },
 ]);
 
-export async function PATCH(req: MedusaRequest<{ name: string }>, res: MedusaResponse) {
+export async function PATCH(req: MedusaRequest<UpdateDigitalAssetType>, res: MedusaResponse) {
   await new Promise<void>((resolve, reject) => {
     upload(req as any, res as any, (err) => {
       if (err) {

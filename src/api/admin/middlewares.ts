@@ -5,15 +5,12 @@ import {
 } from "@medusajs/framework/http";
 import { CreateDigitalAssetLicenseSchema } from "./digital-asset-licenses/validators";
 import { CreateDigitalAssetSchema, UpdateDigitalAssetSchema } from "./digital-assets/validators";
-import multer from "multer";
-
-const upload = multer({ storage: multer.memoryStorage() });
 
 export default defineMiddlewares({
   routes: [
     {
       matcher: "/admin/*",
-      middlewares: [authenticate("admin", ["bearer"])],
+      middlewares: [authenticate("user", ["bearer"])],
     },
     {
       matcher: "/admin/digital-assets",

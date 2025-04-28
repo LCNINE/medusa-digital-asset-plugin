@@ -4,6 +4,12 @@ import { uploadFilesWorkflow } from "@medusajs/medusa/core-flows";
 import { ContainerRegistrationKeys, MedusaError } from "@medusajs/utils";
 import multer from "multer";
 import { DIGITAL_ASSET } from "../../../modules/digital-asset";
+import { CreateDigitalAssetType } from "./validators";
+
+const upload = multer({ storage: multer.memoryStorage() }).fields([
+  { name: "file", maxCount: 1 },
+  { name: "thumbnail", maxCount: 1 },
+]);
 
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY);
@@ -28,16 +34,10 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
   }
 }
 
-const upload = multer({ storage: multer.memoryStorage() }).fields([
-  { name: "file", maxCount: 1 },
-  { name: "thumbnail", maxCount: 1 },
-]);
-
-export async function POST(req: MedusaRequest<{ name: string }>, res: MedusaResponse) {
+export async function POST(req: MedusaRequest<CreateDigitalAssetType>, res: MedusaResponse) {
   await new Promise<void>((resolve, reject) => {
     upload(req as any, res as any, (err) => {
       if (err) {
-        console.error("Multer 에러:", err);
         return reject(new MedusaError(MedusaError.Types.INVALID_DATA, "파일 업로드 실패"));
       }
       resolve();
