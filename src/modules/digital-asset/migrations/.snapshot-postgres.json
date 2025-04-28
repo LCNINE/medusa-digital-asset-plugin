@@ -33,6 +33,15 @@
           "nullable": false,
           "mappedType": "text"
         },
+        "file_id": {
+          "name": "file_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
         "file_url": {
           "name": "file_url",
           "type": "text",

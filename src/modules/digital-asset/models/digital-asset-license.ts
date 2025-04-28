@@ -9,6 +9,6 @@ const DigitalAssetLicense = model.define("digital_asset_license", {
   customer_id: model.text(),
   order_item_id: model.text(),
   is_exercised: model.boolean().default(false),
-})
+});
 
-export default DigitalAssetLicense
+export default DigitalAssetLicense;

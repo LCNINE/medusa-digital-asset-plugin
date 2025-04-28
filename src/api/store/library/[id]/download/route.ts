@@ -5,8 +5,6 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
   const licenseId = req.params.id;
   const customerId = req.auth_context.actor_id;
 
-  console.log("licenseId:", licenseId);
-
   if (!customerId) {
     throw new MedusaError(MedusaError.Types.UNAUTHORIZED, "로그인이 필요합니다.");
   }
@@ -17,16 +15,18 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
     data: [license],
   } = await query.graph({
     entity: "digital_asset_license",
-    fields: ["*", "digital_asset.*"],
+    fields: ["*", "digital_asset_id.*"],
     filters: {
       id: licenseId,
-      customer_id: customerId,
+      // customer_id: customerId,
     },
   });
-
+  // console.log(license);
   if (!license) {
     throw new MedusaError(MedusaError.Types.NOT_FOUND, "라이선스를 찾을 수 없습니다.");
   }
+
+  console.log("license::", license);
 
   // 소유권 행사 여부 검증
   if (!license.is_exercised) {
@@ -42,18 +42,14 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
   // 그래서 지금은 fileService.retrieveFile()로 반환되는 fileRecord.url 을 내려주고,
   // 차후 AWS 연결 완료 후 getPresignedDownloadUrl() 으로 교체할 예정입니다.
   const fileService = req.scope.resolve(Modules.FILE);
-  // const fileKey = license.digital_asset.file_url
-  // const fileRecord   = await fileService.retrieveFile(fileKey)
+  const fileKey = license.digital_asset_id.file_url;
+  const fileRecord = await fileService.retrieveFile(fileKey);
+  if (!fileRecord) {
+    throw new MedusaError(MedusaError.Types.NOT_FOUND, "파일 URL 정보를 찾을 수 없습니다.");
+  }
 
-  // if (!fileRecord.url) {
-  //     throw new MedusaError(
-  //     MedusaError.Types.NOT_FOUND,
-  //     "파일 URL 정보를 찾을 수 없습니다."
-  //     )
-  // }
-
-  console.log("license::", license);
   //  지금방식은 로컬 파일 경로나 CDN 경로가 그대로 노출돼서
   // 추후 AWS S3 버킷 연결 완료 시 getPresignedDownloadUrl(fileKey) 호출로 변경
-  // res.status(200).json({ url: fileRecord.url })
+  res.status(200).json({ url: fileRecord });
+  // res.status(200).json({ url: fileRecord.url });
 }

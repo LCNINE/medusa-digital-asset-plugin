@@ -1,10 +1,13 @@
 import {
   authenticate,
   defineMiddlewares,
-  validateAndTransformBody
-} from "@medusajs/framework/http"
-import { CreateDigitalAssetLicenseSchema } from "./digital-asset-licenses/validators"
-import { CreateDigitalAssetSchema, UpdateDigitalAssetSchema } from "./digital-assets/validators"
+  validateAndTransformBody,
+} from "@medusajs/framework/http";
+import { CreateDigitalAssetLicenseSchema } from "./digital-asset-licenses/validators";
+import { CreateDigitalAssetSchema, UpdateDigitalAssetSchema } from "./digital-assets/validators";
+import multer from "multer";
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 export default defineMiddlewares({
   routes: [
@@ -14,27 +17,18 @@ export default defineMiddlewares({
     },
     {
       matcher: "/admin/digital-assets",
-      method: "POST",
-      middlewares: [
-        authenticate("admin", ["bearer"]),
-        validateAndTransformBody(CreateDigitalAssetSchema),
-      ],
+      method: ["POST"],
+      middlewares: [validateAndTransformBody(CreateDigitalAssetSchema)],
     },
     {
-      matcher: "/admin/digital-assets",
-      method: "PATCH",
-      middlewares: [
-        authenticate("admin", ["bearer"]),
-        validateAndTransformBody(UpdateDigitalAssetSchema),
-      ],
+      matcher: "/admin/digital-assets/:id",
+      method: ["PATCH"],
+      middlewares: [validateAndTransformBody(UpdateDigitalAssetSchema)],
     },
     {
       matcher: "/admin/digital-asset-licenses",
-      method: "POST",
-      middlewares: [
-        authenticate("admin", ["bearer"]),
-        validateAndTransformBody(CreateDigitalAssetLicenseSchema),
-      ],
+      method: ["POST"],
+      middlewares: [validateAndTransformBody(CreateDigitalAssetLicenseSchema)],
     },
   ],
-})
+});
