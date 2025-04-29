@@ -3,7 +3,7 @@ import DigitalAsset from "./digital-asset";
 
 const DigitalAssetLicense = model.define("digital_asset_license", {
   id: model.id().primaryKey(),
-  digital_asset_id: model.belongsTo(() => DigitalAsset, {
+  digital_asset: model.belongsTo(() => DigitalAsset, {
     mapped: "licenses",
   }),
   customer_id: model.text(),

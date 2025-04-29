@@ -131,8 +131,8 @@
           "nullable": false,
           "mappedType": "text"
         },
-        "digital_asset_id_id": {
-          "name": "digital_asset_id_id",
+        "digital_asset_id": {
+          "name": "digital_asset_id",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -205,13 +205,13 @@
       "schema": "public",
       "indexes": [
         {
-          "keyName": "IDX_digital_asset_license_digital_asset_id_id",
+          "keyName": "IDX_digital_asset_license_digital_asset_id",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_digital_asset_license_digital_asset_id_id\" ON \"digital_asset_license\" (digital_asset_id_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_digital_asset_license_digital_asset_id\" ON \"digital_asset_license\" (digital_asset_id) WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_digital_asset_license_deleted_at",
@@ -235,10 +235,10 @@
       ],
       "checks": [],
       "foreignKeys": {
-        "digital_asset_license_digital_asset_id_id_foreign": {
-          "constraintName": "digital_asset_license_digital_asset_id_id_foreign",
+        "digital_asset_license_digital_asset_id_foreign": {
+          "constraintName": "digital_asset_license_digital_asset_id_foreign",
           "columnNames": [
-            "digital_asset_id_id"
+            "digital_asset_id"
           ],
           "localTableName": "public.digital_asset_license",
           "referencedColumnNames": [

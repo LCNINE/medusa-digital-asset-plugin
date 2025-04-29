@@ -3,7 +3,10 @@ import {
   defineMiddlewares,
   validateAndTransformBody,
 } from "@medusajs/framework/http";
-import { CreateDigitalAssetLicenseSchema } from "./digital-asset-licenses/validators";
+import {
+  CreateDigitalAssetLicenseSchema,
+  UpdateDigitalAssetLicenseSchema,
+} from "./digital-asset-licenses/validators";
 import { CreateDigitalAssetSchema, UpdateDigitalAssetSchema } from "./digital-assets/validators";
 
 export default defineMiddlewares({
@@ -26,6 +29,11 @@ export default defineMiddlewares({
       matcher: "/admin/digital-asset-licenses",
       method: ["POST"],
       middlewares: [validateAndTransformBody(CreateDigitalAssetLicenseSchema)],
+    },
+    {
+      matcher: "/admin/digital-asset-licenses/*",
+      method: ["PATCH"],
+      middlewares: [validateAndTransformBody(UpdateDigitalAssetLicenseSchema)],
     },
   ],
 });

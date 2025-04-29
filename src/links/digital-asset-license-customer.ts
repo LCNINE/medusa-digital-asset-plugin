@@ -6,6 +6,7 @@ export default defineLink(
   {
     linkable: DigitalAssetModule.linkable.digitalAssetLicense,
     isList: true,
+    customName: "digital_asset_license_customer",
   },
   CustomerModule.linkable.customer,
-)
+);

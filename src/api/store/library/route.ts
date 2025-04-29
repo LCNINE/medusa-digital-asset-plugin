@@ -11,33 +11,31 @@ interface DigitalAsset {
 
 interface DigitalAssetLicense {
   id: string;
-  digital_asset_id: string;
   customer_id: string;
   order_item_id?: string;
   is_exercised: boolean;
-  digital_asset?: DigitalAsset;
-  customer?: any;
+  digital_asset?: {
+    id: string;
+    name: string;
+    mime_type: string;
+    file_url: string;
+    thumbnail_url: string | null;
+  };
 }
 
-export async function GET(
-  req: AuthenticatedMedusaRequest,
-  res: MedusaResponse
-) {
-  const limit = parseInt(req.query.limit as string) || 20
-  const offset = parseInt(req.query.offset as string) || 0
-  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) {
+  const limit = parseInt(req.query.limit as string) || 20;
+  const offset = parseInt(req.query.offset as string) || 0;
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY);
 
   try {
-    const customerId = req.auth_context.actor_id
+    const customerId = req.auth_context.actor_id;
 
     if (!customerId) {
-      return res.status(401).json({ message: "Unauthorized" })
+      return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const {
-      data: licenses,
-      metadata: { count, skip, take } = {},
-    } = await query.graph({
+    const { data: licenses, metadata: { count, skip, take } = {} } = await query.graph({
       entity: "digital_asset_license",
       fields: [
         "id",
@@ -45,46 +43,44 @@ export async function GET(
         "customer_id",
         "order_item_id",
         "is_exercised",
-        "digital_asset.*"
+        "digital_asset.*",
       ],
       filters: {
-        customer_id: customerId, 
+        customer_id: customerId,
       },
       pagination: {
         skip: offset,
         take: limit,
       },
-    })
-    
+    });
+
     if (licenses.length > 0) {
-      console.log("📦 [DEBUG] First license object:", JSON.stringify(licenses[0], null, 2))
+      console.log("📦 [DEBUG] First license object:", JSON.stringify(licenses[0], null, 2));
     }
 
-    console.log('typeof licenses:',typeof licenses)
+    const sanitizedLicenses = licenses.map((license: DigitalAssetLicense) => {
+      if (!license.is_exercised && license.digital_asset) {
+        return {
+          ...license,
+          digital_asset: {
+            ...license.digital_asset,
+            file_url: null,
+          },
+        };
+      }
 
-    // const sanitizedLicenses = licenses.map((license: DigitalAssetLicense) => {
-    //   if (!license.is_exercised && license.digital_asset) {
-    //     return {
-    //       ...license,
-    //       digital_asset: {
-    //         ...license.digital_asset,
-    //         file_url: null,
-    //       },
-    //     }
-    //   }
+      return license;
+    });
 
-    //   return license
-    // })
-
-    // return res.status(200).json({
-    //   licenses: sanitizedLicenses,
-    //   pagination: {
-    //     count: count || 0,
-    //     skip: skip || offset,
-    //     take: take || limit,
-    //   }
-    // })
+    return res.status(200).json({
+      licenses: sanitizedLicenses,
+      pagination: {
+        count: count || 0,
+        skip: skip || offset,
+        take: take || limit,
+      },
+    });
   } catch (error) {
-    return res.status(400).json({ error: error.message })
+    return res.status(400).json({ error: error.message });
   }
 }
