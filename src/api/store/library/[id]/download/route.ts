@@ -50,7 +50,6 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
     console.error("URL 파싱 에러:", error);
   }
 
-  console.log("fileKey:::::", fileKey);
   const fileRecord = await fileService.retrieveFile(fileKey);
 
   if (!fileRecord) {
@@ -59,5 +58,5 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
 
   //  지금방식은 로컬 파일 경로나 CDN 경로가 그대로 노출돼서
   // 추후 AWS S3 버킷 연결 완료 시 getPresignedDownloadUrl(fileKey) 호출로 변경
-  res.status(200).json({ url: fileRecord });
+  res.status(200).json({ file: fileRecord });
 }
