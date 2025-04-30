@@ -9,22 +9,21 @@ import { UpdateDigitalAssetType } from "../validators";
 
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
   const digitalAssetId = req.params.id;
+
   if (!digitalAssetId) return MedusaError.Types.INVALID_DATA;
 
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY);
 
   try {
-    const digitalAssetQuery = {
+    const {
+      data: [digitalAsset],
+    } = await query.graph({
       entity: DIGITAL_ASSET,
+      fields: ["id", "name", "product_variants.*"],
       filters: {
         id: digitalAssetId,
       },
-      fields: ["*"],
-    };
-
-    const {
-      data: [digitalAsset],
-    } = await query.graph(digitalAssetQuery);
+    });
 
     return res.status(200).json({ digitalAsset });
   } catch (error) {

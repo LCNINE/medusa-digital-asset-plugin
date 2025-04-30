@@ -26,9 +26,9 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
       },
     };
 
-    const { data: digitalAssets } = await query.graph(digitalAssetQuery);
+    const { data: digital_assets } = await query.graph(digitalAssetQuery);
 
-    return res.status(200).json({ digitalAssets });
+    return res.status(200).json({ digital_assets });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -93,6 +93,7 @@ export async function POST(req: MedusaRequest<CreateDigitalAssetType>, res: Medu
       file_url: mainFileInfo.url,
       thumbnail_url: thumbnailFileInfo?.url,
     });
+    console.log("digitalAsset:::::::", digitalAsset);
 
     res.status(200).json({
       digital_asset: digitalAsset,
