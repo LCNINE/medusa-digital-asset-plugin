@@ -52,11 +52,10 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
 
 export async function POST(req: MedusaRequest<CreateDigitalAssetLicenseType>, res: MedusaResponse) {
   const input = req.body;
-  console.log("input:", input);
 
   try {
     const { result } = await createDigitalAssetLicenseWorkFlow(req.scope).run({ input });
-    console.log("result:", result);
+
     return res.status(201).json({ license: result });
   } catch (error) {
     return res.status(400).json({ error: error.message });
