@@ -35,17 +35,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
 }
 
 export async function POST(req: MedusaRequest<CreateDigitalAssetType>, res: MedusaResponse) {
-  await new Promise<void>((resolve, reject) => {
-    upload(req as any, res as any, (err) => {
-      if (err) {
-        return reject(new MedusaError(MedusaError.Types.INVALID_DATA, "파일 업로드 실패"));
-      }
-      resolve();
-    });
-  });
-
   const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-
   const file = files?.file?.[0];
   const thumbnail = files?.thumbnail?.[0];
 
@@ -93,7 +83,6 @@ export async function POST(req: MedusaRequest<CreateDigitalAssetType>, res: Medu
       file_url: mainFileInfo.url,
       thumbnail_url: thumbnailFileInfo?.url,
     });
-    console.log("digitalAsset:::::::", digitalAsset);
 
     res.status(200).json({
       digital_asset: digitalAsset,

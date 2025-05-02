@@ -1,5 +1,5 @@
 import { defineRouteConfig } from "@medusajs/admin-sdk";
-import { Button, Container, Heading, Text } from "@medusajs/ui";
+import { Button, Container, Heading, Text, toast, Toaster } from "@medusajs/ui";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { sdk } from "../../lib/config";
@@ -27,6 +27,12 @@ const DigitalAssetsPage = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["digital-assets"] });
       handleCreateModalClose();
+    },
+    onError: (error) => {
+      console.error(error);
+      toast.error("업로드 실패", {
+        description: `파일 업로드 중 오류가 발생했습니다: ${error}`,
+      });
     },
   });
 
@@ -58,6 +64,7 @@ const DigitalAssetsPage = () => {
 
   return (
     <Container>
+      <Toaster />
       <div className="mb-6 flex items-center justify-between">
         <Heading level="h1">디지털 자산</Heading>
         <Button onClick={handleCreateModalOpen}>새 디지털 자산 생성</Button>
