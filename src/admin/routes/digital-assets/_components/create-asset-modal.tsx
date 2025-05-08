@@ -48,7 +48,11 @@ const CreateAssetModal = ({ isOpen, onClose, createAssetMutation }: CreateAssetM
       formData.append("thumbnail", selectedThumbnail);
     }
 
-    createAssetMutation.mutate(formData);
+    createAssetMutation.mutate(formData, {
+      onSuccess: () => {
+        handleModalClose();
+      },
+    });
   };
 
   const handleModalClose = () => {
