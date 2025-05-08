@@ -2,14 +2,9 @@ import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
 import { CreateFileDTO } from "@medusajs/framework/types";
 import { uploadFilesWorkflow } from "@medusajs/medusa/core-flows";
 import { ContainerRegistrationKeys, MedusaError } from "@medusajs/utils";
-import multer from "multer";
 import { DIGITAL_ASSET } from "../../../modules/digital-asset";
+import DigitalAssetService from "../../../modules/digital-asset/service";
 import { CreateDigitalAssetType } from "./validators";
-
-const upload = multer({ storage: multer.memoryStorage() }).fields([
-  { name: "file", maxCount: 1 },
-  { name: "thumbnail", maxCount: 1 },
-]);
 
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY);
@@ -70,12 +65,9 @@ export async function POST(req: MedusaRequest<CreateDigitalAssetType>, res: Medu
         })),
       },
     });
-
     const mainFileInfo = result[0];
     const thumbnailFileInfo = thumbnail ? result[1] : undefined;
-
-    const digitalAssetService = req.scope.resolve(DIGITAL_ASSET);
-
+    const digitalAssetService: DigitalAssetService = req.scope.resolve(DIGITAL_ASSET);
     const digitalAsset = await digitalAssetService.createDigitalAssets({
       name: req.body.name,
       file_id: mainFileInfo.id,
@@ -83,7 +75,6 @@ export async function POST(req: MedusaRequest<CreateDigitalAssetType>, res: Medu
       file_url: mainFileInfo.url,
       thumbnail_url: thumbnailFileInfo?.url,
     });
-
     res.status(200).json({
       digital_asset: digitalAsset,
     });

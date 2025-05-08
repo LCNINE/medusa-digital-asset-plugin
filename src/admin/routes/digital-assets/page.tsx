@@ -1,9 +1,9 @@
 import { defineRouteConfig } from "@medusajs/admin-sdk";
 import { Button, Container, Heading, Text, toast, Toaster } from "@medusajs/ui";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { sdk } from "../../lib/config";
-import { AssetDetailsModal, CreateAssetModal, AssetList, DigitalAsset } from "./_components";
+import { AssetDetailsModal, AssetList, CreateAssetModal, DigitalAsset } from "./_components";
 
 const DigitalAssetsPage = () => {
   const [selectedAsset, setSelectedAsset] = useState<DigitalAsset | null>(null);
@@ -18,10 +18,11 @@ const DigitalAssetsPage = () => {
 
   const createAssetMutation = useMutation({
     mutationFn: async (formData: FormData) => {
-      const response = await sdk.client.fetch("/admin/digital-assets", {
+      const response = await fetch("/admin/digital-assets", {
         method: "POST",
         body: formData,
       });
+      console.log("response:", response);
       return response;
     },
     onSuccess: () => {

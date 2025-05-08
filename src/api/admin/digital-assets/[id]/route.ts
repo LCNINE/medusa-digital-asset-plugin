@@ -1,6 +1,5 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
 import { ContainerRegistrationKeys, MedusaError } from "@medusajs/utils";
-import multer from "multer";
 import { DIGITAL_ASSET } from "../../../../modules/digital-asset";
 import DigitalAssetService from "../../../../modules/digital-asset/service";
 import { UpdateDigitalAssetInput } from "../../../../workflows/digital-asset/steps/upload-digital-asset";
@@ -31,21 +30,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
   }
 }
 
-const upload = multer({ storage: multer.memoryStorage() }).fields([
-  { name: "file", maxCount: 1 },
-  { name: "thumbnail", maxCount: 1 },
-]);
-
 export async function PATCH(req: MedusaRequest<UpdateDigitalAssetType>, res: MedusaResponse) {
-  await new Promise<void>((resolve, reject) => {
-    upload(req as any, res as any, (err) => {
-      if (err) {
-        return reject(new MedusaError(MedusaError.Types.INVALID_DATA, "파일 업로드 실패"));
-      }
-      resolve();
-    });
-  });
-
   const { name } = req.body;
   const { id } = req.params;
 
@@ -98,7 +83,7 @@ export async function PATCH(req: MedusaRequest<UpdateDigitalAssetType>, res: Med
       throw new MedusaError(MedusaError.Types.INVALID_DATA, "업데이트할 내용이 없습니다");
     }
 
-    const digitalAssetService = req.scope.resolve(DIGITAL_ASSET);
+    const digitalAssetService: DigitalAssetService = req.scope.resolve(DIGITAL_ASSET);
     const updatedAsset = await digitalAssetService.updateDigitalAssets({ id, ...updateData });
 
     res.status(200).json({ digital_asset: updatedAsset });

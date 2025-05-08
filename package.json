@@ -83,6 +83,7 @@
   "dependencies": {
     "@medusajs/js-sdk": "^2.7.1",
     "@medusajs/types": "^2.7.1",
+    "dayjs": "^1.11.13",
     "medusa-digital-asset-plugin": "file:.yalc/medusa-digital-asset-plugin",
     "uuid": "^11.1.0"
   }

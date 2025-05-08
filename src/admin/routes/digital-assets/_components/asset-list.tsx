@@ -1,4 +1,5 @@
 import { Button, Table, Text } from "@medusajs/ui";
+import dayjs from "dayjs";
 import { DigitalAsset } from "./types";
 
 type AssetListProps = {
@@ -27,6 +28,7 @@ const AssetList = ({ assets, onViewAsset, onCreateAsset }: AssetListProps) => {
           <Table.HeaderCell>이름</Table.HeaderCell>
           <Table.HeaderCell>타입</Table.HeaderCell>
           <Table.HeaderCell>생성일</Table.HeaderCell>
+          <Table.HeaderCell>상태</Table.HeaderCell>
           <Table.HeaderCell>상품</Table.HeaderCell>
         </Table.Row>
       </Table.Header>
@@ -36,7 +38,16 @@ const AssetList = ({ assets, onViewAsset, onCreateAsset }: AssetListProps) => {
             <Table.Cell>{asset.id}</Table.Cell>
             <Table.Cell>{asset.name || "-"}</Table.Cell>
             <Table.Cell>{asset.mime_type || "-"}</Table.Cell>
-            <Table.Cell>{new Date(asset.created_at).toLocaleDateString()}</Table.Cell>
+            <Table.Cell>{dayjs(asset.created_at).format("YYYY-MM-DD")}</Table.Cell>
+            <Table.Cell>
+              {asset.deleted_at ? (
+                <span className="text-red-500">
+                  삭제됨 ({dayjs(asset.deleted_at).format("YYYY-MM-DD")})
+                </span>
+              ) : (
+                <span className="text-green-500">활성화</span>
+              )}
+            </Table.Cell>
             <Table.Cell>
               <Button variant="secondary" size="small" onClick={() => onViewAsset(asset)}>
                 보기
