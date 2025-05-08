@@ -100,8 +100,23 @@ export async function DELETE(req: MedusaRequest, res: MedusaResponse) {
   const digitalAssetId = req.params.id;
   if (!digitalAssetId) return MedusaError.Types.INVALID_DATA;
 
-  const digitalAssetService: DigitalAssetService = req.scope.resolve(DIGITAL_ASSET);
-  await digitalAssetService.softDeleteDigitalAssets([digitalAssetId]);
+  try {
+    const digitalAssetService: DigitalAssetService = req.scope.resolve(DIGITAL_ASSET);
+    await digitalAssetService.softDeleteDigitalAssets([digitalAssetId]);
 
-  return res.status(200).json({ message: "digitalAsse deleted" });
+    const link = req.scope.resolve(ContainerRegistrationKeys.LINK);
+    await link.delete({
+      [DIGITAL_ASSET]: {
+        digital_asset_id: digitalAssetId,
+      },
+    });
+
+    return res.status(200).json({ message: "디지털 자산이 삭제되었습니다" });
+  } catch (error) {
+    console.error("디지털 자산 삭제 오류:", error);
+    return res.status(500).json({
+      message: error.message || "디지털 자산 삭제 중 오류가 발생했습니다",
+      code: error.type || "unknown_error",
+    });
+  }
 }
