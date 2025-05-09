@@ -1,15 +1,5 @@
 import { defineRouteConfig } from "@medusajs/admin-sdk";
-import {
-  Button,
-  Container,
-  Heading,
-  Text,
-  toast,
-  Toaster,
-  Switch,
-  Checkbox,
-  Label,
-} from "@medusajs/ui";
+import { Button, Checkbox, Container, Heading, Label, Text, toast, Toaster } from "@medusajs/ui";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { sdk } from "../../lib/config";

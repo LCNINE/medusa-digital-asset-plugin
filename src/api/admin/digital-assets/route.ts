@@ -10,18 +10,17 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY);
 
   try {
+    // includeDeleted가 true면 삭제된 항목을 포함해 모든 데이터 조회
     const includeDeleted = req.query.include_deleted === "true";
 
-    // includeDeleted가 true면 삭제된 항목을 포함해 모든 데이터 조회
-    const digitalAssetQuery = {
-      entity: DIGITAL_ASSET,
-      fields: ["*"],
-      filters: {
-        ...(includeDeleted ? {} : { deleted_at: null }),
-      },
-    };
+    const digitalAssetService: DigitalAssetService = req.scope.resolve(DIGITAL_ASSET);
 
-    const { data: digital_assets } = await query.graph(digitalAssetQuery);
+    const digital_assets = await digitalAssetService.listDigitalAssets(
+      {},
+      {
+        withDeleted: includeDeleted,
+      },
+    );
 
     return res.status(200).json({ digital_assets });
   } catch (error) {
