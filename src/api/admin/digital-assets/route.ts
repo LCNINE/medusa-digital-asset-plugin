@@ -12,17 +12,40 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
   try {
     // includeDeleted가 true면 삭제된 항목을 포함해 모든 데이터 조회
     const includeDeleted = req.query.include_deleted === "true";
+    const limit = parseInt(req.query.limit as string) || 20;
+    const offset = parseInt(req.query.offset as string) || 0;
+
+    const filters = includeDeleted ? { deleted_at: { $ne: null } } : { deleted_at: null };
 
     const digitalAssetService: DigitalAssetService = req.scope.resolve(DIGITAL_ASSET);
 
-    const digital_assets = await digitalAssetService.listDigitalAssets(
-      {},
-      {
-        withDeleted: includeDeleted,
+    const { data: digital_assets, metadata: { count } = {} } = await query.graph({
+      entity: DIGITAL_ASSET,
+      fields: [
+        "id",
+        "name",
+        "file_url",
+        "thumbnail_url",
+        "mime_type",
+        "created_at",
+        "updated_at",
+        "deleted_at",
+      ],
+      filters: filters as any,
+      pagination: {
+        skip: offset,
+        take: limit,
       },
-    );
+    });
 
-    return res.status(200).json({ digital_assets });
+    return res.status(200).json({
+      digital_assets,
+      pagination: {
+        count: count || 0,
+        offset,
+        limit,
+      },
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
