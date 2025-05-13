@@ -87,6 +87,7 @@ export async function POST(req: MedusaRequest<CreateDigitalAssetType>, res: Medu
         })),
       },
     });
+
     const mainFileInfo = result[0];
     const thumbnailFileInfo = thumbnail ? result[1] : undefined;
 

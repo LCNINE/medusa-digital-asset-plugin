@@ -20,13 +20,22 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
       data: [digitalAsset],
     } = await query.graph({
       entity: DIGITAL_ASSET,
-      fields: ["id", "name", "product_variants.*"],
+      fields: [
+        "id",
+        "name",
+        "file_url",
+        "thumbnail_url",
+        "mime_type",
+        "created_at",
+        "updated_at",
+        "deleted_at",
+      ],
       filters: {
         id: digitalAssetId,
       },
     });
 
-    return res.status(200).json({ digitalAsset });
+    return res.status(200).json(digitalAsset);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -96,15 +105,14 @@ export async function PATCH(req: MedusaRequest<UpdateDigitalAssetType>, res: Med
     }
 
     if (file) {
-      const mainFileInfo = result[0];
-      updateData.file_id = mainFileInfo.id;
+      updateData.file_id = result[0].id;
       updateData.mime_type = file.mimetype;
-      updateData.file_url = mainFileInfo.url;
+      updateData.file_url = result[0].url;
     }
 
     if (thumbnail) {
-      const thumbnailFileInfo = result[1];
-      updateData.thumbnail_url = thumbnailFileInfo.url;
+      const thumbIndex = file ? 1 : 0;
+      updateData.thumbnail_url = result[thumbIndex]?.url;
     }
 
     const updatedAsset = await digitalAssetService.updateDigitalAssets({ id, ...updateData });
@@ -117,6 +125,10 @@ export async function PATCH(req: MedusaRequest<UpdateDigitalAssetType>, res: Med
       code: error.type || "unknown_error",
     });
   }
+}
+
+export async function POST(req: MedusaRequest, res: MedusaResponse) {
+  // 구현 예정
 }
 
 export async function DELETE(req: MedusaRequest, res: MedusaResponse) {
