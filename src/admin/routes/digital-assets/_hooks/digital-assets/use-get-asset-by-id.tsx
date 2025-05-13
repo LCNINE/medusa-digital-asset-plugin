@@ -1,6 +1,6 @@
 import { toast } from "@medusajs/ui";
 import { useQuery } from "@tanstack/react-query";
-import { DIGITAL_ASSETS_QUERY_KEY } from "../../../../../_constants";
+import { DIGITAL_ASSETS_QUERY_KEY } from "../../../../../constants";
 import { sdk } from "../../../../lib/config";
 export const useGetAssetById = (assetId: string) => {
   return useQuery({
