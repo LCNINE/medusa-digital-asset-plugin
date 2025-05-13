@@ -14,6 +14,10 @@ export const useCreateAssetMutation = () => {
         body: formData,
       });
 
+      if (!response.ok) {
+        throw new Error("업로드 실패");
+      }
+
       return response;
     },
     onSuccess: () => {

@@ -1,6 +1,7 @@
 import { toast } from "@medusajs/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DIGITAL_ASSETS_QUERY_KEY } from "../../../../../_constants";
+import { sdk } from "../../../../lib/config";
 
 // 하나 삭제
 const useDeleteAssetMutation = () => {
@@ -8,7 +9,7 @@ const useDeleteAssetMutation = () => {
 
   return useMutation({
     mutationFn: async (assetId: string) => {
-      await fetch(`/admin/digital-assets/${assetId}`, {
+      await sdk.client.fetch(`/admin/digital-assets/${assetId}`, {
         method: "DELETE",
       });
     },
@@ -30,7 +31,7 @@ const useDeleteAssetsMutation = () => {
 
   return useMutation({
     mutationFn: async (assetIds: string[]) => {
-      const res = await fetch(`/admin/digital-assets/batch_delete`, {
+      const res = await sdk.client.fetch(`/admin/digital-assets/batch_delete`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -38,11 +39,7 @@ const useDeleteAssetsMutation = () => {
         body: JSON.stringify({ ids: assetIds }),
       });
 
-      if (!res.ok) {
-        throw new Error("삭제 처리 중 오류가 발생했습니다.");
-      }
-
-      return res.json();
+      return res;
     },
 
     onSuccess: (_, assetIds) => {
