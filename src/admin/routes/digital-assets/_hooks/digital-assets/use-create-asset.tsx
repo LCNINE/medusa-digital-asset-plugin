@@ -1,6 +1,7 @@
 import { toast } from "@medusajs/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useDigitalAsset } from "../_context";
+import { useDigitalAsset } from "../../_context";
+import { DIGITAL_ASSETS_QUERY_KEY } from "../../../../../_constants";
 
 export const useCreateAssetMutation = () => {
   const queryClient = useQueryClient();
@@ -16,7 +17,7 @@ export const useCreateAssetMutation = () => {
       return response;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["digital-assets"] });
+      queryClient.invalidateQueries({ queryKey: DIGITAL_ASSETS_QUERY_KEY.all });
       toast.success("디지털자산 생성이 완료되었습니다.");
       setIsAssetFormModalOpen(false);
     },

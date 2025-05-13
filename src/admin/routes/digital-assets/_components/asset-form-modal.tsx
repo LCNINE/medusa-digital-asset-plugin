@@ -1,8 +1,9 @@
 import { Button, FocusModal, Input, Label, Text } from "@medusajs/ui";
 import { useEffect, useRef, useState } from "react";
 import { useDigitalAsset } from "../_context";
-import { useCreateAssetMutation } from "../_hooks/use-create-asset";
-import { useUpdateAssetMutation } from "../_hooks/use-update-asset";
+import { useCreateAssetMutation } from "../_hooks/digital-assets/use-create-asset";
+import { useUpdateAssetMutation } from "../_hooks/digital-assets/use-update-asset";
+import { useGetAssetById } from "../_hooks/digital-assets/use-get-asset-by-id";
 
 const AssetFormModal = () => {
   const [newAssetName, setNewAssetName] = useState("");
@@ -14,10 +15,12 @@ const AssetFormModal = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const thumbnailInputRef = useRef<HTMLInputElement>(null);
 
-  const { isAssetFormModalOpen, setIsAssetFormModalOpen, currentAsset, setCurrentAsset } =
+  const { isAssetFormModalOpen, setIsAssetFormModalOpen, selectedAssetId, setSelectedAssetId } =
     useDigitalAsset();
   const createAssetMutation = useCreateAssetMutation();
   const updateAssetMutation = useUpdateAssetMutation();
+
+  const { data: currentAsset } = useGetAssetById(selectedAssetId as string);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: "file" | "thumbnail") => {
     const file = e.target.files?.[0];
@@ -63,8 +66,8 @@ const AssetFormModal = () => {
     setSelectedFile(null);
     setSelectedThumbnail(null);
     setIsAssetFormModalOpen(false);
-    setCurrentAsset(null);
     setFileUrl(null);
+    setSelectedAssetId(null);
   };
 
   useEffect(() => {

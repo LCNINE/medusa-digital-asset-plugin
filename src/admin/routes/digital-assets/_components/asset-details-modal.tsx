@@ -1,18 +1,21 @@
 import { Badge, Button, FocusModal, Text } from "@medusajs/ui";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useDigitalAsset } from "../_context";
-import { DigitalAsset } from "./types";
+import { useGetAssetById } from "../_hooks/digital-assets/use-get-asset-by-id";
 
 type AssetDetailsModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  asset: DigitalAsset | null;
+  assetId: string;
 };
 
-const AssetDetailsModal = ({ isOpen, onClose, asset }: AssetDetailsModalProps) => {
-  if (!asset) return null;
+const AssetDetailsModal = ({ isOpen, onClose, assetId }: AssetDetailsModalProps) => {
+  const { data: asset, isLoading } = useGetAssetById(assetId);
 
-  const { setCurrentAsset, setIsAssetFormModalOpen } = useDigitalAsset();
+  const { setIsAssetFormModalOpen, setSelectedAssetId } = useDigitalAsset();
+
+  if (isLoading) return <div>Loading...</div>;
+  if (!asset) return null;
 
   return (
     <FocusModal open={isOpen} onOpenChange={onClose}>
@@ -27,7 +30,7 @@ const AssetDetailsModal = ({ isOpen, onClose, asset }: AssetDetailsModalProps) =
         <Button
           variant="secondary"
           onClick={() => {
-            setCurrentAsset(asset);
+            setSelectedAssetId(asset.id);
             setIsAssetFormModalOpen(true);
           }}
           className="ml-auto mr-4 mt-4 p-4 sm:px-3 sm:py-2"
@@ -38,7 +41,7 @@ const AssetDetailsModal = ({ isOpen, onClose, asset }: AssetDetailsModalProps) =
           <>
             {/* 썸네일 영역 */}
             <div className="w-full md:w-1/3 flex flex-col items-center ">
-              {asset.thumbnail_url ? (
+              {asset?.thumbnail_url ? (
                 <div className="w-full aspect-square bg-gray-100 rounded-lg overflow-hidden">
                   <img
                     src={asset.thumbnail_url}

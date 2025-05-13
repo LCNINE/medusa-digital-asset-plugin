@@ -1,5 +1,6 @@
 import { toast } from "@medusajs/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { DIGITAL_ASSETS_QUERY_KEY } from "../../../../../_constants";
 
 // 하나 삭제
 const useDeleteAssetMutation = () => {
@@ -11,8 +12,9 @@ const useDeleteAssetMutation = () => {
         method: "DELETE",
       });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["digital-assets"] });
+    onSuccess: (_, assetId) => {
+      queryClient.invalidateQueries({ queryKey: DIGITAL_ASSETS_QUERY_KEY.all });
+      queryClient.invalidateQueries({ queryKey: DIGITAL_ASSETS_QUERY_KEY.detail(assetId) });
       toast.success("삭제 처리 되었습니다.");
     },
     onError: (error) => {
@@ -43,8 +45,11 @@ const useDeleteAssetsMutation = () => {
       return res.json();
     },
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["digital-assets"] });
+    onSuccess: (_, assetIds) => {
+      queryClient.invalidateQueries({ queryKey: DIGITAL_ASSETS_QUERY_KEY.all });
+      assetIds.forEach((id) => {
+        queryClient.invalidateQueries({ queryKey: DIGITAL_ASSETS_QUERY_KEY.detail(id) });
+      });
       toast.success("삭제 처리 되었습니다.");
     },
     onError: (error) => {

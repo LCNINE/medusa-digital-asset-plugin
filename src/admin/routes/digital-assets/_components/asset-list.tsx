@@ -2,13 +2,16 @@ import { Button, Checkbox, CommandBar, Prompt, Table, Text, toast } from "@medus
 import dayjs from "dayjs";
 import { useState } from "react";
 import { useDigitalAsset } from "../_context";
-import { useDeleteAssetMutation, useDeleteAssetsMutation } from "../_hooks/use-delete-asset";
-import { useRestoreAssetsMutation } from "../_hooks/use-restore-asset";
+import {
+  useDeleteAssetMutation,
+  useDeleteAssetsMutation,
+} from "../_hooks/digital-assets/use-delete-asset";
+import { useRestoreAssetsMutation } from "../_hooks/digital-assets/use-restore-asset";
 import { DigitalAsset } from "./types";
 
 type AssetListProps = {
   assets: DigitalAsset[];
-  onViewAsset: (asset: DigitalAsset) => void;
+  onViewAsset: (assetId: string) => void;
   pagination?: {
     count: number;
     offset: number;
@@ -23,7 +26,6 @@ const AssetList = ({ assets, onViewAsset, pagination, onPageChange }: AssetListP
     setSelectedAssets,
     isDeleteModalOpen,
     setIsDeleteModalOpen,
-    setCurrentAsset,
     setIsAssetFormModalOpen,
   } = useDigitalAsset();
 
@@ -112,7 +114,7 @@ const AssetList = ({ assets, onViewAsset, pagination, onPageChange }: AssetListP
       const asset = assets.find((a) => a.id === selectedAssets[0]);
 
       if (asset) {
-        setCurrentAsset(asset);
+        setSelectedAssetId(asset.id);
         setIsAssetFormModalOpen(true);
       }
     }
@@ -206,8 +208,7 @@ const AssetList = ({ assets, onViewAsset, pagination, onPageChange }: AssetListP
                     variant="secondary"
                     size="small"
                     onClick={() => {
-                      setCurrentAsset(asset);
-                      onViewAsset(asset);
+                      onViewAsset(asset.id);
                     }}
                   >
                     보기

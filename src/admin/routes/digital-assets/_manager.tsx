@@ -9,7 +9,7 @@ import { useDigitalAsset } from "./_context";
 import CreateDigitalAssetBtn from "./_components/create-digital-asset-btn";
 
 const DigitalAssetManager = () => {
-  const [selectedAsset, setSelectedAsset] = useState<DigitalAsset | null>(null);
+  const [assetId, setAssetId] = useState<string | null>(null);
   const [includeDeleted, setIncludeDeleted] = useState(false);
   const [offset, setOffset] = useState(0);
   const limit = 20;
@@ -31,14 +31,14 @@ const DigitalAssetManager = () => {
       ),
   });
 
-  const handleViewAsset = (asset: DigitalAsset) => {
-    setSelectedAsset(asset);
+  const handleViewAsset = (assetId: string) => {
+    setAssetId(assetId);
     setIsModalOpen(true);
   };
 
   const handleModalClose = () => {
     setIsModalOpen(false);
-    setSelectedAsset(null);
+    setAssetId(null);
   };
 
   if (isPending) {
@@ -77,7 +77,11 @@ const DigitalAssetManager = () => {
         }}
       />
 
-      <AssetDetailsModal isOpen={isModalOpen} onClose={handleModalClose} asset={selectedAsset} />
+      <AssetDetailsModal
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        assetId={assetId as string}
+      />
 
       <AssetFormModal />
     </Container>
