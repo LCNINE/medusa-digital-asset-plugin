@@ -1,7 +1,7 @@
 import { Badge, Button, FocusModal, Text } from "@medusajs/ui";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { DigitalAsset } from "./types";
 import { useDigitalAsset } from "../_context";
+import { DigitalAsset } from "./types";
 
 type AssetDetailsModalProps = {
   isOpen: boolean;
@@ -30,7 +30,7 @@ const AssetDetailsModal = ({ isOpen, onClose, asset }: AssetDetailsModalProps) =
             setCurrentAsset(asset);
             setIsAssetFormModalOpen(true);
           }}
-          className="ml-auto mr-4 mt-4"
+          className="ml-auto mr-4 mt-4 p-4 sm:px-3 sm:py-2"
         >
           편집
         </Button>
@@ -47,7 +47,7 @@ const AssetDetailsModal = ({ isOpen, onClose, asset }: AssetDetailsModalProps) =
                   />
                 </div>
               ) : (
-                <div className="w-full aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
+                <div className="w-full bg-gray-100 rounded-lg flex items-center justify-center aspect-square sm:h-72 h-40">
                   <Text className="text-gray-400">썸네일 없음</Text>
                 </div>
               )}
