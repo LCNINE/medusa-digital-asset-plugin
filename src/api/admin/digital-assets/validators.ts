@@ -16,6 +16,9 @@ export const DeleteBatchDigitalAssetSchema = z.object({
   ids: z.array(z.string()),
 });
 
+export const RestoreDigitalAssetSchema = DeleteBatchDigitalAssetSchema;
+
 export type CreateDigitalAssetType = z.infer<typeof CreateDigitalAssetSchema>;
 export type UpdateDigitalAssetType = z.infer<typeof UpdateDigitalAssetSchema>;
 export type DeleteBatchDigitalAssetType = z.infer<typeof DeleteBatchDigitalAssetSchema>;
+export type RestoreDigitalAssetType = z.infer<typeof RestoreDigitalAssetSchema>;
