@@ -89,6 +89,7 @@ export async function POST(req: MedusaRequest<CreateDigitalAssetType>, res: Medu
     });
     const mainFileInfo = result[0];
     const thumbnailFileInfo = thumbnail ? result[1] : undefined;
+
     const digitalAssetService: DigitalAssetService = req.scope.resolve(DIGITAL_ASSET);
     const digitalAsset = await digitalAssetService.createDigitalAssets({
       name: req.body.name,
@@ -97,6 +98,7 @@ export async function POST(req: MedusaRequest<CreateDigitalAssetType>, res: Medu
       file_url: mainFileInfo.url,
       thumbnail_url: thumbnailFileInfo?.url,
     });
+
     res.status(200).json({
       digital_asset: digitalAsset,
     });

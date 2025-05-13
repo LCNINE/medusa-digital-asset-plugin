@@ -5,6 +5,8 @@ import DigitalAssetService from "../../../../modules/digital-asset/service";
 import { UpdateDigitalAssetInput } from "../../../../workflows/digital-asset/steps/upload-digital-asset";
 import { updateDigitalAssetWorkflow } from "../../../../workflows/digital-asset/workflows/upload-digital-asset";
 import { UpdateDigitalAssetType } from "../validators";
+import { CreateFileDTO } from "@medusajs/framework/types";
+import { uploadFilesWorkflow } from "@medusajs/medusa/core-flows";
 
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
   const digitalAssetId = req.params.id;
@@ -52,38 +54,59 @@ export async function PATCH(req: MedusaRequest<UpdateDigitalAssetType>, res: Med
       throw new MedusaError(MedusaError.Types.NOT_FOUND, "디지털 에셋을 찾을 수 없습니다");
     }
 
-    const updateData: any = {};
-
-    if (name) {
-      updateData.name = name;
-    }
-
-    let updatedFile;
-
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
     const file = files?.file?.[0];
+    const thumbnail = files?.thumbnail?.[0];
 
-    if (files && file) {
-      const input: UpdateDigitalAssetInput = {
-        fileId: existingAsset.file_id,
-        type: "digital-asset",
+    const uploadFiles: CreateFileDTO[] = [];
+
+    if (file) {
+      uploadFiles.push({
+        filename: file.originalname,
         mimeType: file.mimetype,
-        base64Content: file.buffer.toString("base64"),
-      };
-
-      const { result } = await updateDigitalAssetWorkflow(req.scope).run({ input });
-      updatedFile = result.updatedFile;
-
-      updateData.file_id = updatedFile.id;
-      updateData.file_url = updatedFile.url;
-      updateData.mime_type = file.mimetype;
+        content: file.buffer.toString("binary"),
+        access: "private" as const,
+      });
     }
 
-    if (Object.keys(updateData).length === 0) {
-      throw new MedusaError(MedusaError.Types.INVALID_DATA, "업데이트할 내용이 없습니다");
+    if (thumbnail) {
+      uploadFiles.push({
+        filename: thumbnail.originalname,
+        mimeType: thumbnail.mimetype,
+        content: thumbnail.buffer.toString("binary"),
+        access: "public" as const,
+      });
     }
+
+    const { result } = await uploadFilesWorkflow(req.scope).run({
+      input: {
+        files: uploadFiles.map((file) => ({
+          ...file,
+          access: file.access as "private" | "public",
+        })),
+      },
+    });
 
     const digitalAssetService: DigitalAssetService = req.scope.resolve(DIGITAL_ASSET);
+
+    const updateData: any = {};
+
+    if (req.body.name) {
+      updateData.name = req.body.name;
+    }
+
+    if (file) {
+      const mainFileInfo = result[0];
+      updateData.file_id = mainFileInfo.id;
+      updateData.mime_type = file.mimetype;
+      updateData.file_url = mainFileInfo.url;
+    }
+
+    if (thumbnail) {
+      const thumbnailFileInfo = result[1];
+      updateData.thumbnail_url = thumbnailFileInfo.url;
+    }
+
     const updatedAsset = await digitalAssetService.updateDigitalAssets({ id, ...updateData });
 
     res.status(200).json({ digital_asset: updatedAsset });

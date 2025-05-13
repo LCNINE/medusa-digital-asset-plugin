@@ -8,9 +8,14 @@ export const CreateDigitalAssetSchema = z
 
 export const UpdateDigitalAssetSchema = z
   .object({
-    name: z.string().min(1),
+    name: z.string().optional(),
   })
   .strict();
 
+export const DeleteBatchDigitalAssetSchema = z.object({
+  ids: z.array(z.string()),
+});
+
 export type CreateDigitalAssetType = z.infer<typeof CreateDigitalAssetSchema>;
 export type UpdateDigitalAssetType = z.infer<typeof UpdateDigitalAssetSchema>;
+export type DeleteBatchDigitalAssetType = z.infer<typeof DeleteBatchDigitalAssetSchema>;

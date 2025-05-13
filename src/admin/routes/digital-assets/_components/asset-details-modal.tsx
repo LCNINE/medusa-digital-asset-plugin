@@ -1,4 +1,4 @@
-import { FocusModal, Text, Button, Badge } from "@medusajs/ui";
+import { Badge, FocusModal, Text } from "@medusajs/ui";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { DigitalAsset } from "./types";
 
@@ -37,12 +37,6 @@ const AssetDetailsModal = ({ isOpen, onClose, asset }: AssetDetailsModalProps) =
                   <Text className="text-gray-400">썸네일 없음</Text>
                 </div>
               )}
-
-              <div className="mt-4 w-full">
-                <Button variant="primary" className="w-full" disabled={!asset.file_url}>
-                  파일 다운로드
-                </Button>
-              </div>
             </div>
 
             {/* 상세 정보 영역 */}

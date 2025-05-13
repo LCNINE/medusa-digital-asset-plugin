@@ -1,21 +1,23 @@
 import { Button, FocusModal, Input, Label, Text } from "@medusajs/ui";
-import { UseMutationResult } from "@tanstack/react-query";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useDigitalAsset } from "../_context";
+import { useCreateAssetMutation } from "../_hooks/use-create-asset";
+import { useUpdateAssetMutation } from "../_hooks/use-update-asset";
 
-type CreateAssetModalProps = {
-  isOpen: boolean;
-  onClose: () => void;
-  createAssetMutation: UseMutationResult<any, unknown, FormData, unknown>;
-};
-
-const CreateAssetModal = ({ isOpen, onClose, createAssetMutation }: CreateAssetModalProps) => {
+const AssetFormModal = () => {
   const [newAssetName, setNewAssetName] = useState("");
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedThumbnail, setSelectedThumbnail] = useState<File | null>(null);
+  const [fileUrl, setFileUrl] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const thumbnailInputRef = useRef<HTMLInputElement>(null);
+
+  const { isAssetFormModalOpen, setIsAssetFormModalOpen, currentAsset, setCurrentAsset } =
+    useDigitalAsset();
+  const createAssetMutation = useCreateAssetMutation();
+  const updateAssetMutation = useUpdateAssetMutation();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: "file" | "thumbnail") => {
     const file = e.target.files?.[0];
@@ -48,11 +50,11 @@ const CreateAssetModal = ({ isOpen, onClose, createAssetMutation }: CreateAssetM
       formData.append("thumbnail", selectedThumbnail);
     }
 
-    createAssetMutation.mutate(formData, {
-      onSuccess: () => {
-        handleModalClose();
-      },
-    });
+    if (currentAsset?.id) {
+      updateAssetMutation.mutate({ id: currentAsset.id, formData });
+    } else {
+      createAssetMutation.mutate(formData);
+    }
   };
 
   const handleModalClose = () => {
@@ -60,14 +62,28 @@ const CreateAssetModal = ({ isOpen, onClose, createAssetMutation }: CreateAssetM
     setThumbnailPreview(null);
     setSelectedFile(null);
     setSelectedThumbnail(null);
-    onClose();
+    setIsAssetFormModalOpen(false);
+    setCurrentAsset(null);
+    setFileUrl(null);
   };
 
+  useEffect(() => {
+    if (currentAsset) {
+      setNewAssetName(currentAsset.name);
+      setFileUrl(currentAsset.file_url);
+      setThumbnailPreview(currentAsset.thumbnail_url || null);
+      setSelectedFile(null);
+      setSelectedThumbnail(null);
+    }
+  }, [currentAsset]);
+
+  const modalTitle = currentAsset ? "디지털 자산 편집" : "새 디지털 자산 생성";
+
   return (
-    <FocusModal open={isOpen} onOpenChange={handleModalClose}>
+    <FocusModal open={isAssetFormModalOpen} onOpenChange={handleModalClose}>
       <FocusModal.Content aria-describedby={undefined}>
         <FocusModal.Header>
-          <FocusModal.Title>새 디지털 자산 생성</FocusModal.Title>
+          <FocusModal.Title>{modalTitle}</FocusModal.Title>
         </FocusModal.Header>
         <FocusModal.Body className="py-8 px-4">
           <form onSubmit={handleCreateAsset} className="space-y-8 max-w-2xl mx-auto">
@@ -97,7 +113,7 @@ const CreateAssetModal = ({ isOpen, onClose, createAssetMutation }: CreateAssetM
                     ref={fileInputRef}
                     onChange={(e) => handleFileChange(e, "file")}
                     className="hidden"
-                    required
+                    required={!currentAsset && !selectedFile && !fileUrl}
                   />
                   <Button
                     type="button"
@@ -112,6 +128,10 @@ const CreateAssetModal = ({ isOpen, onClose, createAssetMutation }: CreateAssetM
                   {selectedFile ? (
                     <Text className="text-sm p-2 rounded border">
                       선택된 파일: {selectedFile.name}
+                    </Text>
+                  ) : fileUrl ? (
+                    <Text className="text-sm p-2 rounded border break-all">
+                      현재 파일: {fileUrl}
                     </Text>
                   ) : (
                     <Text className="text-sm text-gray-500 p-2">
@@ -169,9 +189,21 @@ const CreateAssetModal = ({ isOpen, onClose, createAssetMutation }: CreateAssetM
               <Button
                 type="submit"
                 variant="primary"
-                disabled={createAssetMutation.isPending || !newAssetName || !selectedFile}
+                disabled={
+                  currentAsset
+                    ? updateAssetMutation.isPending ||
+                      !newAssetName ||
+                      (newAssetName === currentAsset.name && !selectedFile && !selectedThumbnail)
+                    : createAssetMutation.isPending || !newAssetName || (!selectedFile && !fileUrl)
+                }
               >
-                {createAssetMutation.isPending ? "저장 중..." : "저장"}
+                {currentAsset
+                  ? updateAssetMutation.isPending
+                    ? "업데이트 중..."
+                    : "업데이트"
+                  : createAssetMutation.isPending
+                    ? "생성 중..."
+                    : "생성"}
               </Button>
             </div>
           </form>
@@ -181,4 +213,4 @@ const CreateAssetModal = ({ isOpen, onClose, createAssetMutation }: CreateAssetM
   );
 };
 
-export default CreateAssetModal;
+export default AssetFormModal;

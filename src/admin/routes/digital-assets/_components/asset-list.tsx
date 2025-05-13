@@ -1,19 +1,35 @@
-import { Button, Table, Text, Prompt } from "@medusajs/ui";
-import { UseMutationResult } from "@tanstack/react-query";
+import { Button, Checkbox, CommandBar, Prompt, Table, Text, toast } from "@medusajs/ui";
 import dayjs from "dayjs";
-import { DigitalAsset } from "./types";
 import { useState } from "react";
+import { useDigitalAsset } from "../_context";
+import { useDeleteAssetMutation, useDeleteAssetsMutation } from "../_hooks/use-delete-asset";
+import { DigitalAsset } from "./types";
 
 type AssetListProps = {
   assets: DigitalAsset[];
   onViewAsset: (asset: DigitalAsset) => void;
-  onCreateAsset: () => void;
-  onDeleteAsset: UseMutationResult<any, unknown, string, unknown>;
+  pagination?: {
+    count: number;
+    offset: number;
+    limit: number;
+  };
+  onPageChange?: (page: number) => void;
 };
 
-const AssetList = ({ assets, onViewAsset, onCreateAsset, onDeleteAsset }: AssetListProps) => {
+const AssetList = ({ assets, onViewAsset, pagination, onPageChange }: AssetListProps) => {
+  const {
+    selectedAssets,
+    setSelectedAssets,
+    isDeleteModalOpen,
+    setIsDeleteModalOpen,
+    setCurrentAsset,
+    setIsAssetFormModalOpen,
+  } = useDigitalAsset();
+
+  const deleteAsset = useDeleteAssetMutation();
+  const deleteAssets = useDeleteAssetsMutation();
+
   const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const handleDeleteClick = (assetId: string) => {
     setSelectedAssetId(assetId);
@@ -27,8 +43,40 @@ const AssetList = ({ assets, onViewAsset, onCreateAsset, onDeleteAsset }: AssetL
 
   const handleConfirmDelete = () => {
     if (selectedAssetId) {
-      onDeleteAsset.mutate(selectedAssetId);
+      deleteAsset.mutate(selectedAssetId);
       handleCloseModal();
+    }
+  };
+
+  const handleSelectAsset = (assetId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedAssets((prev) => [...prev, assetId]);
+    } else {
+      setSelectedAssets((prev) => prev.filter((id) => id !== assetId));
+    }
+  };
+
+  const handleDeleteSelected = () => {
+    alert(`선택한 ${selectedAssets.length}개 항목을 삭제합니다.`);
+    deleteAssets.mutate(selectedAssets, {
+      onSuccess: () => {
+        setSelectedAssets([]);
+      },
+    });
+  };
+
+  const handleViewSelected = () => {
+    if (selectedAssets.length !== 1) {
+      toast.error("편집할 항목은 한개만 선택해주세요.");
+      return;
+    }
+
+    if (selectedAssets.length === 1) {
+      const asset = assets.find((a) => a.id === selectedAssets[0]);
+      if (asset) {
+        setCurrentAsset(asset);
+        setIsAssetFormModalOpen(true);
+      }
     }
   };
 
@@ -36,18 +84,45 @@ const AssetList = ({ assets, onViewAsset, onCreateAsset, onDeleteAsset }: AssetL
     return (
       <div className="flex flex-col items-center justify-center py-10">
         <Text>디지털 자산이 없습니다</Text>
-        <Button variant="secondary" className="mt-4" onClick={onCreateAsset}>
+        <Button variant="secondary" className="mt-4" onClick={() => setIsAssetFormModalOpen(true)}>
           새 디지털 자산 생성
         </Button>
       </div>
     );
   }
 
+  const totalPages = pagination ? Math.ceil(pagination.count / pagination.limit) : 1;
+  const currentPage = pagination ? Math.floor(pagination.offset / pagination.limit) + 1 : 1;
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1 && onPageChange) {
+      onPageChange(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages && onPageChange) {
+      onPageChange(currentPage + 1);
+    }
+  };
+
   return (
     <>
       <Table>
         <Table.Header>
           <Table.Row>
+            <Table.HeaderCell>
+              <Checkbox
+                checked={selectedAssets.length > 0 && selectedAssets.length === assets.length}
+                onCheckedChange={(checked) => {
+                  if (checked) {
+                    setSelectedAssets(assets.map((asset) => asset.id));
+                  } else {
+                    setSelectedAssets([]);
+                  }
+                }}
+              />
+            </Table.HeaderCell>
             <Table.HeaderCell>ID</Table.HeaderCell>
             <Table.HeaderCell>이름</Table.HeaderCell>
             <Table.HeaderCell>타입</Table.HeaderCell>
@@ -56,9 +131,18 @@ const AssetList = ({ assets, onViewAsset, onCreateAsset, onDeleteAsset }: AssetL
             <Table.HeaderCell>상품</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
+
         <Table.Body>
           {assets.map((asset: DigitalAsset) => (
             <Table.Row key={asset.id}>
+              <Table.Cell>
+                <Checkbox
+                  checked={selectedAssets.includes(asset.id)}
+                  onCheckedChange={(checked) =>
+                    handleSelectAsset(asset.id, checked === true ? true : false)
+                  }
+                />
+              </Table.Cell>
               <Table.Cell>{asset.id}</Table.Cell>
               <Table.Cell>{asset.name || "-"}</Table.Cell>
               <Table.Cell>{asset.mime_type || "-"}</Table.Cell>
@@ -74,7 +158,14 @@ const AssetList = ({ assets, onViewAsset, onCreateAsset, onDeleteAsset }: AssetL
               </Table.Cell>
               <Table.Cell>
                 <div className="flex gap-2">
-                  <Button variant="secondary" size="small" onClick={() => onViewAsset(asset)}>
+                  <Button
+                    variant="secondary"
+                    size="small"
+                    onClick={() => {
+                      setCurrentAsset(asset);
+                      onViewAsset(asset);
+                    }}
+                  >
                     보기
                   </Button>
                   {!asset.deleted_at ? (
@@ -97,6 +188,45 @@ const AssetList = ({ assets, onViewAsset, onCreateAsset, onDeleteAsset }: AssetL
         </Table.Body>
       </Table>
 
+      {pagination && pagination.count > pagination.limit && (
+        <div className="flex justify-center items-center gap-4 mt-6">
+          <Button
+            variant="secondary"
+            size="small"
+            onClick={handlePreviousPage}
+            disabled={currentPage === 1}
+          >
+            이전
+          </Button>
+          <Text>
+            {currentPage} / {totalPages} 페이지 (총 {pagination.count}개)
+          </Text>
+          <Button
+            variant="secondary"
+            size="small"
+            onClick={handleNextPage}
+            disabled={currentPage >= totalPages}
+          >
+            다음
+          </Button>
+        </div>
+      )}
+
+      <CommandBar open={selectedAssets.length > 0}>
+        <CommandBar.Bar>
+          <CommandBar.Value>{selectedAssets.length}개 선택됨</CommandBar.Value>
+          <CommandBar.Seperator />
+          <CommandBar.Command action={handleDeleteSelected} label="삭제" shortcut="d" />
+          <CommandBar.Seperator />
+          <CommandBar.Command
+            action={handleViewSelected}
+            label="편집"
+            shortcut="v"
+            disabled={selectedAssets.length !== 1}
+          />
+        </CommandBar.Bar>
+      </CommandBar>
+
       <Prompt open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
         <Prompt.Content>
           <Prompt.Header>
@@ -108,8 +238,8 @@ const AssetList = ({ assets, onViewAsset, onCreateAsset, onDeleteAsset }: AssetL
           </Prompt.Header>
           <Prompt.Footer>
             <Prompt.Cancel onClick={handleCloseModal}>취소</Prompt.Cancel>
-            <Prompt.Action onClick={handleConfirmDelete} disabled={onDeleteAsset.isPending}>
-              {onDeleteAsset.isPending ? "삭제 중..." : "삭제"}
+            <Prompt.Action onClick={handleConfirmDelete} disabled={deleteAsset.isPending}>
+              {deleteAsset.isPending ? "삭제 중..." : "삭제"}
             </Prompt.Action>
           </Prompt.Footer>
         </Prompt.Content>

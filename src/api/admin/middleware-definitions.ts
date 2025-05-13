@@ -4,7 +4,11 @@ import {
   CreateDigitalAssetLicenseSchema,
   UpdateDigitalAssetLicenseSchema,
 } from "./digital-asset-licenses/validators";
-import { CreateDigitalAssetSchema, UpdateDigitalAssetSchema } from "./digital-assets/validators";
+import {
+  CreateDigitalAssetSchema,
+  DeleteBatchDigitalAssetSchema,
+  UpdateDigitalAssetSchema,
+} from "./digital-assets/validators";
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -24,6 +28,11 @@ export const adminMiddlewares = {
         ]),
         validateAndTransformBody(CreateDigitalAssetSchema),
       ],
+    },
+    {
+      matcher: "/admin/digital-assets/betch_delete",
+      method: ["POST"],
+      middlewares: [validateAndTransformBody(DeleteBatchDigitalAssetSchema)],
     },
     {
       matcher: "/admin/digital-assets/:id",

@@ -1,0 +1,87 @@
+import { Container, Heading, Text, Toaster } from "@medusajs/ui";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { sdk } from "../../lib/config";
+import { AssetDetailsModal, AssetList, AssetFormModal } from "./_components";
+import { DigitalAsset } from "./_components/types";
+import ViewDeletedAssetsBtn from "./_components/view-deleted-assets-btn";
+import { useDigitalAsset } from "./_context";
+import CreateDigitalAssetBtn from "./_components/create-digital-asset-btn";
+
+const DigitalAssetManager = () => {
+  const [selectedAsset, setSelectedAsset] = useState<DigitalAsset | null>(null);
+  const [includeDeleted, setIncludeDeleted] = useState(false);
+  const [offset, setOffset] = useState(0);
+  const limit = 20;
+
+  const { isModalOpen, setIsModalOpen } = useDigitalAsset();
+
+  const { data, isPending } = useQuery<{
+    digital_assets: DigitalAsset[];
+    pagination: {
+      count: number;
+      offset: number;
+      limit: number;
+    };
+  }>({
+    queryKey: ["digital-assets", includeDeleted, offset, limit],
+    queryFn: async () =>
+      await sdk.client.fetch(
+        `/admin/digital-assets?include_deleted=${includeDeleted}&offset=${offset}&limit=${limit}`,
+      ),
+  });
+
+  const handleViewAsset = (asset: DigitalAsset) => {
+    setSelectedAsset(asset);
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedAsset(null);
+  };
+
+  if (isPending) {
+    return (
+      <Container className="flex items-center justify-center p-10">
+        <Text>로딩 중...</Text>
+      </Container>
+    );
+  }
+
+  return (
+    <Container>
+      <Toaster />
+      <div className="mb-6 flex items-center justify-between">
+        <Heading level="h1">디지털 자산</Heading>
+
+        <div className="flex items-center gap-2">
+          {/* 삭제된 자산 보기 체크 버튼 */}
+          <ViewDeletedAssetsBtn
+            includeDeleted={includeDeleted}
+            setIncludeDeleted={setIncludeDeleted}
+            setOffset={setOffset}
+          />
+
+          {/* 새 디지털 자산 생성 */}
+          <CreateDigitalAssetBtn />
+        </div>
+      </div>
+
+      <AssetList
+        assets={data?.digital_assets || []}
+        onViewAsset={handleViewAsset}
+        pagination={data?.pagination}
+        onPageChange={(page: number) => {
+          setOffset((page - 1) * limit);
+        }}
+      />
+
+      <AssetDetailsModal isOpen={isModalOpen} onClose={handleModalClose} asset={selectedAsset} />
+
+      <AssetFormModal />
+    </Container>
+  );
+};
+
+export default DigitalAssetManager;
