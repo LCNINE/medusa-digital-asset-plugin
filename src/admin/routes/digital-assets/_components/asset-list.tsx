@@ -110,6 +110,7 @@ const AssetList = ({ assets, onViewAsset, pagination, onPageChange }: AssetListP
 
     if (selectedAssets.length === 1) {
       const asset = assets.find((a) => a.id === selectedAssets[0]);
+
       if (asset) {
         setCurrentAsset(asset);
         setIsAssetFormModalOpen(true);

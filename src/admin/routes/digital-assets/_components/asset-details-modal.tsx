@@ -1,6 +1,7 @@
-import { Badge, FocusModal, Text } from "@medusajs/ui";
+import { Badge, Button, FocusModal, Text } from "@medusajs/ui";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { DigitalAsset } from "./types";
+import { useDigitalAsset } from "../_context";
 
 type AssetDetailsModalProps = {
   isOpen: boolean;
@@ -11,6 +12,8 @@ type AssetDetailsModalProps = {
 const AssetDetailsModal = ({ isOpen, onClose, asset }: AssetDetailsModalProps) => {
   if (!asset) return null;
 
+  const { setCurrentAsset, setIsAssetFormModalOpen } = useDigitalAsset();
+
   return (
     <FocusModal open={isOpen} onOpenChange={onClose}>
       <FocusModal.Content aria-describedby={undefined}>
@@ -20,6 +23,17 @@ const AssetDetailsModal = ({ isOpen, onClose, asset }: AssetDetailsModalProps) =
           </VisuallyHidden>
           <Text className="text-xl font-semibold">디지털 자산 상세 정보</Text>
         </FocusModal.Header>
+
+        <Button
+          variant="secondary"
+          onClick={() => {
+            setCurrentAsset(asset);
+            setIsAssetFormModalOpen(true);
+          }}
+          className="ml-auto mr-4 mt-4"
+        >
+          편집
+        </Button>
         <FocusModal.Body className="flex flex-col md:flex-row gap-8 py-8 justify-center items-center m-auto px-2">
           <>
             {/* 썸네일 영역 */}
