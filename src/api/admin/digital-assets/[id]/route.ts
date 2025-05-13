@@ -127,10 +127,6 @@ export async function PATCH(req: MedusaRequest<UpdateDigitalAssetType>, res: Med
   }
 }
 
-export async function POST(req: MedusaRequest, res: MedusaResponse) {
-  // 구현 예정
-}
-
 export async function DELETE(req: MedusaRequest, res: MedusaResponse) {
   const digitalAssetId = req.params.id;
   if (!digitalAssetId) return MedusaError.Types.INVALID_DATA;
