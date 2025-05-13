@@ -1,5 +1,5 @@
 import { Checkbox, Label } from "@medusajs/ui";
-
+import { useDigitalAsset } from "../_context";
 interface IProps {
   includeDeleted: boolean;
   setIncludeDeleted: (includeDeleted: boolean) => void;
@@ -7,6 +7,8 @@ interface IProps {
 }
 
 const ViewDeletedAssetsBtn = ({ includeDeleted, setIncludeDeleted, setOffset }: IProps) => {
+  const { setSelectedAssets } = useDigitalAsset();
+
   return (
     <div className="flex items-center gap-x-2">
       <Checkbox
@@ -15,6 +17,7 @@ const ViewDeletedAssetsBtn = ({ includeDeleted, setIncludeDeleted, setOffset }: 
         onCheckedChange={(checked) => {
           setIncludeDeleted(checked === true ? true : false);
           setOffset(0);
+          setSelectedAssets([]);
         }}
       />
       <Label htmlFor="include-deleted">삭제된 자산 보기</Label>
