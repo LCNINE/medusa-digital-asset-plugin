@@ -15,6 +15,33 @@ export async function POST(
   }
 
   try {
+    const query = req.scope.resolve(ContainerRegistrationKeys.QUERY);
+
+    const {
+      data: [digitalAsset],
+    } = await query.graph({
+      entity: DIGITAL_ASSET,
+      fields: [
+        "id",
+        "name",
+        "file_url",
+        "thumbnail_url",
+        "mime_type",
+        "created_at",
+        "updated_at",
+        "deleted_at",
+      ],
+      filters: {
+        id: digital_asset_id,
+      },
+    });
+
+    if (!digitalAsset) {
+      return res.status(404).json({
+        message: "해당 디지털 자산이 존재하지 않습니다",
+      });
+    }
+
     const link = req.scope.resolve(ContainerRegistrationKeys.LINK);
 
     await link.create({
