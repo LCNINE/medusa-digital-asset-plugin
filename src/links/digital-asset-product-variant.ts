@@ -13,4 +13,9 @@ export default defineLink(
     isList: true,
     customName: "digital_asset_product_variant",
   },
+  {
+    database: {
+      table: "digital_asset_product_variant",
+    },
+  },
 );

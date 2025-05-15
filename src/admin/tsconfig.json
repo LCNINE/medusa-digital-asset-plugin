@@ -20,5 +20,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": [".", "../_constants"]
+  "include": [".", "../_constants", "../api/admin/variant-digital-asset.tsx"]
 }

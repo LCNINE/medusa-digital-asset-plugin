@@ -1,6 +1,9 @@
 import { toast } from "@medusajs/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { DIGITAL_ASSETS_QUERY_KEY } from "../../../../../constants";
+import {
+  DIGITAL_ASSETS_QUERY_KEY,
+  VARIANT_DIGITAL_ASSETS_QUERY_KEY,
+} from "../../../../../constants";
 import { sdk } from "../../../../lib/config";
 
 // 하나 삭제
@@ -16,6 +19,8 @@ const useDeleteAssetMutation = () => {
     onSuccess: (_, assetId) => {
       queryClient.invalidateQueries({ queryKey: DIGITAL_ASSETS_QUERY_KEY.all });
       queryClient.invalidateQueries({ queryKey: DIGITAL_ASSETS_QUERY_KEY.detail(assetId) });
+      queryClient.fetchQuery({ queryKey: [VARIANT_DIGITAL_ASSETS_QUERY_KEY.lists()] });
+
       toast.success("삭제 처리 되었습니다.");
     },
     onError: (error) => {
@@ -31,7 +36,7 @@ const useDeleteAssetsMutation = () => {
 
   return useMutation({
     mutationFn: async (assetIds: string[]) => {
-      const res = await sdk.client.fetch(`/admin/digital-assets/batch_delete`, {
+      const res = await sdk.client.fetch(`/admin/digital-assets/batch-delete`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -47,6 +52,7 @@ const useDeleteAssetsMutation = () => {
       assetIds.forEach((id) => {
         queryClient.invalidateQueries({ queryKey: DIGITAL_ASSETS_QUERY_KEY.detail(id) });
       });
+      queryClient.fetchQuery({ queryKey: [VARIANT_DIGITAL_ASSETS_QUERY_KEY.lists()] });
       toast.success("삭제 처리 되었습니다.");
     },
     onError: (error) => {

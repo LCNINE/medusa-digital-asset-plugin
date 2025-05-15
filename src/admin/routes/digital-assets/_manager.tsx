@@ -2,11 +2,12 @@ import { Container, Heading, Text, Toaster } from "@medusajs/ui";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { sdk } from "../../lib/config";
-import { AssetDetailsModal, AssetList, AssetFormModal } from "./_components";
-import { DigitalAsset } from "./_components/types";
+import { AssetDetailsModal, AssetFormModal, AssetList } from "./_components";
+
+import { DigitalAsset } from "../../../types/digital-asset.types";
+import CreateDigitalAssetBtn from "./_components/create-digital-asset-btn";
 import ViewDeletedAssetsBtn from "./_components/view-deleted-assets-btn";
 import { useDigitalAsset } from "./_context";
-import CreateDigitalAssetBtn from "./_components/create-digital-asset-btn";
 
 const DigitalAssetManager = () => {
   const [assetId, setAssetId] = useState<string | null>(null);

@@ -10,12 +10,39 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY);
 
   try {
-    // includeDeleted가 true면 삭제된 항목을 포함해 모든 데이터 조회
     const includeDeleted = req.query.include_deleted === "true";
     const limit = parseInt(req.query.limit as string) || 20;
     const offset = parseInt(req.query.offset as string) || 0;
+    const search = (req.query.search as string) || "";
+    const excludeVariantId = req.query.exclude_variant_id as string;
 
-    const filters = includeDeleted ? { deleted_at: { $ne: null } } : { deleted_at: null };
+    let filters: any = includeDeleted ? { deleted_at: { $ne: null } } : { deleted_at: null };
+
+    if (search) {
+      filters = {
+        ...filters,
+        name: { $like: `%${search}%` },
+      };
+    }
+
+    if (excludeVariantId) {
+      const { data: linkedAssets } = await query.graph({
+        entity: "digital_asset_product_variant",
+        fields: ["*"],
+        filters: {
+          product_variant_id: excludeVariantId,
+        },
+      });
+
+      if (linkedAssets && linkedAssets.length > 0) {
+        const linkedAssetIds = linkedAssets.map((link) => link.digital_asset_id);
+
+        filters = {
+          ...filters,
+          id: { $nin: linkedAssetIds },
+        };
+      }
+    }
 
     const digitalAssetService: DigitalAssetService = req.scope.resolve(DIGITAL_ASSET);
 
@@ -31,7 +58,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
         "updated_at",
         "deleted_at",
       ],
-      filters: filters as any,
+      filters: filters,
       pagination: {
         skip: offset,
         take: limit,

@@ -7,7 +7,7 @@ import {
   useDeleteAssetsMutation,
 } from "../_hooks/digital-assets/use-delete-asset";
 import { useRestoreAssetsMutation } from "../_hooks/digital-assets/use-restore-asset";
-import { DigitalAsset } from "./types";
+import { DigitalAsset } from "../../../../types/digital-asset.types";
 
 type AssetListProps = {
   assets: DigitalAsset[];
