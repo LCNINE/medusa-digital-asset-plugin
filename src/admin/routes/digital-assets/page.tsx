@@ -1,4 +1,5 @@
 import { defineRouteConfig } from "@medusajs/admin-sdk";
+import { ArrowDownCircle } from "@medusajs/icons";
 import DigitalAssetManager from "./_manager";
 
 const DigitalAssetsPage = () => {
@@ -8,5 +9,6 @@ const DigitalAssetsPage = () => {
 export default DigitalAssetsPage;
 
 export const config = defineRouteConfig({
-  label: "Digital asset",
+  label: "Digital assets",
+  icon: ArrowDownCircle,
 });
