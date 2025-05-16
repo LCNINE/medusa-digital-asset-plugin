@@ -22,8 +22,10 @@ export const AssetSelector = ({
 }: IAssetSelectorProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [selectedAssetCache, setSelectedAssetCache] = useState<DigitalAsset | null>(null);
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const debouncedSearch = useCallback((value: string) => {
     const debouncedFn = debounce(() => {
@@ -51,13 +53,6 @@ export const AssetSelector = ({
     }
   };
 
-  const filteredAssets =
-    digitalAssets?.pages.flatMap((page: DigitalAssetPaginatedResponse) =>
-      page.digital_assets.filter((asset: DigitalAsset) =>
-        asset.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()),
-      ),
-    ) || [];
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -77,7 +72,22 @@ export const AssetSelector = ({
     debouncedSearch(value);
   };
 
-  const selectedAsset = filteredAssets.find((a) => a.id === selectedAssetId);
+  const handleAssetSelect = (asset: DigitalAsset) => {
+    setSelectedAssetId(asset.id);
+    setSelectedAssetCache(asset);
+    setShowDropdown(false);
+  };
+
+  const filteredAssets =
+    digitalAssets?.pages.flatMap((page: DigitalAssetPaginatedResponse) =>
+      page.digital_assets.filter((asset: DigitalAsset) =>
+        asset.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()),
+      ),
+    ) || [];
+
+  const selectedAsset =
+    filteredAssets.find((a) => a.id === selectedAssetId) ||
+    (selectedAssetId && selectedAssetCache?.id === selectedAssetId ? selectedAssetCache : null);
 
   return (
     <div className="mt-6">
@@ -86,7 +96,7 @@ export const AssetSelector = ({
       <div className="flex items-center gap-2">
         <div className="flex-1 max-w-md relative">
           <div
-            className="border rounded p-2 h-10 cursor-pointer flex justify-between items-center"
+            className="border border-ui-border-base rounded p-2 h-10 cursor-pointer flex justify-between items-center bg-ui-bg-base text-ui-fg-base"
             onClick={() => setShowDropdown((prev) => !prev)}
           >
             <span>
@@ -98,39 +108,44 @@ export const AssetSelector = ({
           {showDropdown && (
             <div
               ref={dropdownRef}
-              className="absolute z-10 mt-1 w-full bg-white border rounded-md shadow-lg max-h-60 overflow-auto"
+              className="absolute z-10 mt-1 w-full bg-ui-bg-base border border-ui-border-base rounded-md shadow-lg max-h-60 overflow-auto"
             >
-              <div className="p-2 border-b">
+              <div className="p-2 border-b border-ui-border-base">
                 <input
                   type="text"
                   placeholder="자산 검색..."
                   value={searchTerm}
                   onChange={handleSearchInput}
-                  className="w-full p-2 rounded border border-gray-200 text-sm focus:outline-none"
+                  className="w-full p-2 rounded border border-ui-border-base text-sm focus:outline-none bg-ui-bg-field text-ui-fg-base"
                   onClick={(e) => e.stopPropagation()}
                 />
               </div>
 
               <div className="overflow-y-auto max-h-40" onScroll={handleScroll}>
                 {isPending || debouncedSearchTerm !== searchTerm ? (
-                  <div className="p-2 text-center">로딩 중...</div>
+                  <div className="p-2 text-center text-ui-fg-subtle">로딩 중...</div>
                 ) : filteredAssets.length === 0 ? (
-                  <div className="p-2 text-center">사용 가능한 디지털 자산 없음</div>
+                  <div className="p-2 text-center text-ui-fg-subtle">
+                    사용 가능한 디지털 자산 없음
+                  </div>
                 ) : (
                   filteredAssets.map((asset) => (
                     <div
                       key={asset.id}
-                      className={`p-2 ml-2 hover:bg-gray-100 cursor-pointer ${selectedAssetId === asset.id ? "bg-gray-100" : ""}`}
-                      onClick={() => {
-                        setSelectedAssetId(asset.id);
-                        setShowDropdown(false);
-                      }}
+                      className={`p-2 ml-2 hover:bg-ui-bg-base-hover cursor-pointer ${
+                        selectedAssetId === asset.id
+                          ? "bg-ui-bg-base-pressed text-ui-fg-base"
+                          : "text-ui-fg-base bg-ui-bg-base"
+                      }`}
+                      onClick={() => handleAssetSelect(asset)}
                     >
                       {asset.name}
                     </div>
                   ))
                 )}
-                {isFetchingNextPage && <div className="p-2 text-center">더 불러오는 중...</div>}
+                {isFetchingNextPage && (
+                  <div className="p-2 text-center text-ui-fg-subtle">더 불러오는 중...</div>
+                )}
               </div>
             </div>
           )}
@@ -146,7 +161,7 @@ export const AssetSelector = ({
           <Button
             variant="primary"
             disabled={!selectedAssetId || !selectedAsset || isLinking}
-            className="h-10"
+            className="h-10 disabled:cursor-not-allowed"
             onClick={() => {
               if (selectedAssetId && selectedAsset) {
                 onLink(selectedAssetId);
