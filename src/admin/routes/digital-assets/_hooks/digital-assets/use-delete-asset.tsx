@@ -33,7 +33,7 @@ const useDeleteAssetsMutation = () => {
 
   return useMutation({
     mutationFn: async (assetIds: string[]) => {
-      const res = await sdk.client.fetch(`/admin/digital-assets/batch-delete`, {
+      const res = await fetch(`/admin/digital-assets/batch-delete`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -41,7 +41,12 @@ const useDeleteAssetsMutation = () => {
         body: JSON.stringify({ ids: assetIds }),
       });
 
-      return res;
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "삭제 처리 중 오류가 발생했습니다.");
+      }
+
+      return res.json();
     },
 
     onSuccess: (_, assetIds) => {

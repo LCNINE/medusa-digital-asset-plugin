@@ -30,7 +30,7 @@ export const adminMiddlewares = {
       ],
     },
     {
-      matcher: "/admin/digital-assets/betch_delete",
+      matcher: "/admin/digital-assets/batch-delete",
       method: ["POST"],
       middlewares: [validateAndTransformBody(DeleteBatchDigitalAssetSchema)],
     },
