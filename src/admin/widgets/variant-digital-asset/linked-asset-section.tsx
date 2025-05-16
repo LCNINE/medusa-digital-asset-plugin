@@ -60,6 +60,7 @@ const LinkedAssetSection = ({ variantId, isUnLinking, onUnlink }: ILinkedAssetSe
                 disabled={isUnLinking}
                 className="w-full sm:w-auto mt-2 sm:mt-0 text-sm py-1.5 whitespace-nowrap transition-all duration-200 hover:bg-ui-bg-interactive hover:text-ui-fg-on-color hover:shadow-sm"
                 size="small"
+                onClick={(e) => e.stopPropagation()}
               >
                 연결 해제
               </Button>
