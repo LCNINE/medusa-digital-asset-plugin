@@ -4,7 +4,7 @@ import {
   DIGITAL_ASSETS_QUERY_KEY,
   VARIANT_DIGITAL_ASSETS_QUERY_KEY,
   LINK_DIGITAL_ASSET_TO_VARIANT_QUERY_KEY,
-} from "../../constants";
+} from "../constants";
 
 type LinkDigitalAssetToVariantDTO = {
   digital_asset_id: string;

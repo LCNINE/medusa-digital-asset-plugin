@@ -1,9 +1,6 @@
 import { toast } from "@medusajs/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  DIGITAL_ASSETS_QUERY_KEY,
-  VARIANT_DIGITAL_ASSETS_QUERY_KEY,
-} from "../../../../../constants";
+import { DIGITAL_ASSETS_QUERY_KEY, VARIANT_DIGITAL_ASSETS_QUERY_KEY } from "../../../../constants";
 import { sdk } from "../../../../lib/config";
 
 // 하나 삭제

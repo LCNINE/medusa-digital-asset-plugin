@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { DIGITAL_ASSETS_QUERY_KEY } from "../../constants";
+import { DIGITAL_ASSETS_QUERY_KEY } from "../constants";
 import { DigitalAssetPaginatedResponse } from "../../types/digital-asset.types";
 import { sdk } from "../lib/config";
 

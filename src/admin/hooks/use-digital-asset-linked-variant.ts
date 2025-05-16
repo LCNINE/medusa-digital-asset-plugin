@@ -1,6 +1,6 @@
 import { toast } from "@medusajs/ui";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { LINK_DIGITAL_ASSET_TO_VARIANT_QUERY_KEY } from "../../constants";
+import { LINK_DIGITAL_ASSET_TO_VARIANT_QUERY_KEY } from "../constants";
 import { DigitalAsset } from "../../types/digital-asset.types";
 import { sdk } from "../lib/config";
 
