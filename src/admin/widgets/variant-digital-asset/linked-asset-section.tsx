@@ -1,8 +1,9 @@
-import { Avatar, Button, Prompt, Text } from "@medusajs/ui";
+import { Avatar, Button, Container, Prompt, Text } from "@medusajs/ui";
 import { Suspense } from "react";
 import { useDigitalAssetStore } from "../../../store/digital-asset";
 import { useDigitalAssetLinkedVariant } from "../../hooks/use-digital-asset-linked-variant";
 import { AssetDetailsModal, AssetFormModal } from "../../routes/digital-assets/_components";
+import { Spinner } from "@medusajs/icons";
 
 interface ILinkedAssetSectionProps {
   variantId: string;
@@ -97,7 +98,13 @@ const LinkedAssetSection = ({ variantId, isUnLinking, onUnlink }: ILinkedAssetSe
 };
 
 export const SuspenseLinkedAssetSection = (props: ILinkedAssetSectionProps) => (
-  <Suspense fallback={<Text className="text-ui-fg-subtle mb-4 text-center py-2">로딩 중...</Text>}>
+  <Suspense
+    fallback={
+      <div className="flex justify-center items-center min-h-36">
+        <Spinner />
+      </div>
+    }
+  >
     <LinkedAssetSection {...props} />
   </Suspense>
 );
