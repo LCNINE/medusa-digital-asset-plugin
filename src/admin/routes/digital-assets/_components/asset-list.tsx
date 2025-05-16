@@ -129,17 +129,6 @@ const AssetList = ({ assets, onViewAsset, pagination, onPageChange }: AssetListP
     });
   };
 
-  if (assets.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-10">
-        <Text>디지털 자산이 없습니다</Text>
-        <Button variant="secondary" className="mt-4" onClick={() => setIsAssetFormModalOpen(true)}>
-          새 디지털 자산 생성
-        </Button>
-      </div>
-    );
-  }
-
   const totalPages = pagination ? Math.ceil(pagination.count / pagination.limit) : 1;
   const currentPage = pagination ? Math.floor(pagination.offset / pagination.limit) + 1 : 1;
 
@@ -160,6 +149,17 @@ const AssetList = ({ assets, onViewAsset, pagination, onPageChange }: AssetListP
     const asset = assets.find((a) => a.id === id);
     return asset && asset.deleted_at;
   });
+
+  if (assets.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-10">
+        <Text>디지털 자산이 없습니다</Text>
+        <Button variant="secondary" className="mt-4" onClick={() => setIsAssetFormModalOpen(true)}>
+          새 디지털 자산 생성
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <>
