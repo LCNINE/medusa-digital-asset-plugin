@@ -1,7 +1,8 @@
-import { Avatar, Button, Container, Prompt, Text } from "@medusajs/ui";
-import { Suspense, useState } from "react";
+import { Avatar, Button, Prompt, Text } from "@medusajs/ui";
+import { Suspense } from "react";
+import { useDigitalAssetStore } from "../../../store/digital-asset";
 import { useDigitalAssetLinkedVariant } from "../../hooks/use-digital-asset-linked-variant";
-import { AssetDetailsModal } from "../../routes/digital-assets/_components";
+import { AssetDetailsModal, AssetFormModal } from "../../routes/digital-assets/_components";
 
 interface ILinkedAssetSectionProps {
   variantId: string;
@@ -10,8 +11,8 @@ interface ILinkedAssetSectionProps {
 }
 
 const LinkedAssetSection = ({ variantId, isUnLinking, onUnlink }: ILinkedAssetSectionProps) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [assetId, setAssetId] = useState<string | null>(null);
+  const { isModalOpen, setIsModalOpen, selectedAssetId, setSelectedAssetId } =
+    useDigitalAssetStore();
   const { data: linkedAssets } = useDigitalAssetLinkedVariant(variantId);
 
   const handleUnlink = (assetId: string) => {
@@ -22,7 +23,7 @@ const LinkedAssetSection = ({ variantId, isUnLinking, onUnlink }: ILinkedAssetSe
 
   const handleModalClose = () => {
     setIsModalOpen(false);
-    setAssetId(null);
+    setSelectedAssetId(null);
   };
 
   return (
@@ -32,6 +33,10 @@ const LinkedAssetSection = ({ variantId, isUnLinking, onUnlink }: ILinkedAssetSe
         <div
           key={asset?.id}
           className="flex flex-col sm:flex-row items-start sm:items-center p-3 bg-ui-bg-subtle rounded-md mb-3 shadow-sm cursor-pointer"
+          onClick={() => {
+            setSelectedAssetId(asset.id);
+            setIsModalOpen(true);
+          }}
         >
           <div className="flex items-center w-full mb-2 sm:mb-0 h-full">
             <Avatar
@@ -80,13 +85,13 @@ const LinkedAssetSection = ({ variantId, isUnLinking, onUnlink }: ILinkedAssetSe
         </div>
       )}
 
-      {/* TODO: 디지털 자산 상세보기 창 context -> zustand로 변경하기 */}
-      {/* 
       <AssetDetailsModal
         isOpen={isModalOpen}
         onClose={handleModalClose}
-        assetId={assetId as string}
-      /> */}
+        assetId={selectedAssetId as string}
+      />
+
+      <AssetFormModal />
     </div>
   );
 };

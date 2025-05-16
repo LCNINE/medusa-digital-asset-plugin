@@ -10,12 +10,12 @@ import ViewDeletedAssetsBtn from "./_components/view-deleted-assets-btn";
 import { useDigitalAssetStore } from "../../../store/digital-asset";
 
 const DigitalAssetManager = () => {
-  const [assetId, setAssetId] = useState<string | null>(null);
   const [includeDeleted, setIncludeDeleted] = useState(false);
   const [offset, setOffset] = useState(0);
   const limit = 20;
 
-  const { isModalOpen, setIsModalOpen } = useDigitalAssetStore();
+  const { isModalOpen, setIsModalOpen, selectedAssetId, setSelectedAssetId } =
+    useDigitalAssetStore();
 
   const { data, isPending } = useQuery<{
     digital_assets: DigitalAsset[];
@@ -33,13 +33,13 @@ const DigitalAssetManager = () => {
   });
 
   const handleViewAsset = (assetId: string) => {
-    setAssetId(assetId);
+    setSelectedAssetId(assetId);
     setIsModalOpen(true);
   };
 
   const handleModalClose = () => {
     setIsModalOpen(false);
-    setAssetId(null);
+    setSelectedAssetId(null);
   };
 
   if (isPending) {
@@ -81,7 +81,7 @@ const DigitalAssetManager = () => {
       <AssetDetailsModal
         isOpen={isModalOpen}
         onClose={handleModalClose}
-        assetId={assetId as string}
+        assetId={selectedAssetId as string}
       />
 
       <AssetFormModal />
