@@ -6,6 +6,8 @@ import { useState } from "react";
 import { useDigitalAssetLicense } from "./_hooks/use-digital-asset-license";
 import { useRevokeLicense } from "./_hooks/use-revoke-license";
 import { DigitalAssetLicense } from "../../../../.medusa/types/query-entry-points";
+import { Pagination } from "../../components/ui/pagination";
+import dayjs from "dayjs";
 
 type LicenseWithFields = DigitalAssetLicense & {
   digital_asset_id: string;
@@ -65,7 +67,7 @@ const LicensesPage = () => {
                       <Badge color="blue">미사용</Badge>
                     )}
                   </Table.Cell>
-                  <Table.Cell>{new Date(license.created_at).toLocaleDateString()}</Table.Cell>
+                  <Table.Cell>{dayjs(license.created_at).format("YYYY-MM-DD")}</Table.Cell>
                   <Table.Cell>
                     <Button
                       variant="secondary"
@@ -81,52 +83,13 @@ const LicensesPage = () => {
             </Table.Body>
           </Table>
 
-          <div className="flex justify-between items-center mt-4">
-            <Button
-              variant="secondary"
-              disabled={page === 1}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-            >
-              이전
-            </Button>
-
-            <div className="flex items-center gap-2">
-              {/* 페이지 번호 표시 */}
-              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                const startPage = Math.max(1, page - 2);
-                const endPage = Math.min(totalPages, startPage + 4);
-                const adjustedStartPage = Math.max(1, endPage - 4);
-
-                const pageNumber = adjustedStartPage + i;
-                if (pageNumber <= totalPages) {
-                  return (
-                    <Button
-                      key={pageNumber}
-                      variant={pageNumber === page ? "primary" : "secondary"}
-                      size="small"
-                      onClick={() => setPage(pageNumber)}
-                    >
-                      {pageNumber}
-                    </Button>
-                  );
-                }
-                return null;
-              })}
-            </div>
-
-            <Button
-              variant="secondary"
-              disabled={page >= totalPages}
-              onClick={() => setPage((p) => p + 1)}
-            >
-              다음
-            </Button>
-          </div>
-
-          <Text className="text-center mt-2">
-            총 {data.pagination.count}개 항목 중 {(page - 1) * LIMIT + 1} -{" "}
-            {Math.min(page * LIMIT, data.pagination.count)}개 표시 중
-          </Text>
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            totalItems={data.pagination.count}
+            pageSize={LIMIT}
+            onPageChange={setPage}
+          />
         </>
       ) : (
         <Text className="text-gray-500">라이선스 내역이 없습니다.</Text>
