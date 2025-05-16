@@ -1,6 +1,6 @@
 import { Badge, Button, FocusModal, Text } from "@medusajs/ui";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { useDigitalAsset } from "../_context";
+import { useDigitalAssetStore } from "../../../../store/digital-asset";
 import { useGetAssetById } from "../_hooks/digital-assets/use-get-asset-by-id";
 
 type AssetDetailsModalProps = {
@@ -12,7 +12,7 @@ type AssetDetailsModalProps = {
 const AssetDetailsModal = ({ isOpen, onClose, assetId }: AssetDetailsModalProps) => {
   const { data: asset, isLoading } = useGetAssetById(assetId);
 
-  const { setIsAssetFormModalOpen, setSelectedAssetId } = useDigitalAsset();
+  const { setIsAssetFormModalOpen, setSelectedAssetId } = useDigitalAssetStore();
 
   if (isLoading) return <div>Loading...</div>;
   if (!asset) return null;

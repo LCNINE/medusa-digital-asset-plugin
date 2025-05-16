@@ -7,7 +7,7 @@ import { AssetDetailsModal, AssetFormModal, AssetList } from "./_components";
 import { DigitalAsset } from "../../../types/digital-asset.types";
 import CreateDigitalAssetBtn from "./_components/create-digital-asset-btn";
 import ViewDeletedAssetsBtn from "./_components/view-deleted-assets-btn";
-import { useDigitalAsset } from "./_context";
+import { useDigitalAssetStore } from "../../../store/digital-asset";
 
 const DigitalAssetManager = () => {
   const [assetId, setAssetId] = useState<string | null>(null);
@@ -15,7 +15,7 @@ const DigitalAssetManager = () => {
   const [offset, setOffset] = useState(0);
   const limit = 20;
 
-  const { isModalOpen, setIsModalOpen } = useDigitalAsset();
+  const { isModalOpen, setIsModalOpen } = useDigitalAssetStore();
 
   const { data, isPending } = useQuery<{
     digital_assets: DigitalAsset[];

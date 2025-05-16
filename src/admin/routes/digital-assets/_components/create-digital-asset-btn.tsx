@@ -1,8 +1,8 @@
 import { Button } from "@medusajs/ui";
-import { useDigitalAsset } from "../_context";
+import { useDigitalAssetStore } from "../../../../store/digital-asset";
 
 const CreateDigitalAssetBtn = () => {
-  const { setIsAssetFormModalOpen } = useDigitalAsset();
+  const { setIsAssetFormModalOpen } = useDigitalAssetStore();
 
   return <Button onClick={() => setIsAssetFormModalOpen(true)}>디지털 자산 생성</Button>;
 };

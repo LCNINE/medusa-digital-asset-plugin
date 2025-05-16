@@ -1,6 +1,6 @@
 import { Button, FocusModal, Input, Label, Text } from "@medusajs/ui";
 import { useEffect, useRef, useState } from "react";
-import { useDigitalAsset } from "../_context";
+import { useDigitalAssetStore } from "../../../../store/digital-asset";
 import { useCreateAssetMutation } from "../_hooks/digital-assets/use-create-asset";
 import { useUpdateAssetMutation } from "../_hooks/digital-assets/use-update-asset";
 import { useGetAssetById } from "../_hooks/digital-assets/use-get-asset-by-id";
@@ -16,7 +16,7 @@ const AssetFormModal = () => {
   const thumbnailInputRef = useRef<HTMLInputElement>(null);
 
   const { isAssetFormModalOpen, setIsAssetFormModalOpen, selectedAssetId, setSelectedAssetId } =
-    useDigitalAsset();
+    useDigitalAssetStore();
   const createAssetMutation = useCreateAssetMutation();
   const updateAssetMutation = useUpdateAssetMutation();
 

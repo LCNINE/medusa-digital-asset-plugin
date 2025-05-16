@@ -1,13 +1,13 @@
 import { Button, Checkbox, CommandBar, Prompt, Table, Text, toast } from "@medusajs/ui";
 import dayjs from "dayjs";
 import { useState } from "react";
-import { useDigitalAsset } from "../_context";
 import {
   useDeleteAssetMutation,
   useDeleteAssetsMutation,
 } from "../_hooks/digital-assets/use-delete-asset";
 import { useRestoreAssetsMutation } from "../_hooks/digital-assets/use-restore-asset";
 import { DigitalAsset } from "../../../../types/digital-asset.types";
+import { useDigitalAssetStore } from "../../../../store/digital-asset";
 
 type AssetListProps = {
   assets: DigitalAsset[];
@@ -27,7 +27,7 @@ const AssetList = ({ assets, onViewAsset, pagination, onPageChange }: AssetListP
     isDeleteModalOpen,
     setIsDeleteModalOpen,
     setIsAssetFormModalOpen,
-  } = useDigitalAsset();
+  } = useDigitalAssetStore();
 
   const deleteAsset = useDeleteAssetMutation();
   const deleteAssets = useDeleteAssetsMutation();
@@ -68,9 +68,10 @@ const AssetList = ({ assets, onViewAsset, pagination, onPageChange }: AssetListP
 
   const handleSelectAsset = (assetId: string, checked: boolean) => {
     if (checked) {
-      setSelectedAssets((prev) => [...prev, assetId]);
+      setSelectedAssets(assetId);
     } else {
-      setSelectedAssets((prev) => prev.filter((id) => id !== assetId));
+      const filteredAssets = selectedAssets.filter((id) => id !== assetId);
+      setSelectedAssets(filteredAssets);
     }
   };
 

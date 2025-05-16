@@ -1,5 +1,6 @@
 import { Checkbox, Label } from "@medusajs/ui";
-import { useDigitalAsset } from "../_context";
+import { useDigitalAssetStore } from "../../../../store/digital-asset";
+
 interface IProps {
   includeDeleted: boolean;
   setIncludeDeleted: (includeDeleted: boolean) => void;
@@ -7,7 +8,7 @@ interface IProps {
 }
 
 const ViewDeletedAssetsBtn = ({ includeDeleted, setIncludeDeleted, setOffset }: IProps) => {
-  const { setSelectedAssets } = useDigitalAsset();
+  const { setSelectedAssets } = useDigitalAssetStore();
 
   return (
     <div className="flex items-center gap-x-2">

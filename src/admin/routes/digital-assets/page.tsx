@@ -1,13 +1,8 @@
 import { defineRouteConfig } from "@medusajs/admin-sdk";
-import { DigitalAssetProvider } from "./_context";
 import DigitalAssetManager from "./_manager";
 
 const DigitalAssetsPage = () => {
-  return (
-    <DigitalAssetProvider>
-      <DigitalAssetManager />
-    </DigitalAssetProvider>
-  );
+  return <DigitalAssetManager />;
 };
 
 export default DigitalAssetsPage;

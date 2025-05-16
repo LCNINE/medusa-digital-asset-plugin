@@ -1,11 +1,11 @@
 import { toast } from "@medusajs/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useDigitalAsset } from "../../_context";
+import { useDigitalAssetStore } from "../../../../../store/digital-asset";
 import { DIGITAL_ASSETS_QUERY_KEY } from "../../../../../constants";
 
 export const useCreateAssetMutation = () => {
   const queryClient = useQueryClient();
-  const { setIsAssetFormModalOpen } = useDigitalAsset();
+  const { setIsAssetFormModalOpen } = useDigitalAssetStore();
 
   return useMutation({
     mutationFn: async (formData: FormData) => {

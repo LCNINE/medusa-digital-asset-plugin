@@ -86,6 +86,7 @@
     "@medusajs/types": "^2.7.1",
     "dayjs": "^1.11.13",
     "medusa-digital-asset-plugin": "file:.yalc/medusa-digital-asset-plugin",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "zustand": "^5.0.4"
   }
 }
