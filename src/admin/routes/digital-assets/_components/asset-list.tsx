@@ -1,13 +1,14 @@
-import { Button, Checkbox, CommandBar, Prompt, Table, Text, toast } from "@medusajs/ui";
+import { Button, Checkbox, CommandBar, Table, Text, toast } from "@medusajs/ui";
 import dayjs from "dayjs";
 import { useState } from "react";
+import { useDigitalAssetStore } from "../../../../store/digital-asset";
+import { DigitalAsset } from "../../../../types/digital-asset.types";
+import ConfirmModal from "../../../components/ui/confirm-modal";
 import {
   useDeleteAssetMutation,
   useDeleteAssetsMutation,
 } from "../_hooks/digital-assets/use-delete-asset";
 import { useRestoreAssetsMutation } from "../_hooks/digital-assets/use-restore-asset";
-import { DigitalAsset } from "../../../../types/digital-asset.types";
-import { useDigitalAssetStore } from "../../../../store/digital-asset";
 
 type AssetListProps = {
   assets: DigitalAsset[];
@@ -35,6 +36,7 @@ const AssetList = ({ assets, onViewAsset, pagination, onPageChange }: AssetListP
 
   const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
   const [isRestoreModalOpen, setIsRestoreModalOpen] = useState(false);
+  const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
 
   const handleDeleteClick = (assetId: string) => {
     setSelectedAssetId(assetId);
@@ -55,8 +57,14 @@ const AssetList = ({ assets, onViewAsset, pagination, onPageChange }: AssetListP
   const handleConfirmDelete = () => {
     if (selectedAssetId) {
       deleteAsset.mutate(selectedAssetId);
-      handleCloseModal();
+    } else if (selectedAssets.length > 0) {
+      deleteAssets.mutate(selectedAssets, {
+        onSuccess: () => {
+          setSelectedAssets([]);
+        },
+      });
     }
+    handleCloseModal();
   };
 
   const handleConfirmRestore = () => {
@@ -73,15 +81,6 @@ const AssetList = ({ assets, onViewAsset, pagination, onPageChange }: AssetListP
       const filteredAssets = selectedAssets.filter((id) => id !== assetId);
       setSelectedAssets(filteredAssets);
     }
-  };
-
-  const handleDeleteSelected = () => {
-    alert(`선택한 ${selectedAssets.length}개 항목을 삭제합니다.`);
-    deleteAssets.mutate(selectedAssets, {
-      onSuccess: () => {
-        setSelectedAssets([]);
-      },
-    });
   };
 
   const handleRestoreSelected = () => {
@@ -119,6 +118,15 @@ const AssetList = ({ assets, onViewAsset, pagination, onPageChange }: AssetListP
         setIsAssetFormModalOpen(true);
       }
     }
+  };
+
+  const handleConfirmBulkDelete = () => {
+    deleteAssets.mutate(selectedAssets, {
+      onSuccess: () => {
+        setSelectedAssets([]);
+        setIsBulkDeleteModalOpen(false);
+      },
+    });
   };
 
   if (assets.length === 0) {
@@ -268,7 +276,11 @@ const AssetList = ({ assets, onViewAsset, pagination, onPageChange }: AssetListP
             <>
               <CommandBar.Value>{selectedAssets.length}개 선택됨</CommandBar.Value>
               <CommandBar.Seperator />
-              <CommandBar.Command action={handleDeleteSelected} label="삭제" shortcut="d" />
+              <CommandBar.Command
+                action={() => setIsBulkDeleteModalOpen(true)}
+                label="삭제"
+                shortcut="d"
+              />
 
               <CommandBar.Seperator />
               <CommandBar.Command
@@ -290,42 +302,69 @@ const AssetList = ({ assets, onViewAsset, pagination, onPageChange }: AssetListP
       </CommandBar>
 
       {/* 삭제 모달 */}
-      <Prompt open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
-        <Prompt.Content>
-          <Prompt.Header>
-            <Prompt.Title>디지털 자산 삭제</Prompt.Title>
-            <Prompt.Description>
-              정말로 이 디지털 자산을 삭제하시겠습니까? <br />
+      <ConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={handleCloseModal}
+        onConfirm={handleConfirmDelete}
+        title="디지털 자산 삭제"
+        description={
+          selectedAssetId ? (
+            <>
+              정말로 이 디지털 자산을 삭제하시겠습니까?
+              <br />
               해당 자산은 더 이상 판매 중인 상품에서 사용할 수 없습니다.
-            </Prompt.Description>
-          </Prompt.Header>
-          <Prompt.Footer>
-            <Prompt.Cancel onClick={handleCloseModal}>취소</Prompt.Cancel>
-            <Prompt.Action onClick={handleConfirmDelete} disabled={deleteAsset.isPending}>
-              {deleteAsset.isPending ? "삭제 중..." : "삭제"}
-            </Prompt.Action>
-          </Prompt.Footer>
-        </Prompt.Content>
-      </Prompt>
+            </>
+          ) : (
+            <>
+              선택한 {selectedAssets.length}개 디지털 자산을 삭제하시겠습니까?
+              <br />
+              해당 자산은 더 이상 판매 중인 상품에서 사용할 수 없습니다.
+            </>
+          )
+        }
+        isLoading={selectedAssetId ? deleteAsset.isPending : deleteAssets.isPending}
+        actionText="삭제"
+        loadingText="삭제 중..."
+        cancelText="취소"
+      />
 
       {/* 복구 모달 */}
-      <Prompt open={isRestoreModalOpen} onOpenChange={setIsRestoreModalOpen}>
-        <Prompt.Content>
-          <Prompt.Header>
-            <Prompt.Title>디지털 자산 복구</Prompt.Title>
-            <Prompt.Description>
-              삭제된 디지털 자산을 복구하시겠습니까? <br />
-              복구 시 해당 자산은 다시 활성화되어 사용할 수 있습니다.
-            </Prompt.Description>
-          </Prompt.Header>
-          <Prompt.Footer>
-            <Prompt.Cancel onClick={handleCloseModal}>취소</Prompt.Cancel>
-            <Prompt.Action onClick={handleConfirmRestore} disabled={restoreAssets.isPending}>
-              {restoreAssets.isPending ? "복구 중..." : "복구"}
-            </Prompt.Action>
-          </Prompt.Footer>
-        </Prompt.Content>
-      </Prompt>
+      <ConfirmModal
+        isOpen={isRestoreModalOpen}
+        onClose={handleCloseModal}
+        onConfirm={handleConfirmRestore}
+        title="디지털 자산 복구"
+        description={
+          <>
+            삭제된 디지털 자산을 복구하시겠습니까?
+            <br />
+            복구 시 해당 자산은 다시 활성화되어 사용할 수 있습니다.
+          </>
+        }
+        isLoading={restoreAssets.isPending}
+        actionText="복구"
+        loadingText="복구 중..."
+        cancelText="취소"
+      />
+
+      {/* 다중 삭제 모달 */}
+      <ConfirmModal
+        isOpen={isBulkDeleteModalOpen}
+        onClose={() => setIsBulkDeleteModalOpen(false)}
+        onConfirm={handleConfirmBulkDelete}
+        title="여러 디지털 자산 삭제"
+        description={
+          <>
+            선택한 {selectedAssets.length}개 디지털 자산을 삭제하시겠습니까?
+            <br />
+            해당 자산들은 더 이상 판매 중인 상품에서 사용할 수 없습니다.
+          </>
+        }
+        isLoading={deleteAssets.isPending}
+        actionText="삭제"
+        loadingText="삭제 중..."
+        cancelText="취소"
+      />
     </>
   );
 };
