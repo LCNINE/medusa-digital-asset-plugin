@@ -19,9 +19,16 @@ type AssetListProps = {
     limit: number;
   };
   onPageChange?: (page: number) => void;
+  includeDeleted: boolean;
 };
 
-const AssetList = ({ assets, onViewAsset, pagination, onPageChange }: AssetListProps) => {
+const AssetList = ({
+  assets,
+  onViewAsset,
+  pagination,
+  onPageChange,
+  includeDeleted,
+}: AssetListProps) => {
   const {
     selectedAssets,
     setSelectedAssets,
@@ -143,12 +150,6 @@ const AssetList = ({ assets, onViewAsset, pagination, onPageChange }: AssetListP
       onPageChange(currentPage + 1);
     }
   };
-
-  // 선택된 항목 중 삭제된 자산이 있는지 확인
-  const hasDeletedAssetsSelected = selectedAssets.some((id) => {
-    const asset = assets.find((a) => a.id === id);
-    return asset && asset.deleted_at;
-  });
 
   if (assets.length === 0) {
     return (
@@ -272,7 +273,7 @@ const AssetList = ({ assets, onViewAsset, pagination, onPageChange }: AssetListP
 
       <CommandBar open={selectedAssets.length > 0}>
         <CommandBar.Bar>
-          {!hasDeletedAssetsSelected ? (
+          {!includeDeleted ? (
             <>
               <CommandBar.Value>{selectedAssets.length}개 선택됨</CommandBar.Value>
               <CommandBar.Seperator />

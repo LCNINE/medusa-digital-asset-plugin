@@ -76,6 +76,7 @@ const DigitalAssetManager = () => {
         onPageChange={(page: number) => {
           setOffset((page - 1) * limit);
         }}
+        includeDeleted={includeDeleted}
       />
 
       <AssetDetailsModal
