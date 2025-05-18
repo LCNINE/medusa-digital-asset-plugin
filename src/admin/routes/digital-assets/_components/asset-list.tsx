@@ -91,6 +91,8 @@ const AssetList = ({
   };
 
   const handleRestoreSelected = () => {
+    if (!includeDeleted) return;
+
     // 선택된 항목 중 삭제된 자산만 필터링
     const deletedAssetIds = selectedAssets.filter((id) => {
       const asset = assets.find((a) => a.id === id);
@@ -102,13 +104,13 @@ const AssetList = ({
       return;
     }
 
-    alert(`선택한 ${selectedAssets.length}개 항목을 복구합니다.`);
-
-    restoreAssets.mutate(deletedAssetIds, {
-      onSuccess: () => {
-        setSelectedAssets([]);
-      },
-    });
+    if (confirm(`선택한 ${selectedAssets.length}개 항목을 복구하시겠습니까?`)) {
+      restoreAssets.mutate(deletedAssetIds, {
+        onSuccess: () => {
+          setSelectedAssets([]);
+        },
+      });
+    }
   };
 
   const handleViewSelected = () => {
