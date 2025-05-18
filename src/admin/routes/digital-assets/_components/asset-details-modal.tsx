@@ -7,10 +7,16 @@ type AssetDetailsModalProps = {
   isOpen: boolean;
   onClose: () => void;
   assetId: string;
+  includeDeleted: boolean;
 };
 
-const AssetDetailsModal = ({ isOpen, onClose, assetId }: AssetDetailsModalProps) => {
-  const { data: asset, isLoading } = useGetAssetById(assetId);
+const AssetDetailsModal = ({
+  isOpen,
+  onClose,
+  assetId,
+  includeDeleted,
+}: AssetDetailsModalProps) => {
+  const { data: asset, isLoading } = useGetAssetById(assetId, includeDeleted);
 
   const { setIsAssetFormModalOpen, setSelectedAssetId } = useDigitalAssetStore();
 
@@ -27,16 +33,19 @@ const AssetDetailsModal = ({ isOpen, onClose, assetId }: AssetDetailsModalProps)
           <Text className="text-xl font-semibold">디지털 자산 상세 정보</Text>
         </FocusModal.Header>
 
-        <Button
-          variant="secondary"
-          onClick={() => {
-            setSelectedAssetId(asset.id);
-            setIsAssetFormModalOpen(true);
-          }}
-          className="ml-auto mr-4 mt-4 p-4 sm:px-3 sm:py-2"
-        >
-          편집
-        </Button>
+        {!includeDeleted && (
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setSelectedAssetId(asset.id);
+              setIsAssetFormModalOpen(true);
+            }}
+            className="ml-auto mr-4 mt-4 p-4 sm:px-3 sm:py-2"
+          >
+            편집
+          </Button>
+        )}
+
         <FocusModal.Body className="flex flex-col md:flex-row gap-8 py-8 justify-center items-center m-auto px-2">
           <>
             {/* 썸네일 영역 */}

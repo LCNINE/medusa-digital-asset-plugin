@@ -1,24 +1,23 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
+import { CreateFileDTO } from "@medusajs/framework/types";
+import { uploadFilesWorkflow } from "@medusajs/medusa/core-flows";
 import { ContainerRegistrationKeys, MedusaError } from "@medusajs/utils";
 import { DIGITAL_ASSET } from "../../../../modules/digital-asset";
 import DigitalAssetService from "../../../../modules/digital-asset/service";
-import { UpdateDigitalAssetInput } from "../../../../workflows/digital-asset/steps/upload-digital-asset";
-import { updateDigitalAssetWorkflow } from "../../../../workflows/digital-asset/workflows/upload-digital-asset";
 import { UpdateDigitalAssetType } from "../validators";
-import { CreateFileDTO } from "@medusajs/framework/types";
-import { uploadFilesWorkflow } from "@medusajs/medusa/core-flows";
 
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
   const digitalAssetId = req.params.id;
+  const includeDeleted = req.query.include_deleted === "true";
 
   if (!digitalAssetId) return MedusaError.Types.INVALID_DATA;
 
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY);
 
+  let filters: any = includeDeleted ? { deleted_at: { $ne: null } } : { deleted_at: null };
+
   try {
-    const {
-      data: [digitalAsset],
-    } = await query.graph({
+    let result = await query.graph({
       entity: DIGITAL_ASSET,
       fields: [
         "id",
@@ -32,12 +31,20 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
       ],
       filters: {
         id: digitalAssetId,
+        ...filters,
       },
     });
 
+    let digitalAsset = result.data[0];
+    console.log("digitalAsset:", digitalAsset);
+
     return res.status(200).json(digitalAsset);
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    console.error("디지털 자산 조회 오류:", error);
+    return res.status(500).json({
+      message: error.message,
+      error_code: "SERVER_ERROR",
+    });
   }
 }
 

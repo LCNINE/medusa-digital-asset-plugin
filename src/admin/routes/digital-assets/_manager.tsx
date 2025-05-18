@@ -82,6 +82,7 @@ const DigitalAssetManager = () => {
         isOpen={isModalOpen}
         onClose={handleModalClose}
         assetId={selectedAssetId as string}
+        includeDeleted={includeDeleted}
       />
 
       <AssetFormModal />
