@@ -2,13 +2,13 @@ import { defineRouteConfig } from "@medusajs/admin-sdk";
 import { Key } from "@medusajs/icons";
 import { Badge, Button, Container, Heading, Table, Text } from "@medusajs/ui";
 import { useQueryClient } from "@tanstack/react-query";
-import { useState, useEffect } from "react";
-import { useDigitalAssetLicense } from "./_hooks/use-digital-asset-license";
-import { useRevokeLicense } from "./_hooks/use-revoke-license";
+import dayjs from "dayjs";
+import { useEffect, useState } from "react";
 import { DigitalAssetLicense } from "../../../../.medusa/types/query-entry-points";
 import { Pagination } from "../../components/ui/pagination";
-import dayjs from "dayjs";
 import { LicenseTableSkeleton } from "./_components/license-table-skeleton";
+import { useDigitalAssetLicense } from "./_hooks/use-digital-asset-license";
+import { useRevokeLicense } from "./_hooks/use-revoke-license";
 
 type LicenseWithFields = DigitalAssetLicense & {
   digital_asset_id: string;

@@ -1,6 +1,6 @@
 import { Avatar, Button, Container, Prompt, Text } from "@medusajs/ui";
 import { Suspense } from "react";
-import { useDigitalAssetStore } from "../../../store/digital-asset";
+import { useDigitalAssetStore } from "../../../store/digital-asset-store";
 import { useDigitalAssetLinkedVariant } from "../../hooks/use-digital-asset-linked-variant";
 import { AssetDetailsModal, AssetFormModal } from "../../routes/digital-assets/_components";
 import { Spinner } from "@medusajs/icons";

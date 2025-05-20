@@ -1,8 +1,12 @@
+import { DataTableFilteringState } from "@medusajs/ui";
 import { create } from "zustand";
 
 interface DigitalAssetState {
   selectedAssets: string[];
   setSelectedAssets: (assets: string[] | string) => void;
+
+  selectedAssetId: string | null;
+  setSelectedAssetId: (id: string | null) => void;
 
   isModalOpen: boolean;
   setIsModalOpen: (isOpen: boolean) => void;
@@ -13,8 +17,10 @@ interface DigitalAssetState {
   isAssetFormModalOpen: boolean;
   setIsAssetFormModalOpen: (isOpen: boolean) => void;
 
-  selectedAssetId: string | null;
-  setSelectedAssetId: (id: string | null) => void;
+  filtering: DataTableFilteringState<Record<string, unknown>>;
+  setFiltering: React.Dispatch<
+    React.SetStateAction<DataTableFilteringState<Record<string, unknown>>>
+  >;
 }
 
 export const useDigitalAssetStore = create<DigitalAssetState>((set, get) => ({
@@ -42,4 +48,11 @@ export const useDigitalAssetStore = create<DigitalAssetState>((set, get) => ({
   // 선택된 자산 ID
   selectedAssetId: null,
   setSelectedAssetId: (id) => set({ selectedAssetId: id }),
+
+  filtering: {},
+  setFiltering: (filtering) =>
+    set((prev) => ({
+      ...prev,
+      filtering: typeof filtering === "function" ? filtering(prev.filtering) : filtering,
+    })),
 }));

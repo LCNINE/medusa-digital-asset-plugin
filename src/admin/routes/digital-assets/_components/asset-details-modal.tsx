@@ -1,31 +1,24 @@
 import { Badge, Button, FocusModal, Text } from "@medusajs/ui";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { useDigitalAssetStore } from "../../../../store/digital-asset";
+import { useDigitalAssetStore } from "../../../../store/digital-asset-store";
 import { useGetAssetById } from "../_hooks/digital-assets/use-get-asset-by-id";
 
 type AssetDetailsModalProps = {
   isOpen: boolean;
   onClose: () => void;
   assetId: string;
-  includeDeleted: boolean;
 };
 
-const AssetDetailsModal = ({
-  isOpen,
-  onClose,
-  assetId,
-  includeDeleted,
-}: AssetDetailsModalProps) => {
-  const { data: asset, isLoading } = useGetAssetById(assetId, includeDeleted);
-
-  const { setIsAssetFormModalOpen, setSelectedAssetId } = useDigitalAssetStore();
+const AssetDetailsModal = ({ isOpen, onClose, assetId }: AssetDetailsModalProps) => {
+  const { setIsAssetFormModalOpen, setSelectedAssetId, filtering } = useDigitalAssetStore();
+  const { data: asset, isLoading } = useGetAssetById(assetId, filtering.deleted_at as boolean);
 
   if (isLoading) return <div>Loading...</div>;
   if (!asset) return null;
 
   return (
     <FocusModal open={isOpen} onOpenChange={onClose}>
-      <FocusModal.Content aria-describedby={undefined}>
+      <FocusModal.Content aria-describedby={undefined} className="">
         <FocusModal.Header>
           <VisuallyHidden>
             <FocusModal.Title>디지털 자산 상세 정보</FocusModal.Title>
@@ -33,7 +26,7 @@ const AssetDetailsModal = ({
           <Text className="text-xl font-semibold">디지털 자산 상세 정보</Text>
         </FocusModal.Header>
 
-        {!includeDeleted && (
+        {!filtering.deleted_at && (
           <Button
             variant="secondary"
             onClick={() => {

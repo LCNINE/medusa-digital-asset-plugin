@@ -10,19 +10,39 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY);
 
   try {
-    const includeDeleted = req.query.include_deleted === "true";
+    const includeDeleted = req.query.deleted_at === "true";
     const limit = parseInt(req.query.limit as string) || 20;
     const offset = parseInt(req.query.offset as string) || 0;
     const search = (req.query.search as string) || "";
     const excludeVariantId = req.query.exclude_variant_id as string;
+    const statusFilters = (req.query.status as string[]) || [];
+    const orderBy = req.query.order as string;
 
     let filters: any = includeDeleted ? { deleted_at: { $ne: null } } : { deleted_at: null };
 
     if (search) {
       filters = {
         ...filters,
-        name: { $like: `%${search}%` },
+        $or: [{ name: { $like: `%${search}%` } }, { id: { $like: `%${search}%` } }],
       };
+    }
+
+    if (statusFilters && statusFilters.length > 0) {
+      const mimeTypeFilters = Array.isArray(statusFilters) ? statusFilters : [statusFilters];
+
+      if (mimeTypeFilters.length > 0) {
+        const mimeTypeConditions = mimeTypeFilters.map((filter) => {
+          if (filter.endsWith("/")) {
+            return { $like: `${filter}%` };
+          }
+          return filter;
+        });
+
+        filters = {
+          ...filters,
+          mime_type: { $or: mimeTypeConditions },
+        };
+      }
     }
 
     if (excludeVariantId) {
@@ -46,6 +66,22 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
 
     const digitalAssetService: DigitalAssetService = req.scope.resolve(DIGITAL_ASSET);
 
+    let orderOptions = {};
+    if (orderBy) {
+      const desc = orderBy.startsWith("-");
+      const field = desc ? orderBy.substring(1) : orderBy;
+
+      const allowedSortFields = ["id", "name", "created_at", "updated_at"];
+
+      if (allowedSortFields.includes(field)) {
+        orderOptions = {
+          order: {
+            [field]: desc ? "DESC" : "ASC",
+          },
+        };
+      }
+    }
+
     const { data: digital_assets, metadata: { count } = {} } = await query.graph({
       entity: DIGITAL_ASSET,
       fields: [
@@ -62,6 +98,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
       pagination: {
         skip: offset,
         take: limit,
+        ...orderOptions,
       },
     });
 
