@@ -1,5 +1,5 @@
 import { Container, Text, Toaster } from "@medusajs/ui";
-import { Suspense, useState } from "react";
+import { Suspense } from "react";
 import { AssetDetailsModal, AssetFormModal } from "./_components";
 
 import { Spinner } from "@medusajs/icons";
