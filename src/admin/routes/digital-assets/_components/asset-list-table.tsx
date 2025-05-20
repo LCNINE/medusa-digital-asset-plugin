@@ -101,7 +101,6 @@ const AssetListTable = ({ onViewAsset }: IAssetListTableProps) => {
     pageIndex: 0,
   });
   const [search, setSearch] = useState<string>("");
-  // const [filtering, setFiltering] = useState<DataTableFilteringState>({});
   const [sorting, setSorting] = useState<DataTableSortingState | null>(null);
 
   const {
@@ -336,7 +335,7 @@ const AssetListTable = ({ onViewAsset }: IAssetListTableProps) => {
 
       <CommandBar open={selectedAssets.length > 0}>
         <CommandBar.Bar>
-          {filtering.deleted_at === "true" ? (
+          {!filtering.deleted_at ? (
             <>
               <CommandBar.Value>{selectedAssets.length}개 선택됨</CommandBar.Value>
               <CommandBar.Seperator />
