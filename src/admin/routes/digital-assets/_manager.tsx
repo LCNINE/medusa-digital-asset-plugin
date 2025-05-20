@@ -42,16 +42,6 @@ const DigitalAssetManager = () => {
         ]}
       />
 
-      {/* <AssetList
-        assets={data?.digital_assets || []}
-        onViewAsset={handleViewAsset}
-        pagination={data?.pagination}
-        onPageChange={(page: number) => {
-          setOffset((page - 1) * limit);
-        }}
-        includeDeleted={includeDeleted}
-      /> */}
-
       <Suspense
         fallback={
           <DeferredComponent>
