@@ -1,8 +1,7 @@
 import { DataTableSortingState, toast } from "@medusajs/ui";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { DigitalAsset } from "../../../../../types/digital-asset.types";
-import { useDigitalAssetStore } from "../../../../../store/digital-asset-store";
+import { useFilteringStore } from "../../../../../store/filtering-store";
+import { DigitalAsset } from "../../../../../../.medusa/types/query-entry-points";
 import { DIGITAL_ASSETS_QUERY_KEY } from "../../../../constants";
 import { sdk } from "../../../../lib/config";
 
@@ -23,7 +22,7 @@ export const useGetAssets = ({
   deletedAtFilters,
   sorting,
 }: IUseGetAssetsProps) => {
-  const { filtering } = useDigitalAssetStore();
+  const { filtering } = useFilteringStore();
 
   const query = useSuspenseQuery<{
     digital_assets: DigitalAsset[];

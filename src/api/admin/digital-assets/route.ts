@@ -1,4 +1,8 @@
-import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
+import {
+  AuthenticatedMedusaRequest,
+  MedusaRequest,
+  MedusaResponse,
+} from "@medusajs/framework/http";
 import { CreateFileDTO } from "@medusajs/framework/types";
 import { uploadFilesWorkflow } from "@medusajs/medusa/core-flows";
 import { ContainerRegistrationKeys, MedusaError } from "@medusajs/utils";
@@ -6,7 +10,7 @@ import { DIGITAL_ASSET } from "../../../modules/digital-asset";
 import DigitalAssetService from "../../../modules/digital-asset/service";
 import { CreateDigitalAssetType } from "./validators";
 
-export async function GET(req: MedusaRequest, res: MedusaResponse) {
+export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY);
 
   try {

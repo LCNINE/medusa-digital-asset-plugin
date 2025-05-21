@@ -58,7 +58,9 @@ export async function POST(req: AuthenticatedMedusaRequest, res: MedusaResponse)
     });
 
     res.status(200).json({
-      digital_asset,
+      success: true,
+      license_id: updatedLicense.id,
+      message: "라이센스가 성공적으로 행사되었습니다.",
     });
   } catch (error) {
     console.error("error::", error);

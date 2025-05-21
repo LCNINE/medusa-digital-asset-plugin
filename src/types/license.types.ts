@@ -1,6 +1,6 @@
 import { DigitalAssetLicense } from "../../.medusa/types/query-entry-points";
 
-interface LicenseResponse {
+export interface LicenseResponse {
   licenses: DigitalAssetLicense[];
   pagination: {
     count: number;
@@ -9,4 +9,6 @@ interface LicenseResponse {
   };
 }
 
-export type { LicenseResponse };
+export interface SingleLicenseResponse {
+  license: DigitalAssetLicense;
+}

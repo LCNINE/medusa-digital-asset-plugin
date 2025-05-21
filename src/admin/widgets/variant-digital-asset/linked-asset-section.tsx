@@ -1,9 +1,9 @@
-import { Avatar, Button, Container, Prompt, Text } from "@medusajs/ui";
+import { Spinner } from "@medusajs/icons";
+import { Avatar, Button, Prompt, Text } from "@medusajs/ui";
 import { Suspense } from "react";
-import { useDigitalAssetStore } from "../../../store/digital-asset-store";
+import { useModalStore } from "../../../store/modal-store";
 import { useDigitalAssetLinkedVariant } from "../../hooks/use-digital-asset-linked-variant";
 import { AssetDetailsModal, AssetFormModal } from "../../routes/digital-assets/_components";
-import { Spinner } from "@medusajs/icons";
 
 interface ILinkedAssetSectionProps {
   variantId: string;
@@ -12,8 +12,7 @@ interface ILinkedAssetSectionProps {
 }
 
 const LinkedAssetSection = ({ variantId, isUnLinking, onUnlink }: ILinkedAssetSectionProps) => {
-  const { isModalOpen, setIsModalOpen, selectedAssetId, setSelectedAssetId } =
-    useDigitalAssetStore();
+  const { modalType, setModalType, selectedId, setSelectedId } = useModalStore();
   const { data: linkedAssets } = useDigitalAssetLinkedVariant(variantId);
 
   const handleUnlink = (assetId: string) => {
@@ -23,8 +22,8 @@ const LinkedAssetSection = ({ variantId, isUnLinking, onUnlink }: ILinkedAssetSe
   };
 
   const handleModalClose = () => {
-    setIsModalOpen(false);
-    setSelectedAssetId(null);
+    setModalType(null);
+    setSelectedId(null);
   };
 
   return (
@@ -35,13 +34,13 @@ const LinkedAssetSection = ({ variantId, isUnLinking, onUnlink }: ILinkedAssetSe
           key={asset?.id}
           className="flex flex-col sm:flex-row items-start sm:items-center p-3 bg-ui-bg-subtle rounded-md mb-3 shadow-sm cursor-pointer"
           onClick={() => {
-            setSelectedAssetId(asset.id);
-            setIsModalOpen(true);
+            setSelectedId(asset.id);
+            setModalType("detail");
           }}
         >
           <div className="flex items-center w-full mb-2 sm:mb-0 h-full">
             <Avatar
-              src={asset.thumbnail_url}
+              src={asset.thumbnail_url as string}
               fallback=""
               className="mr-2 h-8 w-8 sm:h-10 sm:w-10 transition-transform duration-300 hover:scale-110"
             />
@@ -88,9 +87,9 @@ const LinkedAssetSection = ({ variantId, isUnLinking, onUnlink }: ILinkedAssetSe
       )}
 
       <AssetDetailsModal
-        isOpen={isModalOpen}
+        isOpen={modalType === "detail"}
         onClose={handleModalClose}
-        assetId={selectedAssetId as string}
+        assetId={selectedId as string}
       />
 
       <AssetFormModal />

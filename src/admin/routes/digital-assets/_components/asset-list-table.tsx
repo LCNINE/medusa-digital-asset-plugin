@@ -14,9 +14,10 @@ import {
 } from "@medusajs/ui";
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
-import { useDigitalAssetStore } from "../../../../store/digital-asset-store";
-import { DigitalAsset } from "../../../../types/digital-asset.types";
-import ConfirmModal from "../../../components/ui/confirm-modal";
+import { DigitalAsset } from "../../../../../.medusa/types/query-entry-points";
+import { useFilteringStore } from "../../../../store/filtering-store";
+import { useModalStore } from "../../../../store/modal-store";
+import ConfirmModal from "../../../components/modal/confirm-modal";
 import { SingleColumnLayout } from "../../../layout/single-column";
 import {
   useDeleteAssetMutation,
@@ -104,16 +105,16 @@ const AssetListTable = ({ onViewAsset }: IAssetListTableProps) => {
   const [sorting, setSorting] = useState<DataTableSortingState | null>(null);
 
   const {
-    selectedAssetId,
-    setSelectedAssetId,
-    selectedAssets,
-    setSelectedAssets,
-    setIsAssetFormModalOpen,
-    setIsDeleteModalOpen,
-    isDeleteModalOpen,
-    filtering,
-    setFiltering,
-  } = useDigitalAssetStore();
+    selectedId,
+    setSelectedId,
+    selectedIds,
+    setSelectedIds,
+    setIsFormModalOpen,
+    modalType,
+    setModalType,
+  } = useModalStore();
+
+  const { filtering, setFiltering } = useFilteringStore();
 
   const offset = useMemo(() => {
     return pagination.pageIndex * limit;
@@ -143,18 +144,18 @@ const AssetListTable = ({ onViewAsset }: IAssetListTableProps) => {
   const hasSearchResults = data?.digital_assets && data.digital_assets.length > 0;
 
   const handleCloseModal = () => {
-    setIsDeleteModalOpen(false);
+    setModalType(null);
     // setIsRestoreModalOpen(false);
-    setSelectedAssetId(null);
+    setSelectedId(null);
   };
 
   const handleConfirmDelete = () => {
-    if (selectedAssetId) {
-      deleteAsset.mutate(selectedAssetId);
-    } else if (selectedAssets.length > 0) {
-      deleteAssets.mutate(selectedAssets, {
+    if (selectedId) {
+      deleteAsset.mutate(selectedId);
+    } else if (selectedIds.length > 0) {
+      deleteAssets.mutate(selectedIds, {
         onSuccess: () => {
-          setSelectedAssets([]);
+          setSelectedIds([]);
         },
       });
     }
@@ -165,7 +166,7 @@ const AssetListTable = ({ onViewAsset }: IAssetListTableProps) => {
     if (!filtering.deleted_at) return;
 
     // 선택된 항목 중 삭제된 자산만 필터링
-    const deletedAssetIds = selectedAssets.filter((id) => {
+    const deletedAssetIds = selectedIds.filter((id) => {
       const asset = data?.digital_assets?.find((a) => a.id === id);
       return asset && asset.deleted_at;
     });
@@ -175,10 +176,10 @@ const AssetListTable = ({ onViewAsset }: IAssetListTableProps) => {
       return;
     }
 
-    if (confirm(`선택한 ${selectedAssets.length}개 항목을 복구하시겠습니까?`)) {
+    if (confirm(`선택한 ${selectedIds.length}개 항목을 복구하시겠습니까?`)) {
       restoreAssets.mutate(deletedAssetIds, {
         onSuccess: () => {
-          setSelectedAssets([]);
+          setSelectedIds([]);
         },
       });
     }
@@ -187,41 +188,41 @@ const AssetListTable = ({ onViewAsset }: IAssetListTableProps) => {
   const handleSelectAsset = (assetId: string, checked: boolean) => {
     if (checked) {
       // 새로 체크한 경우
-      const willHaveOneSelection = selectedAssets.length === 0;
-      setSelectedAssets(assetId);
+      const willHaveOneSelection = selectedIds.length === 0;
+      setSelectedIds(assetId);
 
       // 첫 번째 선택인 경우에만 selectedAssetId 설정, 나머지는 null
       if (willHaveOneSelection) {
-        setSelectedAssetId(assetId);
+        setSelectedId(assetId);
       } else {
-        setSelectedAssetId(null);
+        setSelectedId(null);
       }
     } else {
       // 체크 해제된 경우
-      const filteredAssets = selectedAssets.filter((id) => id !== assetId);
-      setSelectedAssets(filteredAssets);
+      const filteredAssets = selectedIds.filter((id) => id !== assetId);
+      setSelectedIds(filteredAssets);
 
       // 체크 해제 후 남은 자산이 하나뿐이면 그것을 selectedAssetId로 설정
       if (filteredAssets.length === 1) {
-        setSelectedAssetId(filteredAssets[0]);
+        setSelectedId(filteredAssets[0]);
       } else {
-        setSelectedAssetId(null);
+        setSelectedId(null);
       }
     }
   };
 
   const handleViewSelected = () => {
-    if (selectedAssets.length !== 1) {
+    if (selectedIds.length !== 1) {
       toast.error("편집할 항목은 한개만 선택해주세요.");
       return;
     }
 
-    if (selectedAssets.length === 1) {
-      const asset = data?.digital_assets?.find((a) => a.id === selectedAssets[0]);
+    if (selectedIds.length === 1) {
+      const asset = data?.digital_assets?.find((a) => a.id === selectedIds[0]);
 
       if (asset) {
-        setSelectedAssetId(asset.id);
-        setIsAssetFormModalOpen(true);
+        setSelectedId(asset.id);
+        setIsFormModalOpen(true);
       }
     }
   };
@@ -255,8 +256,6 @@ const AssetListTable = ({ onViewAsset }: IAssetListTableProps) => {
       <>
         <DataTable instance={table}>
           <DataTable.Toolbar className="flex flex-col items-start justify-between gap-2 md:flex-row md:items-center">
-            <Heading></Heading>
-
             <div className="flex gap-2">
               <DataTable.FilterMenu tooltip="Filter" />
               <DataTable.SortingMenu tooltip="Sort" />
@@ -272,14 +271,14 @@ const AssetListTable = ({ onViewAsset }: IAssetListTableProps) => {
                     <th className="p-3 text-left">
                       <Checkbox
                         checked={
-                          selectedAssets.length > 0 &&
-                          selectedAssets.length === data?.digital_assets?.length
+                          selectedIds.length > 0 &&
+                          selectedIds.length === data?.digital_assets?.length
                         }
                         onCheckedChange={(checked) => {
                           if (checked) {
-                            setSelectedAssets(data?.digital_assets?.map((asset) => asset.id));
+                            setSelectedIds(data?.digital_assets?.map((asset) => asset.id));
                           } else {
-                            setSelectedAssets([]);
+                            setSelectedIds([]);
                           }
                         }}
                       />
@@ -301,7 +300,7 @@ const AssetListTable = ({ onViewAsset }: IAssetListTableProps) => {
                     >
                       <td className="p-3">
                         <Checkbox
-                          checked={selectedAssets.includes(asset.id)}
+                          checked={selectedIds.includes(asset.id)}
                           onCheckedChange={(checked) =>
                             handleSelectAsset(asset.id, checked === true ? true : false)
                           }
@@ -333,15 +332,15 @@ const AssetListTable = ({ onViewAsset }: IAssetListTableProps) => {
         </DataTable>
       </>
 
-      <CommandBar open={selectedAssets.length > 0}>
+      <CommandBar open={selectedIds.length > 0}>
         <CommandBar.Bar>
           {!filtering.deleted_at ? (
             <>
-              <CommandBar.Value>{selectedAssets.length}개 선택됨</CommandBar.Value>
+              <CommandBar.Value>{selectedIds.length}개 선택됨</CommandBar.Value>
               <CommandBar.Seperator />
               <CommandBar.Command
                 action={() => {
-                  setIsDeleteModalOpen(true);
+                  setModalType("delete");
                 }}
                 label="삭제"
                 shortcut="d"
@@ -352,12 +351,12 @@ const AssetListTable = ({ onViewAsset }: IAssetListTableProps) => {
                 action={handleViewSelected}
                 label="편집"
                 shortcut="v"
-                disabled={selectedAssets.length !== 1}
+                disabled={selectedIds.length !== 1}
               />
             </>
           ) : (
             <>
-              <CommandBar.Value>{selectedAssets.length}개 선택됨</CommandBar.Value>
+              <CommandBar.Value>{selectedIds.length}개 선택됨</CommandBar.Value>
 
               <CommandBar.Seperator />
               <CommandBar.Command action={handleRestoreSelected} label="복구" shortcut="r" />
@@ -368,12 +367,12 @@ const AssetListTable = ({ onViewAsset }: IAssetListTableProps) => {
 
       {/* 삭제 모달 */}
       <ConfirmModal
-        isOpen={isDeleteModalOpen}
+        isOpen={modalType === "delete"}
         onClose={handleCloseModal}
         onConfirm={handleConfirmDelete}
         title="디지털 자산 삭제"
         description={
-          selectedAssetId ? (
+          selectedId ? (
             <>
               정말로 이 디지털 자산을 삭제하시겠습니까?
               <br />
@@ -381,13 +380,13 @@ const AssetListTable = ({ onViewAsset }: IAssetListTableProps) => {
             </>
           ) : (
             <>
-              선택한 {selectedAssets.length}개 디지털 자산을 삭제하시겠습니까?
+              선택한 {selectedIds.length}개 디지털 자산을 삭제하시겠습니까?
               <br />
               해당 자산은 더 이상 판매 중인 상품에서 사용할 수 없습니다.
             </>
           )
         }
-        isLoading={selectedAssetId ? deleteAsset.isPending : deleteAssets.isPending}
+        isLoading={selectedId ? deleteAsset.isPending : deleteAssets.isPending}
         actionText="삭제"
         loadingText="삭제 중..."
         cancelText="취소"

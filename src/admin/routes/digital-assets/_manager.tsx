@@ -1,32 +1,27 @@
+import { Spinner } from "@medusajs/icons";
 import { Container, Text, Toaster } from "@medusajs/ui";
 import { Suspense } from "react";
-import { AssetDetailsModal, AssetFormModal } from "./_components";
-
-import { Spinner } from "@medusajs/icons";
-import { useDigitalAssetStore } from "../../../store/digital-asset-store";
+import { useModalStore } from "../../../store/modal-store";
+import AssetDetailsModal from "./_components/asset-details-modal";
+import { TableHeader } from "../../components/table-header";
 import DeferredComponent from "../../layout/deferred-component";
+import { AssetFormModal } from "./_components";
 import AssetListTable from "./_components/asset-list-table";
-import { Header } from "./_components/header";
 
 const DigitalAssetManager = () => {
-  const {
-    isModalOpen,
-    setIsModalOpen,
-    selectedAssetId,
-    setSelectedAssetId,
-    setIsAssetFormModalOpen,
-  } = useDigitalAssetStore();
+  const { modalType, setModalType, selectedId, setSelectedId, setIsFormModalOpen } =
+    useModalStore();
 
   const handleModalClose = () => {
-    setIsModalOpen(false);
-    setSelectedAssetId(null);
+    setModalType(null);
+    setSelectedId(null);
   };
 
   return (
     <Container>
       <Toaster />
 
-      <Header
+      <TableHeader
         title="Digital Assets"
         subtitle="관리자는 이 페이지에서 디지털 자산을 관리할 수 있습니다."
         actions={[
@@ -35,7 +30,7 @@ const DigitalAssetManager = () => {
             props: {
               children: <>Create</>,
               onClick: () => {
-                setIsAssetFormModalOpen(true);
+                setIsFormModalOpen(true);
               },
             },
           },
@@ -54,16 +49,16 @@ const DigitalAssetManager = () => {
       >
         <AssetListTable
           onViewAsset={(assetId: string) => {
-            setSelectedAssetId(assetId);
-            setIsModalOpen(true);
+            setSelectedId(assetId);
+            setModalType("detail");
           }}
         />
       </Suspense>
 
       <AssetDetailsModal
-        isOpen={isModalOpen}
+        isOpen={modalType === "detail"}
         onClose={handleModalClose}
-        assetId={selectedAssetId as string}
+        assetId={selectedId as string}
       />
 
       <AssetFormModal />

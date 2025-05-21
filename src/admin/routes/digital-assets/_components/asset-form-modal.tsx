@@ -1,8 +1,8 @@
 import { Button, FocusModal, Input, Label, Text } from "@medusajs/ui";
 import { useEffect, useRef, useState } from "react";
-import { useDigitalAssetStore } from "../../../../store/digital-asset-store";
-import { useCreateAssetMutation } from "../_hooks/digital-assets/use-create-asset";
+import { useModalStore } from "../../../../store/modal-store";
 import { useUpdateAssetMutation } from "../_hooks/digital-assets/use-update-asset";
+import { useCreateAssetMutation } from "../_hooks/digital-assets/use-create-asset";
 import { useGetAssetById } from "../_hooks/digital-assets/use-get-asset-by-id";
 
 const AssetFormModal = () => {
@@ -15,12 +15,11 @@ const AssetFormModal = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const thumbnailInputRef = useRef<HTMLInputElement>(null);
 
-  const { isAssetFormModalOpen, setIsAssetFormModalOpen, selectedAssetId, setSelectedAssetId } =
-    useDigitalAssetStore();
+  const { isFormModalOpen, setIsFormModalOpen, selectedId, setSelectedId } = useModalStore();
   const createAssetMutation = useCreateAssetMutation();
   const updateAssetMutation = useUpdateAssetMutation();
 
-  const { data: currentAsset } = useGetAssetById(selectedAssetId as string);
+  const { data: currentAsset } = useGetAssetById(selectedId as string, false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: "file" | "thumbnail") => {
     const file = e.target.files?.[0];
@@ -56,7 +55,11 @@ const AssetFormModal = () => {
     if (currentAsset?.id) {
       updateAssetMutation.mutate({ id: currentAsset.id, formData });
     } else {
-      createAssetMutation.mutate(formData);
+      createAssetMutation.mutate(formData, {
+        onSuccess: () => {
+          setIsFormModalOpen(false);
+        },
+      });
     }
   };
 
@@ -65,9 +68,9 @@ const AssetFormModal = () => {
     setThumbnailPreview(null);
     setSelectedFile(null);
     setSelectedThumbnail(null);
-    setIsAssetFormModalOpen(false);
+    setIsFormModalOpen(false);
     setFileUrl(null);
-    setSelectedAssetId(null);
+    setSelectedId(null);
   };
 
   useEffect(() => {
@@ -83,7 +86,7 @@ const AssetFormModal = () => {
   const modalTitle = currentAsset ? "디지털 자산 편집" : "새 디지털 자산 생성";
 
   return (
-    <FocusModal open={isAssetFormModalOpen} onOpenChange={handleModalClose}>
+    <FocusModal open={isFormModalOpen} onOpenChange={handleModalClose}>
       <FocusModal.Content aria-describedby={undefined}>
         <FocusModal.Header>
           <FocusModal.Title>{modalTitle}</FocusModal.Title>

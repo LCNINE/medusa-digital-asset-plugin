@@ -1,25 +1,29 @@
-// src/admin/widgets/variant-digital-asset/asset-selector.tsx
 import { Button, Text, Tooltip } from "@medusajs/ui";
 import { debounce } from "lodash";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { DigitalAsset, DigitalAssetPaginatedResponse } from "../../../types/digital-asset.types";
+import { DigitalAsset } from "../../../../.medusa/types/query-entry-points";
+import { DigitalAssetPaginatedResponse } from "../../../types/digital-asset.types";
 import { useDigitalAssets } from "../../hooks/use-digital-assets";
 
-interface IAssetSelectorProps {
-  variantId: string;
+interface IDigitalAssetSelectorProps {
+  variantId?: string;
   selectedAssetId: string | null;
   setSelectedAssetId: (id: string | null) => void;
-  onLink: (assetId: string) => void;
+  onLink?: (assetId: string) => void;
   isLinking: boolean;
+  selectedAsset: DigitalAsset | null;
+  setSelectedAsset: React.Dispatch<React.SetStateAction<DigitalAsset | null>>;
 }
 
-export const AssetSelector = ({
+export const DigitalAssetSelector = ({
   variantId,
   selectedAssetId,
   setSelectedAssetId,
   onLink,
   isLinking,
-}: IAssetSelectorProps) => {
+  selectedAsset,
+  setSelectedAsset,
+}: IDigitalAssetSelectorProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
@@ -41,7 +45,7 @@ export const AssetSelector = ({
     hasNextPage,
     isFetchingNextPage,
     isPending,
-  } = useDigitalAssets(debouncedSearchTerm, showDropdown, variantId);
+  } = useDigitalAssets({ debouncedSearchTerm, showDropdown, variantId });
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
@@ -85,9 +89,13 @@ export const AssetSelector = ({
       ),
     ) || [];
 
-  const selectedAsset =
+  const computedSelectedAsset =
     filteredAssets.find((a) => a.id === selectedAssetId) ||
     (selectedAssetId && selectedAssetCache?.id === selectedAssetId ? selectedAssetCache : null);
+
+  useEffect(() => {
+    setSelectedAsset(computedSelectedAsset);
+  }, [filteredAssets, selectedAssetId, selectedAssetCache, setSelectedAsset]);
 
   return (
     <div className="mt-6">
@@ -151,28 +159,48 @@ export const AssetSelector = ({
           )}
         </div>
 
-        <Tooltip
-          content={
-            !selectedAssetId || !selectedAsset
-              ? "디지털 자산을 먼저 선택하세요"
-              : "디지털 자산 연결"
-          }
-        >
-          <Button
-            variant="primary"
-            disabled={!selectedAssetId || !selectedAsset || isLinking}
-            className="h-10 disabled:cursor-not-allowed"
-            onClick={() => {
-              if (selectedAssetId && selectedAsset) {
-                onLink(selectedAssetId);
-              }
-            }}
-            isLoading={isLinking}
-          >
-            연결하기
-          </Button>
-        </Tooltip>
+        <DigitalAssetLinkButton
+          selectedAssetId={selectedAssetId}
+          selectedAsset={selectedAsset}
+          onLink={onLink}
+          isLinking={isLinking}
+          variantId={variantId}
+        />
       </div>
     </div>
   );
 };
+
+function DigitalAssetLinkButton({
+  selectedAssetId,
+  selectedAsset,
+  onLink,
+  isLinking,
+  variantId,
+}: Omit<IDigitalAssetSelectorProps, "setSelectedAssetId" | "setSelectedAsset"> & {
+  selectedAsset: DigitalAsset | null;
+}) {
+  if (!variantId) return null;
+
+  return (
+    <Tooltip
+      content={
+        !selectedAssetId || !selectedAsset ? "디지털 자산을 먼저 선택하세요" : "디지털 자산 연결"
+      }
+    >
+      <Button
+        variant="primary"
+        disabled={!selectedAssetId || !selectedAsset || isLinking}
+        className="h-10 disabled:cursor-not-allowed"
+        onClick={() => {
+          if (selectedAssetId && selectedAsset) {
+            onLink && onLink(selectedAssetId);
+          }
+        }}
+        isLoading={isLinking}
+      >
+        연결하기
+      </Button>
+    </Tooltip>
+  );
+}

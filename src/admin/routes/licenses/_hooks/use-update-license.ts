@@ -1,11 +1,9 @@
 import { toast } from "@medusajs/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { DIGITAL_ASSETS_QUERY_KEY } from "../../../../constants";
-import { useModalStore } from "../../../../../store/modal-store";
+import { DIGITAL_ASSET_LICENSES_QUERY_KEY } from "../../../constants";
 
-export const useUpdateAssetMutation = () => {
+export const useUpdateLicense = () => {
   const queryClient = useQueryClient();
-  const { setIsFormModalOpen } = useModalStore();
 
   return useMutation({
     mutationFn: async ({ id, formData }: { id: string; formData: FormData }) => {
@@ -21,15 +19,14 @@ export const useUpdateAssetMutation = () => {
       return response;
     },
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: DIGITAL_ASSETS_QUERY_KEY.all });
-      queryClient.invalidateQueries({ queryKey: DIGITAL_ASSETS_QUERY_KEY.detail(id) });
-      toast.success("디지털자산 수정이 완료되었습니다.");
-      setIsFormModalOpen(false);
+      queryClient.invalidateQueries({ queryKey: DIGITAL_ASSET_LICENSES_QUERY_KEY.all });
+      queryClient.invalidateQueries({ queryKey: DIGITAL_ASSET_LICENSES_QUERY_KEY.detail(id) });
+      toast.success("라이센스 수정이 완료되었습니다.");
     },
     onError: (error) => {
       console.error(error);
       toast.error("수정 실패", {
-        description: `파일 수정 중 오류가 발생했습니다.`,
+        description: `라이센스 수정 중 오류가 발생했습니다.`,
       });
     },
   });

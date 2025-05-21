@@ -18,3 +18,9 @@ export const LINK_DIGITAL_ASSET_TO_VARIANT_QUERY_KEY = {
     variant_id,
   ],
 };
+
+export const DIGITAL_ASSET_LICENSES_QUERY_KEY = {
+  all: ["digital-asset-licenses"],
+  lists: () => [...DIGITAL_ASSET_LICENSES_QUERY_KEY.all, "list"],
+  detail: (id: string) => [...DIGITAL_ASSET_LICENSES_QUERY_KEY.all, "detail", id],
+};

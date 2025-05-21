@@ -36,7 +36,6 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
     });
 
     let digitalAsset = result.data[0];
-    console.log("digitalAsset:", digitalAsset);
 
     return res.status(200).json(digitalAsset);
   } catch (error) {

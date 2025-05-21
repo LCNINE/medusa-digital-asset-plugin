@@ -7,12 +7,16 @@ import { DIGITAL_ASSET } from "../../../modules/digital-asset";
 import DigitalAssetService from "../../../modules/digital-asset/service";
 
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
-  const { license_id, customer_id, order_item_id } = req.query as {
+  const { license_id, customer_id, order_item_id, search, order } = req.query as {
     license_id?: string;
     customer_id?: string;
     order_item_id?: string;
+    search?: string;
+    order?: string;
   };
 
+  const statusFilters = (req.query.status as string[]) || [];
+  const deleted_at = (req.query.deleted_at as string[]) || [];
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY);
 
   try {
@@ -22,18 +26,78 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
     const isExercised =
       isExercisedRaw === "true" ? true : isExercisedRaw === "false" ? false : undefined;
 
+    let filters: any = {
+      ...(license_id && { id: license_id }),
+      ...(customer_id && { customer_id }),
+      ...(order_item_id && { order_item_id }),
+      ...(isExercised !== undefined && { is_exercised: isExercised }),
+    };
+
+    if (search) {
+      filters = {
+        ...filters,
+        $or: [
+          { id: { $like: `%${search}%` } },
+          { customer_id: { $like: `%${search}%` } },
+          { order_item_id: { $like: `%${search}%` } },
+        ],
+      };
+    }
+
+    if (statusFilters && statusFilters.length > 0) {
+      const statusConditions = statusFilters.map((status) => {
+        if (status === "exercised") {
+          return { is_exercised: true };
+        } else if (status === "not_exercised") {
+          return { is_exercised: false };
+        }
+        return {};
+      });
+
+      if (statusConditions.length > 0) {
+        filters = {
+          ...filters,
+          $or: statusConditions,
+        };
+      }
+    }
+
+    if (deleted_at && deleted_at.length > 0) {
+      filters = {
+        ...filters,
+        deleted_at: { $ne: null },
+      };
+    } else {
+      filters = {
+        ...filters,
+        deleted_at: null,
+      };
+    }
+
+    let orderOptions = {};
+    if (order) {
+      const desc = order.startsWith("-");
+      const field = desc ? order.substring(1) : order;
+
+      const allowedSortFields = ["id", "customer_id", "created_at", "updated_at", "is_exercised"];
+
+      if (allowedSortFields.includes(field)) {
+        orderOptions = {
+          order: {
+            [field]: desc ? "DESC" : "ASC",
+          },
+        };
+      }
+    }
+
     const { data: licenses, metadata: { count, skip, take } = {} } = await query.graph({
       entity: "digital_asset_license",
-      fields: ["id", "digital_asset_id", "customer_id", "order_item_id", "is_exercised"],
-      filters: {
-        ...(license_id && { id: license_id }),
-        ...(customer_id && { customer_id }),
-        ...(order_item_id && { order_item_id }),
-        ...(isExercised !== undefined && { is_exercised: isExercised }),
-      },
+      fields: ["*"],
+      filters: filters,
       pagination: {
         skip: offset,
         take: limit,
+        ...orderOptions,
       },
     });
 

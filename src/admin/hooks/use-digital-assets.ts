@@ -5,11 +5,15 @@ import { sdk } from "../lib/config";
 
 const PAGE_SIZE = 5;
 
-export const useDigitalAssets = (
-  debouncedSearchTerm: string,
-  showDropdown: boolean,
-  variantId?: string,
-) => {
+export const useDigitalAssets = ({
+  debouncedSearchTerm,
+  showDropdown,
+  variantId,
+}: {
+  debouncedSearchTerm: string;
+  showDropdown: boolean;
+  variantId?: string;
+}) => {
   return useInfiniteQuery({
     queryKey: [DIGITAL_ASSETS_QUERY_KEY.lists(), debouncedSearchTerm, variantId],
     queryFn: async ({ pageParam = 0 }) => {

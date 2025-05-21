@@ -23,7 +23,7 @@ export type HeadingProps = {
   )[];
 };
 
-export const Header = ({ title, subtitle, actions = [] }: HeadingProps) => {
+export const TableHeader = ({ title, subtitle, actions = [] }: HeadingProps) => {
   return (
     <div className="flex items-center justify-between px-6 py-4">
       <div>

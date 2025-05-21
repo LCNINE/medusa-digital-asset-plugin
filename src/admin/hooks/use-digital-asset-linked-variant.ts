@@ -1,7 +1,7 @@
 import { toast } from "@medusajs/ui";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { DigitalAsset } from "../../../.medusa/types/query-entry-points";
 import { LINK_DIGITAL_ASSET_TO_VARIANT_QUERY_KEY } from "../constants";
-import { DigitalAsset } from "../../types/digital-asset.types";
 import { sdk } from "../lib/config";
 
 export const useDigitalAssetLinkedVariant = (variant_id: string) => {
