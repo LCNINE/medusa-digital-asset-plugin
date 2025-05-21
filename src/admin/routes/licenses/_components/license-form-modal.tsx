@@ -20,8 +20,7 @@ const LicenseFormModal = ({ license, isLoading, type }: ILicenseFormModalProps) 
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [selectedAsset, setSelectedAsset] = useState<DigitalAsset | null>(null);
 
-  const { modalType, isFormModalOpen, setIsFormModalOpen, selectedId, setSelectedId } =
-    useModalStore();
+  const { isFormModalOpen, setIsFormModalOpen, selectedId, setSelectedId } = useModalStore();
   const createLicenseMutation = useCreateLicense();
   const updateLicenseMutation = useUpdateLicense();
 

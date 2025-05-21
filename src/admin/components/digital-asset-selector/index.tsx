@@ -84,8 +84,10 @@ export const DigitalAssetSelector = ({
 
   const filteredAssets =
     digitalAssets?.pages.flatMap((page: DigitalAssetPaginatedResponse) =>
-      page.digital_assets.filter((asset: DigitalAsset) =>
-        asset.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()),
+      page.digital_assets.filter(
+        (asset: DigitalAsset) =>
+          asset.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+          asset.id.toLowerCase().includes(debouncedSearchTerm.toLowerCase()),
       ),
     ) || [];
 
