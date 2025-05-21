@@ -14,7 +14,6 @@ interface ILicenseFormModalProps {
 
 const LicenseFormModal = ({ license, isLoading, type }: ILicenseFormModalProps) => {
   const [newAssetName, setNewAssetName] = useState("");
-  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedThumbnail, setSelectedThumbnail] = useState<File | null>(null);
   const [fileUrl, setFileUrl] = useState<string | null>(null);
@@ -23,39 +22,6 @@ const LicenseFormModal = ({ license, isLoading, type }: ILicenseFormModalProps) 
   const { isFormModalOpen, setIsFormModalOpen, selectedId, setSelectedId } = useModalStore();
   const createLicenseMutation = useCreateLicense();
   const updateLicenseMutation = useUpdateLicense();
-
-  console.log("currentLicense:", license);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: "thumbnail") => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (type === "thumbnail") {
-      setSelectedThumbnail(file);
-
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setThumbnailPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleLinkAsset = (assetId: string) => {
-    // TODO: 라이센스랑 연결할게있는지?
-    // linkDigitalAssetToVariant.mutate(
-    //   {
-    //     digital_asset_id: assetId,
-    //     variant_id: data.id,
-    //   },
-    //   {
-    //     onSuccess: () => {
-    //       setSelectedAssetId(null);
-    //     },
-    //     onError: () => {},
-    //   },
-    // );
-  };
 
   const handleCreateAsset = (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,23 +57,12 @@ const LicenseFormModal = ({ license, isLoading, type }: ILicenseFormModalProps) 
 
   const handleModalClose = () => {
     setNewAssetName("");
-    setThumbnailPreview(null);
     setSelectedFile(null);
     setSelectedThumbnail(null);
     setIsFormModalOpen(false);
     setFileUrl(null);
     setSelectedId(null);
   };
-
-  // useEffect(() => {
-  //   if (currentLicense) {
-  //     setNewAssetName(currentLicense?.name);
-  //     setFileUrl(currentLicense.file_url);
-  //     setThumbnailPreview(currentLicense.thumbnail_url || null);
-  //     setSelectedFile(null);
-  //     setSelectedThumbnail(null);
-  //   }
-  // }, [currentLicense]);
 
   const modalTitle = type === "create" ? "새 라이센스 생성" : "라이센스 편집";
 
@@ -134,24 +89,12 @@ const LicenseFormModal = ({ license, isLoading, type }: ILicenseFormModalProps) 
                 setSelectedAsset={setSelectedAsset}
                 isLinking={false}
               />
-              // 이곳에
+
               <div className="flex justify-end gap-3 pt-2">
                 <Button type="button" variant="secondary" onClick={handleModalClose}>
                   취소
                 </Button>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  disabled={
-                    license
-                      ? updateLicenseMutation.isPending ||
-                        !newAssetName ||
-                        (newAssetName === license.name && !selectedFile && !selectedThumbnail)
-                      : createLicenseMutation.isPending ||
-                        !newAssetName ||
-                        (!selectedFile && !fileUrl)
-                  }
-                >
+                <Button type="submit" variant="primary" disabled={updateLicenseMutation.isPending}>
                   {license
                     ? updateLicenseMutation.isPending
                       ? "업데이트 중..."
