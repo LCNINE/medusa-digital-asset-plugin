@@ -18,9 +18,9 @@ import { useState } from "react";
 import { DigitalAsset } from "../../../../../.medusa/types/query-entry-points";
 import { useModalStore } from "../../../../store/modal-store";
 import { SingleColumnLayout } from "../../../layout/single-column";
-import { useAssets } from "../_hooks/digital-assets/use-assets";
-import { useDeleteAssetMutation } from "../_hooks/digital-assets/use-delete-asset";
-import { useRestoreAssetsMutation } from "../_hooks/digital-assets/use-restore-asset";
+import { useAssets } from "../_hooks/use-assets";
+import { useDeleteAssetMutation } from "../_hooks/use-delete-asset";
+import { useRestoreAssetsMutation } from "../_hooks/use-restore-asset";
 
 const copyToClipboard = (text: string) => {
   navigator.clipboard.writeText(text).catch((err) => {

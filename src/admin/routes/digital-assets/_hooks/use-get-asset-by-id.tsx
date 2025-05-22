@@ -1,9 +1,9 @@
 import { toast } from "@medusajs/ui";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { DigitalAsset } from "../../../../../types/digital-asset.types";
-import { DIGITAL_ASSETS_QUERY_KEY } from "../../../../constants";
-import { sdk } from "../../../../lib/config";
+import { DigitalAsset } from "../../../../types/digital-asset.types";
+import { DIGITAL_ASSETS_QUERY_KEY } from "../../../constants";
+import { sdk } from "../../../lib/config";
 
 export const useGetAssetById = (assetId: string, includeDeleted: boolean) => {
   const query = useQuery<DigitalAsset>({

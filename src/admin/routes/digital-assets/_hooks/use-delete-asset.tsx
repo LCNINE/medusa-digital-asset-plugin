@@ -1,7 +1,7 @@
 import { toast } from "@medusajs/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { DIGITAL_ASSETS_QUERY_KEY } from "../../../../constants";
-import { sdk } from "../../../../lib/config";
+import { DIGITAL_ASSETS_QUERY_KEY } from "../../../constants";
+import { sdk } from "../../../lib/config";
 
 export const useDeleteAssetMutation = () => {
   const queryClient = useQueryClient();

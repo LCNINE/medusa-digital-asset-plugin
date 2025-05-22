@@ -1,9 +1,9 @@
 import { DataTableSortingState, toast } from "@medusajs/ui";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useFilteringStore } from "../../../../../store/filtering-store";
-import { DigitalAsset } from "../../../../../../.medusa/types/query-entry-points";
-import { DIGITAL_ASSETS_QUERY_KEY } from "../../../../constants";
-import { sdk } from "../../../../lib/config";
+import { useFilteringStore } from "../../../../store/filtering-store";
+import { DigitalAsset } from "../../../../../.medusa/types/query-entry-points";
+import { DIGITAL_ASSETS_QUERY_KEY } from "../../../constants";
+import { sdk } from "../../../lib/config";
 
 interface IUseGetAssetsProps {
   offset: number;
