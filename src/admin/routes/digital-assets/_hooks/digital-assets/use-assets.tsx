@@ -14,7 +14,7 @@ interface IUseGetAssetsProps {
   sorting: DataTableSortingState | null;
 }
 
-export const useGetAssets = ({
+export const useAssets = ({
   offset,
   limit,
   search,

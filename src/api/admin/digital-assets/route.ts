@@ -8,7 +8,7 @@ import { uploadFilesWorkflow } from "@medusajs/medusa/core-flows";
 import { ContainerRegistrationKeys, MedusaError } from "@medusajs/utils";
 import { DIGITAL_ASSET } from "../../../modules/digital-asset";
 import DigitalAssetService from "../../../modules/digital-asset/service";
-import { CreateDigitalAssetType } from "./validators";
+import { CreateDigitalAssetType, DeleteBatchDigitalAssetType } from "./validators";
 
 export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY);
@@ -178,4 +178,22 @@ export async function POST(req: MedusaRequest<CreateDigitalAssetType>, res: Medu
       code: error.type || "unknown_error",
     });
   }
+}
+
+export async function DELETE(req: MedusaRequest<DeleteBatchDigitalAssetType>, res: MedusaResponse) {
+  const { ids } = req.body;
+
+  if (!ids) {
+    return res.status(400).json({
+      message: "ids is required",
+    });
+  }
+
+  const digitalAssetService: DigitalAssetService = req.scope.resolve(DIGITAL_ASSET);
+
+  const deletedAssets = await digitalAssetService.softDeleteDigitalAssets(ids);
+
+  return res.status(200).json({
+    message: "디지털 자산 삭제가 완료되었습니다.",
+  });
 }

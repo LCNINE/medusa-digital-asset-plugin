@@ -18,11 +18,8 @@ import { useFilteringStore } from "../../../../store/filtering-store";
 import { useModalStore } from "../../../../store/modal-store";
 import ConfirmModal from "../../../components/modal/confirm-modal";
 import { SingleColumnLayout } from "../../../layout/single-column";
-import {
-  useDeleteAssetMutation,
-  useDeleteAssetsMutation,
-} from "../_hooks/digital-assets/use-delete-asset";
-import { useGetAssets } from "../_hooks/digital-assets/use-get-assets";
+import { useAssets } from "../_hooks/digital-assets/use-assets";
+import { useDeleteAssetMutation } from "../_hooks/digital-assets/use-delete-asset";
 import { useRestoreAssetsMutation } from "../_hooks/digital-assets/use-restore-asset";
 
 const columnHelper = createDataTableColumnHelper<DigitalAsset>();
@@ -127,7 +124,7 @@ const AssetListTable = ({ onViewAsset }: IAssetListTableProps) => {
     return (filtering.deleted_at || []) as string[];
   }, [filtering]);
 
-  const { data } = useGetAssets({
+  const { data } = useAssets({
     offset,
     limit,
     search,
@@ -136,8 +133,7 @@ const AssetListTable = ({ onViewAsset }: IAssetListTableProps) => {
     sorting,
   });
 
-  const deleteAsset = useDeleteAssetMutation();
-  const deleteAssets = useDeleteAssetsMutation();
+  const deleteAssets = useDeleteAssetMutation();
   const restoreAssets = useRestoreAssetsMutation();
 
   const hasSearchResults = data?.digital_assets && data.digital_assets.length > 0;
@@ -149,9 +145,7 @@ const AssetListTable = ({ onViewAsset }: IAssetListTableProps) => {
   };
 
   const handleConfirmDelete = () => {
-    if (selectedId) {
-      deleteAsset.mutate(selectedId);
-    } else if (selectedIds.length > 0) {
+    if (selectedIds.length > 0) {
       deleteAssets.mutate(selectedIds, {
         onSuccess: () => {
           setSelectedIds([]);
@@ -385,7 +379,7 @@ const AssetListTable = ({ onViewAsset }: IAssetListTableProps) => {
             </>
           )
         }
-        isLoading={selectedId ? deleteAsset.isPending : deleteAssets.isPending}
+        isLoading={deleteAssets.isPending}
         actionText="삭제"
         loadingText="삭제 중..."
         cancelText="취소"
