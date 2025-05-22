@@ -74,6 +74,7 @@ export const useAssets = ({
           },
         });
       } catch (error) {
+        console.error("error:", error);
         toast.error("디지털 자산을 불러오던 중 에러가 발생했습니다.", {
           id: "digital-asset-error",
         });

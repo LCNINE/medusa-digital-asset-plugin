@@ -48,23 +48,18 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
         $or: [{ name: { $like: `%${search}%` } }, { id: { $like: `%${search}%` } }],
       };
     }
-
     if (statusFilters && statusFilters.length > 0) {
-      const mimeTypeFilters = Array.isArray(statusFilters) ? statusFilters : [statusFilters];
+      const mimeTypeConditions = statusFilters.map((filter) => {
+        if (filter.endsWith("/")) {
+          return { mime_type: { $like: `${filter}%` } };
+        }
+        return { mime_type: filter };
+      });
 
-      if (mimeTypeFilters.length > 0) {
-        const mimeTypeConditions = mimeTypeFilters.map((filter) => {
-          if (filter.endsWith("/")) {
-            return { $like: `${filter}%` };
-          }
-          return filter;
-        });
-
-        filters = {
-          ...filters,
-          mime_type: { $or: mimeTypeConditions },
-        };
-      }
+      filters = {
+        ...filters,
+        $or: mimeTypeConditions,
+      };
     }
 
     if (excludeVariantId) {
@@ -133,6 +128,7 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
       },
     });
   } catch (error) {
+    console.error("error:", error);
     return res.status(500).json({ message: error.message });
   }
 }

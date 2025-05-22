@@ -291,9 +291,23 @@ const AssetListTable = () => {
             <DataTable.Search placeholder="디지털 자산 이름, ID 등 검색..." />
           </div>
         </DataTable.Toolbar>
-        <DataTable.Table />
-        <DataTable.Pagination />
 
+        {data?.digital_assets?.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-10 bg-white rounded-md">
+            <p className="text-ui-fg-subtle text-base mb-1">데이터가 없습니다</p>
+            <p className="text-ui-fg-muted text-sm">
+              {search
+                ? "검색 조건에 맞는 디지털 자산이 없습니다"
+                : statusFilters.length > 0
+                  ? "선택한 필터에 맞는 디지털 자산이 없습니다"
+                  : "디지털 자산을 추가해보세요"}
+            </p>
+          </div>
+        ) : (
+          <DataTable.Table />
+        )}
+
+        <DataTable.Pagination />
         <DataTable.CommandBar selectedLabel={(count) => `${count}개 선택됨`} />
       </DataTable>
     </SingleColumnLayout>
