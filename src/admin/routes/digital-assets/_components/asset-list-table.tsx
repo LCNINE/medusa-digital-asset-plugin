@@ -1,47 +1,133 @@
+import { Eye } from "@medusajs/icons";
 import {
-  Checkbox,
-  CommandBar,
-  Container,
+  Badge,
+  Button,
   createDataTableColumnHelper,
+  createDataTableCommandHelper,
   createDataTableFilterHelper,
   DataTable,
+  DataTableFilteringState,
   DataTablePaginationState,
+  DataTableRowSelectionState,
   DataTableSortingState,
-  Text,
   toast,
   useDataTable,
 } from "@medusajs/ui";
 import dayjs from "dayjs";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { DigitalAsset } from "../../../../../.medusa/types/query-entry-points";
-import { useFilteringStore } from "../../../../store/filtering-store";
 import { useModalStore } from "../../../../store/modal-store";
-import ConfirmModal from "../../../components/modal/confirm-modal";
 import { SingleColumnLayout } from "../../../layout/single-column";
 import { useAssets } from "../_hooks/digital-assets/use-assets";
 import { useDeleteAssetMutation } from "../_hooks/digital-assets/use-delete-asset";
 import { useRestoreAssetsMutation } from "../_hooks/digital-assets/use-restore-asset";
 
+const copyToClipboard = (text: string) => {
+  navigator.clipboard.writeText(text).catch((err) => {
+    console.error("클립보드 복사 실패:", err);
+  });
+};
+
+const CopyableCell = ({ value }: { value: string | number | null | undefined }) => {
+  if (value === null || value === undefined) {
+    return <span>-</span>;
+  }
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const textValue = String(value);
+    copyToClipboard(textValue);
+    toast(`"${textValue}" 복사되었습니다.`);
+  };
+
+  return (
+    <span
+      onClick={handleClick}
+      className="cursor-pointer hover:bg-gray-100 p-1 rounded transition-colors"
+      title="클릭하여 복사"
+    >
+      {value}
+    </span>
+  );
+};
+
 const columnHelper = createDataTableColumnHelper<DigitalAsset>();
 
 const columns = [
+  columnHelper.select(),
   columnHelper.accessor("id", {
     header: "ID",
     enableSorting: true,
+    cell: ({ getValue }) => <CopyableCell value={getValue()} />,
   }),
   columnHelper.accessor("name", {
-    header: "Name",
+    header: "이름",
     enableSorting: true,
-    sortLabel: "Name",
+    sortLabel: "이름",
     sortAscLabel: "A-Z",
     sortDescLabel: "Z-A",
+    cell: ({ getValue }) => <CopyableCell value={getValue()} />,
   }),
   columnHelper.accessor("mime_type", {
-    header: "File Type",
+    header: "파일 유형",
+    cell: ({ getValue }) => <CopyableCell value={getValue()} />,
   }),
   columnHelper.accessor("created_at", {
-    header: "Created At",
+    header: "생성일",
     enableSorting: true,
+    cell: ({ row, getValue }) => {
+      const value = getValue();
+      if (!row.original.deleted_at && value) {
+        const formattedDate = dayjs(value).format("YYYY-MM-DD");
+        return <CopyableCell value={formattedDate} />;
+      }
+      return "-";
+    },
+  }),
+  columnHelper.accessor("deleted_at", {
+    header: "삭제일",
+    enableSorting: true,
+    cell: ({ getValue }) => {
+      const value = getValue();
+      if (value) {
+        const formattedDate = dayjs(value).format("YYYY-MM-DD");
+        return <CopyableCell value={formattedDate} />;
+      }
+      return "-";
+    },
+  }),
+  columnHelper.accessor("deleted_at", {
+    id: "status",
+    header: "상태",
+    cell: ({ getValue }) => {
+      const isDeleted = !!getValue();
+
+      return (
+        <Badge color={isDeleted ? "red" : "green"} size="xsmall">
+          {isDeleted ? "삭제됨" : "활성"}
+        </Badge>
+      );
+    },
+  }),
+  columnHelper.display({
+    id: "actions",
+    header: "보기",
+    cell: ({ row }) => {
+      const { setModalType, setSelectedId, setIsFormModalOpen } = useModalStore();
+
+      const handleViewClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setSelectedId(row.original.id);
+        setIsFormModalOpen(true);
+      };
+
+      return (
+        <Button variant="secondary" size="small" onClick={handleViewClick}>
+          <Eye className="text-ui-fg-subtle" />
+          <span className="ml-1">보기</span>
+        </Button>
+      );
+    },
   }),
 ];
 
@@ -50,18 +136,18 @@ const filterHelper = createDataTableFilterHelper<DigitalAsset>();
 const filters = [
   filterHelper.accessor("mime_type", {
     type: "select",
-    label: "File Type",
+    label: "파일 유형",
     options: [
       {
-        label: "Image",
+        label: "이미지",
         value: "image/",
       },
       {
-        label: "Video",
+        label: "비디오",
         value: "video/",
       },
       {
-        label: "Audio",
+        label: "오디오",
         value: "audio/",
       },
       {
@@ -71,160 +157,115 @@ const filters = [
     ],
   }),
   filterHelper.accessor("deleted_at", {
-    type: "radio",
-    label: "보기 옵션",
+    type: "select",
+    label: "상태",
     options: [
       {
-        label: "삭제된 항목만 보기",
+        label: "삭제됨",
         value: "true",
       },
       {
-        label: "삭제되지 않은 항목만 보기",
+        label: "활성",
         value: "false",
       },
     ],
   }),
 ];
 
-const limit = 20;
+const commandHelper = createDataTableCommandHelper();
+
+const useCommands = () => {
+  const deleteAssets = useDeleteAssetMutation();
+  const restoreAssets = useRestoreAssetsMutation();
+
+  return [
+    commandHelper.command({
+      label: "삭제",
+      shortcut: "D",
+      action: async (selection) => {
+        if (confirm("선택한 항목을 삭제하시겠습니까?")) {
+          const assetsToDeleteIds = Object.keys(selection);
+          deleteAssets.mutate(assetsToDeleteIds);
+        }
+      },
+    }),
+    commandHelper.command({
+      label: "복구",
+      shortcut: "R",
+      action: async (selection) => {
+        if (confirm("선택한 항목을 복구하시겠습니까?")) {
+          const assetsToRestoreIds = Object.keys(selection);
+
+          restoreAssets.mutate(assetsToRestoreIds, {
+            onSuccess: () => {
+              toast.success("복구 처리 되었습니다.");
+            },
+            onError: () => {
+              toast.error("복구 처리 중 오류가 발생했습니다.");
+            },
+          });
+        }
+      },
+    }),
+    commandHelper.command({
+      label: "편집",
+      shortcut: "E",
+      action: async (selection) => {
+        const assetsIds = Object.keys(selection);
+        if (assetsIds.length > 1) {
+          toast.error("편집할 자산 하나만 선택해주세요");
+          return;
+        }
+
+        const { setSelectedId, setIsFormModalOpen } = useModalStore();
+        setSelectedId(assetsIds[0]);
+        setIsFormModalOpen(true);
+      },
+    }),
+  ];
+};
 
 interface IAssetListTableProps {
-  onViewAsset: (assetId: string) => void;
+  onViewAsset?: (assetId: string) => void;
 }
 
 const AssetListTable = ({ onViewAsset }: IAssetListTableProps) => {
   const [pagination, setPagination] = useState<DataTablePaginationState>({
-    pageSize: limit,
+    pageSize: 20,
     pageIndex: 0,
   });
   const [search, setSearch] = useState<string>("");
   const [sorting, setSorting] = useState<DataTableSortingState | null>(null);
+  const [filtering, setFiltering] = useState<DataTableFilteringState>({});
+  const [rowSelection, setRowSelection] = useState<DataTableRowSelectionState>({});
 
-  const {
-    selectedId,
-    setSelectedId,
-    selectedIds,
-    setSelectedIds,
-    setIsFormModalOpen,
-    modalType,
-    setModalType,
-  } = useModalStore();
+  const offset = pagination.pageIndex * pagination.pageSize;
 
-  const { filtering, setFiltering } = useFilteringStore();
+  const statusFilters = (filtering.mime_type || []) as string[];
+  const deletedAtFilters = (filtering.deleted_at || []) as string[];
 
-  const offset = useMemo(() => {
-    return pagination.pageIndex * limit;
-  }, [pagination]);
-
-  const statusFilters = useMemo(() => {
-    return (filtering.mime_type || []) as string[];
-  }, [filtering]);
-
-  const deletedAtFilters = useMemo(() => {
-    return (filtering.deleted_at || []) as string[];
-  }, [filtering]);
-
-  const { data } = useAssets({
+  const { data, isLoading } = useAssets({
     offset,
-    limit,
+    limit: pagination.pageSize,
     search,
     statusFilters,
     deletedAtFilters,
     sorting,
   });
 
-  const deleteAssets = useDeleteAssetMutation();
-  const restoreAssets = useRestoreAssetsMutation();
-
-  const hasSearchResults = data?.digital_assets && data.digital_assets.length > 0;
-
-  const handleCloseModal = () => {
-    setModalType(null);
-    // setIsRestoreModalOpen(false);
-    setSelectedId(null);
-  };
-
-  const handleConfirmDelete = () => {
-    if (selectedIds.length > 0) {
-      deleteAssets.mutate(selectedIds, {
-        onSuccess: () => {
-          setSelectedIds([]);
-        },
-      });
-    }
-    handleCloseModal();
-  };
-
-  const handleRestoreSelected = () => {
-    if (!filtering.deleted_at) return;
-
-    // 선택된 항목 중 삭제된 자산만 필터링
-    const deletedAssetIds = selectedIds.filter((id) => {
-      const asset = data?.digital_assets?.find((a) => a.id === id);
-      return asset && asset.deleted_at;
-    });
-
-    if (deletedAssetIds.length === 0) {
-      toast.error("복구할 삭제된 항목이 없습니다.");
-      return;
-    }
-
-    if (confirm(`선택한 ${selectedIds.length}개 항목을 복구하시겠습니까?`)) {
-      restoreAssets.mutate(deletedAssetIds, {
-        onSuccess: () => {
-          setSelectedIds([]);
-        },
-      });
-    }
-  };
-
-  const handleSelectAsset = (assetId: string, checked: boolean) => {
-    if (checked) {
-      // 새로 체크한 경우
-      const willHaveOneSelection = selectedIds.length === 0;
-      setSelectedIds(assetId);
-
-      // 첫 번째 선택인 경우에만 selectedAssetId 설정, 나머지는 null
-      if (willHaveOneSelection) {
-        setSelectedId(assetId);
-      } else {
-        setSelectedId(null);
-      }
-    } else {
-      // 체크 해제된 경우
-      const filteredAssets = selectedIds.filter((id) => id !== assetId);
-      setSelectedIds(filteredAssets);
-
-      // 체크 해제 후 남은 자산이 하나뿐이면 그것을 selectedAssetId로 설정
-      if (filteredAssets.length === 1) {
-        setSelectedId(filteredAssets[0]);
-      } else {
-        setSelectedId(null);
-      }
-    }
-  };
-
-  const handleViewSelected = () => {
-    if (selectedIds.length !== 1) {
-      toast.error("편집할 항목은 한개만 선택해주세요.");
-      return;
-    }
-
-    if (selectedIds.length === 1) {
-      const asset = data?.digital_assets?.find((a) => a.id === selectedIds[0]);
-
-      if (asset) {
-        setSelectedId(asset.id);
-        setIsFormModalOpen(true);
-      }
-    }
-  };
+  const commands = useCommands();
 
   const table = useDataTable({
     columns,
-    data: (data?.digital_assets || []) as DigitalAsset[],
+    data: data?.digital_assets || [],
     getRowId: (row) => row.id,
     rowCount: data?.pagination.count || 0,
+    isLoading,
+    commands,
+    rowSelection: {
+      state: rowSelection,
+      onRowSelectionChange: setRowSelection,
+    },
     pagination: {
       state: pagination,
       onPaginationChange: setPagination,
@@ -234,7 +275,7 @@ const AssetListTable = ({ onViewAsset }: IAssetListTableProps) => {
       onSearchChange: setSearch,
     },
     filtering: {
-      state: filtering,
+      state: filtering || {},
       onFilteringChange: setFiltering,
     },
     filters,
@@ -246,144 +287,19 @@ const AssetListTable = ({ onViewAsset }: IAssetListTableProps) => {
 
   return (
     <SingleColumnLayout>
-      <>
-        <DataTable instance={table}>
-          <DataTable.Toolbar className="flex flex-col items-start justify-between gap-2 md:flex-row md:items-center">
-            <div className="flex gap-2">
-              <DataTable.FilterMenu tooltip="Filter" />
-              <DataTable.SortingMenu tooltip="Sort" />
-              <DataTable.Search placeholder="Search..." />
-            </div>
-          </DataTable.Toolbar>
+      <DataTable instance={table}>
+        <DataTable.Toolbar className="flex flex-col items-start justify-between gap-2 md:flex-row md:items-center">
+          <div className="flex gap-2">
+            <DataTable.FilterMenu tooltip="필터" />
+            <DataTable.SortingMenu tooltip="정렬" />
+            <DataTable.Search placeholder="디지털 자산 이름, ID 등 검색..." />
+          </div>
+        </DataTable.Toolbar>
+        <DataTable.Table />
+        <DataTable.Pagination />
 
-          {hasSearchResults ? (
-            <div className="w-full">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-ui-border-base">
-                    <th className="p-3 text-left">
-                      <Checkbox
-                        checked={
-                          selectedIds.length > 0 &&
-                          selectedIds.length === data?.digital_assets?.length
-                        }
-                        onCheckedChange={(checked) => {
-                          if (checked) {
-                            setSelectedIds(data?.digital_assets?.map((asset) => asset.id));
-                          } else {
-                            setSelectedIds([]);
-                          }
-                        }}
-                      />
-                    </th>
-                    <th className="p-3 text-left font-medium">ID</th>
-                    <th className="p-3 text-left font-medium">Name</th>
-                    <th className="p-3 text-left font-medium">File Type</th>
-                    <th className="p-3 text-left font-medium">
-                      {filtering.deleted_at === "true" ? "Deleted At" : "Created At"}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data?.digital_assets?.map((asset) => (
-                    <tr
-                      key={asset.id}
-                      className="border-b border-ui-border-base hover:bg-ui-bg-base-hover cursor-pointer"
-                      onClick={() => onViewAsset(asset.id)}
-                    >
-                      <td className="p-3">
-                        <Checkbox
-                          checked={selectedIds.includes(asset.id)}
-                          onCheckedChange={(checked) =>
-                            handleSelectAsset(asset.id, checked === true ? true : false)
-                          }
-                          onClick={(e) => e.stopPropagation()}
-                        />
-                      </td>
-                      <td className="p-3">{asset.id}</td>
-                      <td className="p-3">{asset.name}</td>
-                      <td className="p-3">{asset.mime_type}</td>
-                      <td className="p-3">
-                        {dayjs(asset.deleted_at || asset.created_at).format("YYYY-MM-DD")}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <Container className="flex flex-col items-center justify-center py-16">
-              <Text className="text-ui-fg-subtle mb-4 text-center">
-                {search || statusFilters.length > 0
-                  ? "검색하신 조건에 맞는 디지털 자산이 없습니다"
-                  : "디지털 자산이 없습니다"}
-              </Text>
-            </Container>
-          )}
-
-          <DataTable.Pagination />
-        </DataTable>
-      </>
-
-      <CommandBar open={selectedIds.length > 0}>
-        <CommandBar.Bar>
-          {!filtering.deleted_at ? (
-            <>
-              <CommandBar.Value>{selectedIds.length}개 선택됨</CommandBar.Value>
-              <CommandBar.Seperator />
-              <CommandBar.Command
-                action={() => {
-                  setModalType("delete");
-                }}
-                label="삭제"
-                shortcut="d"
-              />
-
-              <CommandBar.Seperator />
-              <CommandBar.Command
-                action={handleViewSelected}
-                label="편집"
-                shortcut="v"
-                disabled={selectedIds.length !== 1}
-              />
-            </>
-          ) : (
-            <>
-              <CommandBar.Value>{selectedIds.length}개 선택됨</CommandBar.Value>
-
-              <CommandBar.Seperator />
-              <CommandBar.Command action={handleRestoreSelected} label="복구" shortcut="r" />
-            </>
-          )}
-        </CommandBar.Bar>
-      </CommandBar>
-
-      {/* 삭제 모달 */}
-      <ConfirmModal
-        isOpen={modalType === "delete"}
-        onClose={handleCloseModal}
-        onConfirm={handleConfirmDelete}
-        title="디지털 자산 삭제"
-        description={
-          selectedId ? (
-            <>
-              정말로 이 디지털 자산을 삭제하시겠습니까?
-              <br />
-              해당 자산은 더 이상 판매 중인 상품에서 사용할 수 없습니다.
-            </>
-          ) : (
-            <>
-              선택한 {selectedIds.length}개 디지털 자산을 삭제하시겠습니까?
-              <br />
-              해당 자산은 더 이상 판매 중인 상품에서 사용할 수 없습니다.
-            </>
-          )
-        }
-        isLoading={deleteAssets.isPending}
-        actionText="삭제"
-        loadingText="삭제 중..."
-        cancelText="취소"
-      />
+        <DataTable.CommandBar selectedLabel={(count) => `${count}개 선택됨`} />
+      </DataTable>
     </SingleColumnLayout>
   );
 };
