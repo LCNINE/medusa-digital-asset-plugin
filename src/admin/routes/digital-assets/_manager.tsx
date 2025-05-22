@@ -5,17 +5,10 @@ import { useModalStore } from "../../../store/modal-store";
 import { TableHeader } from "../../components/table-header";
 import DeferredComponent from "../../layout/deferred-component";
 import { AssetFormModal } from "./_components";
-import AssetDetailsModal from "./_components/asset-details-modal";
 import AssetListTable from "./_components/asset-list-table";
 
 const DigitalAssetManager = () => {
-  const { modalType, setModalType, selectedId, setSelectedId, setIsFormModalOpen } =
-    useModalStore();
-
-  const handleModalClose = () => {
-    setModalType(null);
-    setSelectedId(null);
-  };
+  const { setIsFormModalOpen } = useModalStore();
 
   return (
     <Container>
@@ -49,12 +42,6 @@ const DigitalAssetManager = () => {
       >
         <AssetListTable />
       </Suspense>
-
-      <AssetDetailsModal
-        isOpen={modalType === "detail"}
-        onClose={handleModalClose}
-        assetId={selectedId as string}
-      />
 
       <AssetFormModal />
     </Container>
