@@ -27,9 +27,9 @@
   ],
   "scripts": {
     "build": "medusa plugin:build",
-    "dev": "medusa plugin:develop",
+    "dev": "NODE_OPTIONS='--require tsconfig-paths/register' medusa plugin:develop",
     "prepublishOnly": "medusa plugin:build",
-    "start:server": "medusa develop"
+    "start:server": "NODE_OPTIONS='--require tsconfig-paths/register' medusa develop"
   },
   "devDependencies": {
     "@medusajs/admin-sdk": "2.4.0",
@@ -58,6 +58,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.6.2",
     "vite": "^5.2.11",
     "yalc": "^1.0.0-pre.53"

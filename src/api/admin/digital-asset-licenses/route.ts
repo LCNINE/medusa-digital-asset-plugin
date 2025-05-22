@@ -1,9 +1,9 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
-import { DIGITAL_ASSET } from "../../../modules/digital-asset";
-import DigitalAssetService from "../../../modules/digital-asset/service";
-import { createDigitalAssetLicenseWorkFlow } from "../../../workflows/digital-asset-license/workflows/create-digital-asset-licenses";
-import { updateDigitalAssetLicenseWorkFlow } from "../../../workflows/digital-asset-license/workflows/update-digital-asset-licenses";
+import { DIGITAL_ASSET } from "@/modules/digital-asset";
+import DigitalAssetService from "@/modules/digital-asset/service";
+import { createDigitalAssetLicenseWorkFlow } from "@/workflows/digital-asset-license/workflows/create-digital-asset-licenses";
+import { updateDigitalAssetLicenseWorkFlow } from "@/workflows/digital-asset-license/workflows/update-digital-asset-licenses";
 import { CreateDigitalAssetLicenseType, UpdateDigitalAssetLicenseType } from "./validators";
 
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
