@@ -170,7 +170,7 @@ const useCommands = () => {
       shortcut: "D",
       action: async (selection) => {
         const productsToDeleteIds = Object.keys(selection);
-        console.log("productsToDeleteIds:", productsToDeleteIds);
+
         if (confirm("삭제하시겠습니까?")) {
           console.log("삭제 진행");
         }
@@ -256,7 +256,7 @@ const LicenseTable = ({
           <div className="flex gap-2">
             <DataTable.FilterMenu tooltip="Filter" />
             <DataTable.SortingMenu tooltip="Sort" />
-            <DataTable.Search placeholder="Search..." />
+            <DataTable.Search placeholder="라이센스 ID, 고객 ID 등 검색..." />
           </div>
         </DataTable.Toolbar>
         <DataTable.Table />

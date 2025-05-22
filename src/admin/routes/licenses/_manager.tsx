@@ -1,21 +1,17 @@
 import { Container, DataTablePaginationState, DataTableSortingState } from "@medusajs/ui";
-import { useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { useFilteringStore } from "../../../store/filtering-store";
 import { useModalStore } from "../../../store/modal-store";
 import { TableHeader } from "../../components/table-header";
 import LicenseDetailsModal from "./_components/license-details-modal";
+import LicenseFormModal from "./_components/license-form-modal";
 import LicenseTable from "./_components/license-table";
 import { useDigitalAssetLicense } from "./_hooks/use-digital-asset-licenses";
-import { useRevokeLicense } from "./_hooks/use-revoke-license";
-import LicenseFormModal from "./_components/license-form-modal";
 import { useGetLicenseById } from "./_hooks/use-get-license-by-id";
 
 const limit = 10;
 
 export const LicenseManager = () => {
-  const queryClient = useQueryClient();
-
   const [pagination, setPagination] = useState<DataTablePaginationState>({
     pageSize: limit,
     pageIndex: 0,
@@ -54,8 +50,6 @@ export const LicenseManager = () => {
     filtering,
   });
 
-  const revokeLicense = useRevokeLicense(queryClient);
-
   return (
     <Container>
       <TableHeader
@@ -78,9 +72,6 @@ export const LicenseManager = () => {
       <LicenseTable
         licenseData={data}
         isLoading={isLoading}
-        onRevokeClick={(licenseId: string) => {
-          revokeLicense.mutate(licenseId);
-        }}
         pagination={pagination}
         setPagination={setPagination}
         search={search}

@@ -34,6 +34,7 @@ export const TableHeader = ({ title, subtitle, actions = [] }: HeadingProps) => 
           </Text>
         )}
       </div>
+
       {actions.length > 0 && (
         <div className="flex items-center justify-center gap-x-2">
           {actions.map((action, index) => (
