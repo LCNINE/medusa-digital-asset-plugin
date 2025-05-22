@@ -255,7 +255,7 @@ const AssetListTable = () => {
     columns,
     data: data?.digital_assets || [],
     getRowId: (row) => row.id,
-    rowCount: data?.pagination.count || 0,
+    rowCount: data?.count || 0,
     isLoading,
     commands,
     rowSelection: {

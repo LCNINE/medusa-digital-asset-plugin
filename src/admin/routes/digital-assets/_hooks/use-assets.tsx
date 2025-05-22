@@ -1,9 +1,9 @@
 import { DataTableSortingState, toast } from "@medusajs/ui";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useFilteringStore } from "../../../../store/filtering-store";
-import { DigitalAsset } from "../../../../../.medusa/types/query-entry-points";
 import { DIGITAL_ASSETS_QUERY_KEY } from "../../../constants";
 import { sdk } from "../../../lib/config";
+import { DigitalAssetPaginatedResponse } from "../../../../types/digital-asset.types";
 
 interface IUseGetAssetsProps {
   offset: number;
@@ -24,14 +24,7 @@ export const useAssets = ({
 }: IUseGetAssetsProps) => {
   const { filtering } = useFilteringStore();
 
-  const query = useSuspenseQuery<{
-    digital_assets: DigitalAsset[];
-    pagination: {
-      count: number;
-      offset: number;
-      limit: number;
-    };
-  }>({
+  const query = useSuspenseQuery<DigitalAssetPaginatedResponse>({
     queryKey: [
       ...DIGITAL_ASSETS_QUERY_KEY.all,
       filtering.deleted_at,

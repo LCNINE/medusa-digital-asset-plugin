@@ -229,7 +229,7 @@ const LicenseTable = ({
     columns,
     data: licenseData?.licenses || [],
     getRowId: (row) => row.id,
-    rowCount: licenseData?.pagination.count || 0,
+    rowCount: licenseData?.count || 0,
     isLoading,
     commands,
     rowSelection: {

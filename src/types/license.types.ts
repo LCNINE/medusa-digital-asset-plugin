@@ -2,11 +2,9 @@ import { DigitalAssetLicense } from "../../.medusa/types/query-entry-points";
 
 export interface LicenseResponse {
   licenses: DigitalAssetLicense[];
-  pagination: {
-    count: number;
-    skip: number;
-    take: number;
-  };
+  count: number;
+  skip: number;
+  take: number;
 }
 
 export interface SingleLicenseResponse {

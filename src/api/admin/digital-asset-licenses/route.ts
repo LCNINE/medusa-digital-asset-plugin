@@ -1,9 +1,9 @@
-import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
-import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
 import { DIGITAL_ASSET } from "@/modules/digital-asset";
 import DigitalAssetService from "@/modules/digital-asset/service";
 import { createDigitalAssetLicenseWorkFlow } from "@/workflows/digital-asset-license/workflows/create-digital-asset-licenses";
 import { updateDigitalAssetLicenseWorkFlow } from "@/workflows/digital-asset-license/workflows/update-digital-asset-licenses";
+import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
 import { CreateDigitalAssetLicenseType, UpdateDigitalAssetLicenseType } from "./validators";
 
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
@@ -103,11 +103,9 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
 
     return res.status(200).json({
       licenses,
-      pagination: {
-        count,
-        skip,
-        take,
-      },
+      count,
+      skip,
+      take,
     });
   } catch (error) {
     return res.status(400).json({ error: error.message });

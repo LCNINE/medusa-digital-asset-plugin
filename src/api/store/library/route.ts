@@ -74,11 +74,9 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
 
     return res.status(200).json({
       licenses: sanitizedLicenses,
-      pagination: {
-        count: count || 0,
-        skip: skip || offset,
-        take: take || limit,
-      },
+      count: count || 0,
+      skip: skip || offset,
+      take: take || limit,
     });
   } catch (error) {
     return res.status(400).json({ error: error.message });

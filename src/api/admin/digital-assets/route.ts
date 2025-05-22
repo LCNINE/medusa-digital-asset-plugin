@@ -121,11 +121,9 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
 
     return res.status(200).json({
       digital_assets,
-      pagination: {
-        count: count || 0,
-        offset,
-        limit,
-      },
+      count: count || 0,
+      offset,
+      limit,
     });
   } catch (error) {
     console.error("error:", error);
