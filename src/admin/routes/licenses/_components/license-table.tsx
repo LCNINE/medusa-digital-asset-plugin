@@ -175,14 +175,7 @@ const useCommands = () => {
         if (confirm("삭제하시겠습니까?")) {
           const productsToDeleteIds = Object.keys(selection);
 
-          deleteLicenseMutation.mutate(productsToDeleteIds, {
-            onSuccess: () => {
-              toast.success("삭제 처리 되었습니다.");
-            },
-            onError: () => {
-              toast.error("삭제 처리 중 오류가 발생했습니다.");
-            },
-          });
+          deleteLicenseMutation.mutate(productsToDeleteIds);
         }
       },
     }),

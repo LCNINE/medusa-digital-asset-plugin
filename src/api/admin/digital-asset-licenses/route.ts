@@ -164,13 +164,15 @@ export async function DELETE(req: MedusaRequest<{ ids: string[] }>, res: MedusaR
 
   try {
     const digitalAssetService: DigitalAssetService = req.scope.resolve(DIGITAL_ASSET);
-    await digitalAssetService.softDeleteDigitalAssetLicenses(ids);
+
+    await digitalAssetService.deleteDigitalAssetLicenses(ids);
 
     return res.status(200).json({
       success: true,
       message: "라이센스가 성공적으로 삭제되었습니다",
     });
   } catch (error) {
+    console.error(`❌ 라이센스 삭제 오류:`, error);
     return res.status(500).json({
       message: `라이센스 삭제 중 오류가 발생했습니다: ${error.message}`,
     });

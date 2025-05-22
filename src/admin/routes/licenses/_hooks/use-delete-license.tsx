@@ -8,7 +8,7 @@ export const useDeleteLicenseMutation = () => {
 
   return useMutation({
     mutationFn: async (licenseIds: string[]) => {
-      await sdk.client.fetch(`/admin/digital-asset-licenses/`, {
+      await sdk.client.fetch(`/admin/digital-asset-licenses`, {
         method: "DELETE",
         body: {
           ids: licenseIds,
@@ -16,12 +16,16 @@ export const useDeleteLicenseMutation = () => {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: DIGITAL_ASSET_LICENSES_QUERY_KEY.all });
+      queryClient.invalidateQueries({
+        queryKey: DIGITAL_ASSET_LICENSES_QUERY_KEY.all,
+        refetchType: "all",
+        exact: false,
+      });
 
       toast.success("삭제 처리 되었습니다.");
     },
     onError: (error) => {
-      console.error(error);
+      console.error("라이센스 삭제 오류:", error);
       toast.error("삭제 처리 중 오류가 발생했습니다.");
     },
   });
