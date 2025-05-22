@@ -7,7 +7,6 @@ import {
   DataTable,
   DataTablePaginationState,
   DataTableSortingState,
-  Heading,
   Text,
   toast,
   useDataTable,

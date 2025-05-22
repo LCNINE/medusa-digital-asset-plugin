@@ -1,10 +1,10 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
+import { DIGITAL_ASSET } from "../../../modules/digital-asset";
+import DigitalAssetService from "../../../modules/digital-asset/service";
 import { createDigitalAssetLicenseWorkFlow } from "../../../workflows/digital-asset-license/workflows/create-digital-asset-licenses";
 import { updateDigitalAssetLicenseWorkFlow } from "../../../workflows/digital-asset-license/workflows/update-digital-asset-licenses";
 import { CreateDigitalAssetLicenseType, UpdateDigitalAssetLicenseType } from "./validators";
-import { DIGITAL_ASSET } from "../../../modules/digital-asset";
-import DigitalAssetService from "../../../modules/digital-asset/service";
 
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
   const { license_id, customer_id, order_item_id, search, order } = req.query as {
@@ -153,18 +153,26 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(req: MedusaRequest, res: MedusaResponse) {
-  const { license_id } = req.query;
+export async function DELETE(req: MedusaRequest<{ ids: string[] }>, res: MedusaResponse) {
+  const { ids } = req.body;
+
+  if (!ids || !Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({
+      message: "유효한 라이센스 ID 배열이 필요합니다",
+    });
+  }
 
   try {
-    if (!license_id || typeof license_id !== "string" || license_id.trim() === "") {
-      throw new Error("required license_id");
-    }
+    const digitalAssetService: DigitalAssetService = req.scope.resolve(DIGITAL_ASSET);
+    await digitalAssetService.softDeleteDigitalAssetLicenses(ids);
 
-    const digitalAssetLicenseService: DigitalAssetService = req.scope.resolve(DIGITAL_ASSET);
-    await digitalAssetLicenseService.softDeleteDigitalAssetLicenses([license_id as string]);
-    return res.status(200).json({ success: true, message: "license deleted successfully" });
+    return res.status(200).json({
+      success: true,
+      message: "라이센스가 성공적으로 삭제되었습니다",
+    });
   } catch (error) {
-    return res.status(400).json({ error: error.message });
+    return res.status(500).json({
+      message: `라이센스 삭제 중 오류가 발생했습니다: ${error.message}`,
+    });
   }
 }

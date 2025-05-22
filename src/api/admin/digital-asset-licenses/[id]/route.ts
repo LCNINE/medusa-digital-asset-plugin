@@ -1,5 +1,7 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
 import { ContainerRegistrationKeys, MedusaError } from "@medusajs/utils";
+import { DIGITAL_ASSET } from "../../../../modules/digital-asset";
+import DigitalAssetService from "../../../../modules/digital-asset/service";
 
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
   const licenseId = req.params.id;

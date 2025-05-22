@@ -21,6 +21,7 @@ import { DigitalAssetLicense } from "../../../../../.medusa/types/query-entry-po
 import { useModalStore } from "../../../../store/modal-store";
 import { LicenseResponse } from "../../../../types/license.types";
 import { SingleColumnLayout } from "../../../layout/single-column";
+import { useDeleteLicenseMutation } from "../_hooks/use-delete-license";
 
 const copyToClipboard = (text: string) => {
   navigator.clipboard.writeText(text).catch((err) => {
@@ -164,15 +165,24 @@ const filters = [
 const commandHelper = createDataTableCommandHelper();
 
 const useCommands = () => {
+  const deleteLicenseMutation = useDeleteLicenseMutation();
+
   return [
     commandHelper.command({
       label: "삭제",
       shortcut: "D",
       action: async (selection) => {
-        const productsToDeleteIds = Object.keys(selection);
-
         if (confirm("삭제하시겠습니까?")) {
-          console.log("삭제 진행");
+          const productsToDeleteIds = Object.keys(selection);
+
+          deleteLicenseMutation.mutate(productsToDeleteIds, {
+            onSuccess: () => {
+              toast.success("삭제 처리 되었습니다.");
+            },
+            onError: () => {
+              toast.error("삭제 처리 중 오류가 발생했습니다.");
+            },
+          });
         }
       },
     }),

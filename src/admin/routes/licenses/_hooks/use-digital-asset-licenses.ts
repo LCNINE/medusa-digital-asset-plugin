@@ -1,8 +1,8 @@
+import { DataTableFilteringState, DataTableSortingState } from "@medusajs/ui";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { LicenseResponse } from "../../../../types/license.types";
+import { DIGITAL_ASSET_LICENSES_QUERY_KEY } from "../../../constants";
 import { sdk } from "../../../lib/config";
-import { DataTableFilteringState, DataTableSortingState } from "@medusajs/ui";
-import { DIGITAL_ASSETS_QUERY_KEY } from "../../../constants";
 
 interface IUseDigitalAssetLicenseProps {
   offset: number;
@@ -25,7 +25,7 @@ export const useDigitalAssetLicense = ({
 }: IUseDigitalAssetLicenseProps) => {
   return useSuspenseQuery({
     queryKey: [
-      ...DIGITAL_ASSETS_QUERY_KEY.all,
+      ...DIGITAL_ASSET_LICENSES_QUERY_KEY.all,
       filtering?.deleted_at,
       offset,
       limit,
