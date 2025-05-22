@@ -14,7 +14,7 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY);
 
   try {
-    const includeDeleted = req.query.deleted_at === "true";
+    const deletedAtParam = req.query.deleted_at;
     const limit = parseInt(req.query.limit as string) || 20;
     const offset = parseInt(req.query.offset as string) || 0;
     const search = (req.query.search as string) || "";
@@ -22,7 +22,25 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
     const statusFilters = (req.query.status as string[]) || [];
     const orderBy = req.query.order as string;
 
-    let filters: any = includeDeleted ? { deleted_at: { $ne: null } } : { deleted_at: null };
+    let filters: any = {};
+
+    //  "all"이 오면 모든 항목(삭제됨 + 활성) 표시
+    if (
+      deletedAtParam === "all" ||
+      (Array.isArray(deletedAtParam) && deletedAtParam.includes("all"))
+    ) {
+      filters.$or = [{ deleted_at: null }, { deleted_at: { $ne: null } }];
+    } else if (
+      // 삭제된 항목만 표시
+      deletedAtParam === "true" ||
+      (Array.isArray(deletedAtParam) && deletedAtParam.includes("true"))
+    ) {
+      filters.deleted_at = { $ne: null };
+      console.log("삭제된 항목만 표시");
+    } else {
+      // 삭제되지 않은 항목만 표시
+      filters.deleted_at = null;
+    }
 
     if (search) {
       filters = {

@@ -225,11 +225,7 @@ const useCommands = () => {
   ];
 };
 
-interface IAssetListTableProps {
-  onViewAsset?: (assetId: string) => void;
-}
-
-const AssetListTable = ({ onViewAsset }: IAssetListTableProps) => {
+const AssetListTable = () => {
   const [pagination, setPagination] = useState<DataTablePaginationState>({
     pageSize: 20,
     pageIndex: 0,

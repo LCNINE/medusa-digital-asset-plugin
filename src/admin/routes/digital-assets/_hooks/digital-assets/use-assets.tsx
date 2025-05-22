@@ -45,13 +45,31 @@ export const useAssets = ({
     ],
     queryFn: async () => {
       try {
+        let deletedAtValue: string | undefined = undefined;
+
+        if (deletedAtFilters.includes("true") && deletedAtFilters.includes("false")) {
+          deletedAtValue = "all";
+        }
+        // 삭제된 항목만 선택된 경우
+        else if (deletedAtFilters.includes("true")) {
+          deletedAtValue = "true";
+        }
+        // 활성 항목만 선택된 경우
+        else if (deletedAtFilters.includes("false")) {
+          deletedAtValue = "false";
+        }
+        // 아무것도 선택되지 않은 경우
+        else {
+          deletedAtValue = "false";
+        }
+
         return await sdk.client.fetch(`/admin/digital-assets`, {
           query: {
             offset,
             limit,
             search,
             status: statusFilters,
-            deleted_at: deletedAtFilters,
+            deleted_at: deletedAtValue,
             order: sorting ? `${sorting.desc ? "-" : ""}${sorting.id}` : undefined,
           },
         });

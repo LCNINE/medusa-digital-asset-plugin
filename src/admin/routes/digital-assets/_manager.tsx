@@ -2,10 +2,10 @@ import { Spinner } from "@medusajs/icons";
 import { Container, Text, Toaster } from "@medusajs/ui";
 import { Suspense } from "react";
 import { useModalStore } from "../../../store/modal-store";
-import AssetDetailsModal from "./_components/asset-details-modal";
 import { TableHeader } from "../../components/table-header";
 import DeferredComponent from "../../layout/deferred-component";
 import { AssetFormModal } from "./_components";
+import AssetDetailsModal from "./_components/asset-details-modal";
 import AssetListTable from "./_components/asset-list-table";
 
 const DigitalAssetManager = () => {
@@ -47,12 +47,7 @@ const DigitalAssetManager = () => {
           </DeferredComponent>
         }
       >
-        <AssetListTable
-          onViewAsset={(assetId: string) => {
-            setSelectedId(assetId);
-            setModalType("detail");
-          }}
-        />
+        <AssetListTable />
       </Suspense>
 
       <AssetDetailsModal
