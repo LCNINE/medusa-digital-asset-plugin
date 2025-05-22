@@ -191,7 +191,10 @@ const useCommands = () => {
       shortcut: "R",
       action: async (selection) => {
         const productsToDeleteIds = Object.keys(selection);
-        console.log("productsToDeleteIds:", productsToDeleteIds);
+        if (productsToDeleteIds.length > 1) {
+          toast.error("편집할 라이센스 하나만 선택해주세요");
+          return;
+        }
         if (confirm("편집하시겠습니까?")) {
           console.log("편집 진행");
         }
