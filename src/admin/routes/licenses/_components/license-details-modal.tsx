@@ -1,5 +1,6 @@
 import { Badge, Button, Container, FocusModal, Heading, Text } from "@medusajs/ui";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import dayjs from "dayjs";
 import { DigitalAssetLicense } from "../../../../../.medusa/types/query-entry-points";
 import { useFilteringStore } from "../../../../store/filtering-store";
 import { useModalStore } from "../../../../store/modal-store";
@@ -83,11 +84,11 @@ const LicenseDetailsModal = ({ isOpen, onClose, license, isLoading }: LicenseDet
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
                       <Text className="text-ui-fg-subtle font-medium w-36">생성일:</Text>
-                      <Text>{new Date(license.created_at).toLocaleString()}</Text>
+                      <Text>{dayjs(license.created_at).format("YYYY-MM-DD")}</Text>
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
-                      <Text className="text-ui-fg-subtle font-medium w-36">업데이트일:</Text>
-                      <Text>{new Date(license.updated_at).toLocaleString()}</Text>
+                      <Text className="text-ui-fg-subtle font-medium w-36">사용일:</Text>
+                      <Text>{dayjs(license.updated_at).format("YYYY-MM-DD")}</Text>
                     </div>
                   </div>
                 </Container>
