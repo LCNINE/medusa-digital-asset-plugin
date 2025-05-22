@@ -8,7 +8,7 @@ export const useDeleteAssetMutation = () => {
 
   return useMutation({
     mutationFn: async (assetIds: string[]) => {
-      await sdk.client.fetch(`/admin/digital-assetsd`, {
+      await sdk.client.fetch(`/admin/digital-assets`, {
         method: "DELETE",
         body: {
           ids: assetIds,
