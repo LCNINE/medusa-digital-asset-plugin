@@ -293,7 +293,7 @@ const AssetListTable = () => {
         </DataTable.Toolbar>
 
         {data?.digital_assets?.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-10 bg-white rounded-md">
+          <div className="flex flex-col items-center justify-center py-10 rounded-md bg-ui-bg-component">
             <p className="text-ui-fg-subtle text-base mb-1">데이터가 없습니다</p>
             <p className="text-ui-fg-muted text-sm">
               {search
