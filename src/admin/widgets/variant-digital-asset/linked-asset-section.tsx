@@ -70,8 +70,13 @@ const LinkedAssetSection = ({ variantId, isUnLinking, onUnlink }: ILinkedAssetSe
                 <Prompt.Description>한번 해제한 디지털 자산은 복원이 안됩니다.</Prompt.Description>
               </Prompt.Header>
               <Prompt.Footer>
-                <Prompt.Cancel>취소</Prompt.Cancel>
-                <Prompt.Action onClick={() => handleUnlink(asset.id)}>
+                <Prompt.Cancel onClick={(e) => e.stopPropagation()}>취소</Prompt.Cancel>
+                <Prompt.Action
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleUnlink(asset.id);
+                  }}
+                >
                   {isUnLinking ? "처리 중..." : "해제"}
                 </Prompt.Action>
               </Prompt.Footer>
