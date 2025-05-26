@@ -105,15 +105,16 @@ export const DigitalAssetSelector = ({
 
       <div className="flex items-center gap-2">
         <div className="flex-1 max-w-md relative">
-          <div
-            className="border border-ui-border-base rounded p-2 h-10 cursor-pointer flex justify-between items-center bg-ui-bg-base text-ui-fg-base"
+          <Button
+            variant="secondary"
+            className="w-full justify-start"
             onClick={() => setShowDropdown((prev) => !prev)}
           >
             <span>
               {selectedAssetId && selectedAsset ? selectedAsset.name : "디지털 자산 선택"}
             </span>
-            <span>▼</span>
-          </div>
+            <span className="ml-auto">▼</span>
+          </Button>
 
           {showDropdown && (
             <div
