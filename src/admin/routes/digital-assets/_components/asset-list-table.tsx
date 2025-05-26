@@ -251,13 +251,32 @@ const AssetListTable = () => {
 
   const commands = useCommands();
 
+  // 선택된 행들의 상태에 따라 콤보박스 명령어 필터링
+  const filteredCommands = commands.filter((command) => {
+    if (!Object.keys(rowSelection).length) return true;
+
+    const hasDeletedItems = Object.keys(rowSelection).some((id) => {
+      const asset = data?.digital_assets.find((a) => a.id === id);
+      return !!asset?.deleted_at;
+    });
+
+    const hasActiveItems = Object.keys(rowSelection).some((id) => {
+      const asset = data?.digital_assets.find((a) => a.id === id);
+      return !asset?.deleted_at;
+    });
+
+    if (command.label === "복구") return hasDeletedItems;
+    if (command.label === "삭제") return hasActiveItems;
+    return true;
+  });
+
   const table = useDataTable({
     columns,
     data: data?.digital_assets || [],
     getRowId: (row) => row.id,
     rowCount: data?.count || 0,
     isLoading,
-    commands,
+    commands: filteredCommands,
     rowSelection: {
       state: rowSelection,
       onRowSelectionChange: setRowSelection,
