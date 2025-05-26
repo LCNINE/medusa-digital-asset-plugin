@@ -12,7 +12,7 @@ interface DigitalAsset {
 interface DigitalAssetLicense {
   id: string;
   customer_id: string;
-  order_item_id?: string;
+  order_item_id: string | null | undefined;
   is_exercised: boolean;
   digital_asset?: {
     id: string;
