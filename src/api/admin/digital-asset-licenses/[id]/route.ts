@@ -18,7 +18,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
       entity: "digital_asset_license",
       fields: [
         "id",
-        "customer_id",
+        "customer_id.*",
         "created_at",
         "updated_at",
         "deleted_at",
@@ -37,17 +37,17 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
 
     let digitalAssetLicense = result.data[0];
 
-    const {
-      data: [customer],
-    } = await query.graph({
-      entity: "customer",
-      fields: ["id", "first_name", "last_name", "email"],
-      filters: {
-        id: digitalAssetLicense.customer_id,
-      },
-    });
+    // const {
+    //   data: [customer],
+    // } = await query.graph({
+    //   entity: "customer",
+    //   fields: ["id", "first_name", "last_name", "email"],
+    //   filters: {
+    //     id: digitalAssetLicense.customer_id,
+    //   },
+    // });
 
-    digitalAssetLicense.customer = customer;
+    // digitalAssetLicense.customer = customer;
 
     return res.status(200).json(digitalAssetLicense);
   } catch (error) {

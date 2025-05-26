@@ -1,10 +1,6 @@
 import { toast } from "@medusajs/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  DIGITAL_ASSETS_QUERY_KEY,
-  VARIANT_DIGITAL_ASSETS_QUERY_KEY,
-  LINK_DIGITAL_ASSET_TO_VARIANT_QUERY_KEY,
-} from "../constants";
+import { DIGITAL_ASSETS_QUERY_KEY, LINK_DIGITAL_ASSET_TO_VARIANT_QUERY_KEY } from "../constants";
 
 type LinkDigitalAssetToVariantDTO = {
   digital_asset_id: string;

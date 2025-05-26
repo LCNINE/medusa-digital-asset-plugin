@@ -1,7 +1,6 @@
 import { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/framework/http";
 import { ContainerRegistrationKeys, MedusaError } from "@medusajs/framework/utils";
 import DigitalAssetService from "../../../../../modules/digital-asset/service";
-DigitalAssetService;
 
 interface DigitalAsset {
   id: string;
@@ -41,7 +40,7 @@ export async function POST(req: AuthenticatedMedusaRequest, res: MedusaResponse)
       throw new MedusaError(MedusaError.Types.INVALID_DATA, "이미 행사된 라이센스입니다.");
     }
 
-    const digitalAssetService = req.scope.resolve("digital_asset");
+    const digitalAssetService: DigitalAssetService = req.scope.resolve("digital_asset");
 
     // is_exercised true로 라이센스 행사권 행사, 이제 환불 안됌
     const updatedLicense = await digitalAssetService.updateDigitalAssetLicenses({

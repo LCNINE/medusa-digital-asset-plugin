@@ -26,11 +26,8 @@ export const useDigitalAssets = ({
     },
     initialPageParam: 0,
     getNextPageParam: (lastPage: DigitalAssetPaginatedResponse) => {
-      const { pagination } = lastPage;
-      if (pagination.count > pagination.offset + pagination.limit) {
-        return pagination.offset + pagination.limit;
-      }
-      return undefined;
+      const hasMore = lastPage.count > lastPage.offset + lastPage.limit;
+      return hasMore ? lastPage.offset + lastPage.limit : undefined;
     },
     enabled: !!showDropdown,
     staleTime: 0,

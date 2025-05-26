@@ -80,7 +80,6 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
         };
       }
     }
-
     const digitalAssetService: DigitalAssetService = req.scope.resolve(DIGITAL_ASSET);
 
     let orderOptions = {};
