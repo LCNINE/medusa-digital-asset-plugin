@@ -1,15 +1,19 @@
 import { toast } from "@medusajs/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DIGITAL_ASSET_LICENSES_QUERY_KEY } from "../../../constants";
+import { CreateDigitalAssetLicenseType } from "../../../../api/admin/digital-asset-licenses/validators";
 
 export const useCreateLicense = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (formData: FormData) => {
+    mutationFn: async (formData: CreateDigitalAssetLicenseType) => {
       const response = await fetch("/admin/digital-asset-licenses", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
       });
 
       if (!response.ok) {

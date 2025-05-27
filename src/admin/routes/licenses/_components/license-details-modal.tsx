@@ -88,7 +88,11 @@ const LicenseDetailsModal = ({ isOpen, onClose, license, isLoading }: LicenseDet
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
                       <Text className="text-ui-fg-subtle font-medium w-36">사용일:</Text>
-                      <Text>{dayjs(license.updated_at).format("YYYY-MM-DD")}</Text>
+                      <Text>
+                        {license.is_exercised
+                          ? dayjs(license.updated_at).format("YYYY-MM-DD")
+                          : "-"}
+                      </Text>
                     </div>
                   </div>
                 </Container>

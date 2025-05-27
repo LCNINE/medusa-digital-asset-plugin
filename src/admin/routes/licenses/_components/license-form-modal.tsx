@@ -1,45 +1,58 @@
 import { Button, FocusModal, Text } from "@medusajs/ui";
-import { useState } from "react";
-import { DigitalAsset, DigitalAssetLicense } from "../../../../../.medusa/types/query-entry-points";
+import { useEffect, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import {
+  Customer,
+  DigitalAsset,
+  DigitalAssetLicense,
+} from "../../../../../.medusa/types/query-entry-points";
+import { CreateDigitalAssetLicenseType } from "../../../../api/admin/digital-asset-licenses/validators";
 import { useModalStore } from "../../../../store/modal-store";
+import { CustomerSelector } from "../../../components/customer-selector";
 import { DigitalAssetSelector } from "../../../components/digital-asset-selector";
 import { useCreateLicense } from "../_hooks/use-create-license";
 import { useUpdateLicense } from "../_hooks/use-update-license";
 
 interface ILicenseFormModalProps {
-  license: DigitalAssetLicense | undefined;
+  licenseData: DigitalAssetLicense | undefined;
   isLoading: boolean;
   type: "create" | "edit";
 }
 
-const LicenseFormModal = ({ license, isLoading, type }: ILicenseFormModalProps) => {
-  const [newAssetName, setNewAssetName] = useState("");
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [selectedThumbnail, setSelectedThumbnail] = useState<File | null>(null);
-  const [fileUrl, setFileUrl] = useState<string | null>(null);
+const LicenseFormModal = ({ licenseData, isLoading, type }: ILicenseFormModalProps) => {
   const [selectedAsset, setSelectedAsset] = useState<DigitalAsset | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
 
   const { isFormModalOpen, setIsFormModalOpen, selectedId, setSelectedId } = useModalStore();
+
   const createLicenseMutation = useCreateLicense();
   const updateLicenseMutation = useUpdateLicense();
 
-  const handleCreateAsset = (e: React.FormEvent) => {
+  const form = useForm<CreateDigitalAssetLicenseType>({
+    defaultValues: {
+      digital_asset_id: "",
+      customer_id: "",
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const formData = new FormData();
-    formData.append("name", newAssetName);
-
-    if (selectedFile) {
-      formData.append("file", selectedFile);
+    if (!selectedAsset?.id || !selectedCustomer?.id) {
+      return alert("라이센스 생성에 필요한 정보를 선택해주세요.");
     }
 
-    if (selectedThumbnail) {
-      formData.append("thumbnail", selectedThumbnail);
-    }
+    const formData: CreateDigitalAssetLicenseType & { is_exercised?: boolean } = {
+      digital_asset_id: selectedAsset.id,
+      customer_id: selectedCustomer.id,
+    };
 
-    if (license?.id) {
+    if (licenseData?.id) {
+      formData.is_exercised = false;
+
       updateLicenseMutation.mutate(
-        { id: license.id, formData },
+        { id: licenseData.id, formData },
         {
           onSuccess: () => {
             setIsFormModalOpen(false);
@@ -56,59 +69,96 @@ const LicenseFormModal = ({ license, isLoading, type }: ILicenseFormModalProps) 
   };
 
   const handleModalClose = () => {
-    setNewAssetName("");
-    setSelectedFile(null);
-    setSelectedThumbnail(null);
     setIsFormModalOpen(false);
-    setFileUrl(null);
     setSelectedId(null);
+    setSelectedCustomer(null);
+    form.reset();
   };
+
+  useEffect(() => {
+    if (licenseData) {
+      form.reset({
+        digital_asset_id: licenseData.digital_asset?.id,
+        customer_id: licenseData.customer?.id,
+      });
+    }
+  }, [licenseData]);
+
+  useEffect(() => {
+    if (selectedAsset) {
+      form.setValue("digital_asset_id", selectedAsset.id);
+    }
+
+    if (selectedCustomer) {
+      form.setValue("customer_id", selectedCustomer.id);
+    }
+  }, [selectedAsset, selectedCustomer]);
+
+  useEffect(() => {
+    if (licenseData) {
+      setSelectedCustomerId(licenseData.customer_id);
+      setSelectedCustomer(licenseData.customer);
+      setSelectedAsset(licenseData.digital_asset);
+    }
+  }, [licenseData]);
 
   const modalTitle = type === "create" ? "새 라이센스 생성" : "라이센스 편집";
 
   return (
-    <FocusModal open={isFormModalOpen} onOpenChange={handleModalClose}>
-      <FocusModal.Content aria-describedby={undefined}>
-        <FocusModal.Header>
-          <FocusModal.Title>{modalTitle}</FocusModal.Title>
-        </FocusModal.Header>
+    <FormProvider {...form}>
+      <FocusModal open={isFormModalOpen} onOpenChange={handleModalClose}>
+        <FocusModal.Content aria-describedby={undefined}>
+          <FocusModal.Header>
+            <FocusModal.Title>{modalTitle}</FocusModal.Title>
+          </FocusModal.Header>
 
-        <FocusModal.Body className="py-8 px-4">
-          {isLoading ? (
-            <div className="w-full flex flex-col items-center justify-center py-16">
-              <div className="animate-spin rounded-full h-12 w-12 border-2 border-ui-border-base border-t-ui-fg-base"></div>
-              <Text className="text-ui-fg-subtle mt-4">로딩 중...</Text>
-            </div>
-          ) : (
-            <form onSubmit={handleCreateAsset} className="space-y-8 max-w-2xl mx-auto">
-              {/* 디지털 자산 셀렉터 */}
-              <DigitalAssetSelector
-                selectedAssetId={selectedId}
-                setSelectedAssetId={setSelectedId}
-                selectedAsset={selectedAsset}
-                setSelectedAsset={setSelectedAsset}
-                isLinking={false}
-              />
-
-              <div className="flex justify-end gap-3 pt-2">
-                <Button type="button" variant="secondary" onClick={handleModalClose}>
-                  취소
-                </Button>
-                <Button type="submit" variant="primary" disabled={updateLicenseMutation.isPending}>
-                  {license
-                    ? updateLicenseMutation.isPending
-                      ? "업데이트 중..."
-                      : "업데이트"
-                    : createLicenseMutation.isPending
-                      ? "생성 중..."
-                      : "생성"}
-                </Button>
+          <FocusModal.Body className="py-8 px-4">
+            {isLoading ? (
+              <div className="w-full flex flex-col items-center justify-center py-16">
+                <div className="animate-spin rounded-full h-12 w-12 border-2 border-ui-border-base border-t-ui-fg-base"></div>
+                <Text className="text-ui-fg-subtle mt-4">로딩 중...</Text>
               </div>
-            </form>
-          )}
-        </FocusModal.Body>
-      </FocusModal.Content>
-    </FocusModal>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto">
+                <CustomerSelector
+                  selectedCustomerId={selectedCustomerId}
+                  setSelectedCustomerId={setSelectedCustomerId}
+                  selectedCustomer={selectedCustomer}
+                  setSelectedCustomer={setSelectedCustomer}
+                />
+
+                <DigitalAssetSelector
+                  selectedAssetId={selectedId}
+                  setSelectedAssetId={setSelectedId}
+                  selectedAsset={selectedAsset}
+                  setSelectedAsset={setSelectedAsset}
+                  isLinking={false}
+                />
+
+                <div className="flex justify-end gap-3 pt-2">
+                  <Button type="button" variant="secondary" onClick={handleModalClose}>
+                    취소
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    disabled={updateLicenseMutation.isPending || !selectedCustomer}
+                  >
+                    {licenseData
+                      ? updateLicenseMutation.isPending
+                        ? "업데이트 중..."
+                        : "업데이트"
+                      : createLicenseMutation.isPending
+                        ? "생성 중..."
+                        : "생성"}
+                  </Button>
+                </div>
+              </form>
+            )}
+          </FocusModal.Body>
+        </FocusModal.Content>
+      </FocusModal>
+    </FormProvider>
   );
 };
 

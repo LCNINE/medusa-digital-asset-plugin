@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { EntityType, ModalType } from "../types/modal.type";
+import { ModalType } from "../types/modal.type";
 
 interface IDetailModalState {
   selectedIds: string[];
@@ -10,9 +10,6 @@ interface IDetailModalState {
 
   modalType: ModalType;
   setModalType: (type: ModalType) => void;
-
-  entityType: EntityType;
-  setEntityType: (type: EntityType) => void;
 
   isFormModalOpen: boolean;
   setIsFormModalOpen: (isOpen: boolean) => void;
@@ -33,10 +30,6 @@ export const useModalStore = create<IDetailModalState>((set, get) => ({
   // 모달 상태들
   modalType: null,
   setModalType: (type) => set({ modalType: type }),
-
-  // 어떤 종류의 모달 타입인지
-  entityType: null,
-  setEntityType: (type) => set({ entityType: type }),
 
   isFormModalOpen: false,
   setIsFormModalOpen: (state: boolean) => set({ isFormModalOpen: state }),

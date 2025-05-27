@@ -1,7 +1,7 @@
 import { toast } from "@medusajs/ui";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { DigitalAsset } from "../../../../types/digital-asset.types";
+import { DigitalAsset } from "../../../../../.medusa/types/query-entry-points";
 import { DIGITAL_ASSETS_QUERY_KEY } from "../../../constants";
 import { sdk } from "../../../lib/config";
 

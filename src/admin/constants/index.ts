@@ -24,3 +24,9 @@ export const DIGITAL_ASSET_LICENSES_QUERY_KEY = {
   lists: () => [...DIGITAL_ASSET_LICENSES_QUERY_KEY.all, "list"],
   detail: (id: string) => [...DIGITAL_ASSET_LICENSES_QUERY_KEY.all, "detail", id],
 };
+
+export const CUSTOMERS_QUERY_KEY = {
+  all: ["customers"],
+  lists: () => [...CUSTOMERS_QUERY_KEY.all, "list"],
+  detail: (id: string) => [...CUSTOMERS_QUERY_KEY.all, "detail", id],
+};

@@ -40,7 +40,7 @@ const LinkedAssetSection = ({ variantId, isUnLinking, onUnlink }: ILinkedAssetSe
         >
           <div className="flex items-center w-full mb-2 sm:mb-0 h-full">
             <Avatar
-              src={asset.thumbnail_url as string}
+              src={asset?.thumbnail_url as string}
               fallback=""
               className="mr-2 h-8 w-8 sm:h-10 sm:w-10 transition-transform duration-300 hover:scale-110"
             />

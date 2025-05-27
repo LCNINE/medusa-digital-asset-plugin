@@ -124,13 +124,12 @@ const columns = [
     id: "actions",
     header: "보기",
     cell: ({ row }) => {
-      const { setModalType, setSelectedId, setEntityType } = useModalStore();
+      const { setModalType, setSelectedId } = useModalStore();
 
       const handleViewClick = (e: React.MouseEvent) => {
         e.stopPropagation();
         setSelectedId(row.id);
         setModalType("detail");
-        setEntityType("digital-asset-license");
       };
 
       return (
@@ -166,6 +165,7 @@ const commandHelper = createDataTableCommandHelper();
 
 const useCommands = () => {
   const deleteLicenseMutation = useDeleteLicenseMutation();
+  const { setModalType, setSelectedId, setIsFormModalOpen } = useModalStore();
 
   return [
     commandHelper.command({
@@ -189,7 +189,9 @@ const useCommands = () => {
           return;
         }
         if (confirm("편집하시겠습니까?")) {
-          console.log("편집 진행");
+          setSelectedId(productsToDeleteIds[0]);
+          setModalType("edit");
+          setIsFormModalOpen(true);
         }
       },
     }),

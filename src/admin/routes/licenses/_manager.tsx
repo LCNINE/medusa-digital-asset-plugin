@@ -22,7 +22,7 @@ export const LicenseManager = () => {
   const { modalType, setModalType, selectedId, setIsFormModalOpen } = useModalStore();
   const { filtering, setFiltering } = useFilteringStore();
 
-  const getLicenseById = useGetLicenseById(
+  const getLicenseData = useGetLicenseById(
     selectedId as string,
     filtering.deleted_at as boolean,
     modalType === "detail" || modalType === "edit",
@@ -40,7 +40,7 @@ export const LicenseManager = () => {
     return (filtering?.deleted_at || []) as string[];
   }, [filtering]);
 
-  const { data, isLoading } = useDigitalAssetLicense({
+  const { data, isPending } = useDigitalAssetLicense({
     offset,
     limit,
     search,
@@ -71,7 +71,7 @@ export const LicenseManager = () => {
 
       <LicenseTable
         licenseData={data}
-        isLoading={isLoading}
+        isLoading={isPending}
         pagination={pagination}
         setPagination={setPagination}
         search={search}
@@ -83,15 +83,15 @@ export const LicenseManager = () => {
       />
 
       <LicenseDetailsModal
-        license={getLicenseById.data}
-        isLoading={getLicenseById.isLoading}
+        license={getLicenseData.data}
+        isLoading={getLicenseData.isPending}
         isOpen={modalType === "detail"}
         onClose={() => setModalType(null)}
       />
 
       <LicenseFormModal
-        license={getLicenseById.data}
-        isLoading={getLicenseById.isLoading}
+        licenseData={getLicenseData.data}
+        isLoading={modalType === "create" ? isPending : getLicenseData.isPending}
         type={modalType === "create" ? "create" : "edit"}
       />
     </Container>
