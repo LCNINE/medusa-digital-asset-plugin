@@ -1,7 +1,7 @@
 import { Spinner } from "@medusajs/icons";
 import { Avatar, Button, Prompt, Text } from "@medusajs/ui";
 import { Suspense } from "react";
-import { useModalStore } from "../../../store/modal-store";
+import { useModalStore } from "../../store/modal-store";
 import { useDigitalAssetLinkedVariant } from "../../hooks/use-digital-asset-linked-variant";
 import { AssetDetailsModal, AssetFormModal } from "../../routes/digital-assets/_components";
 

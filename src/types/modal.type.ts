@@ -1,1 +1,1 @@
-export type ModalType = "confirm" | "edit" | "delete" | "detail" | "create" | null;
+export type ModalStatusType = "confirm" | "edit" | "delete" | "detail" | "create" | null;

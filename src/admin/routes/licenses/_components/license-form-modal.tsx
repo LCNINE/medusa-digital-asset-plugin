@@ -7,7 +7,7 @@ import {
   DigitalAssetLicense,
 } from "../../../../../.medusa/types/query-entry-points";
 import { CreateDigitalAssetLicenseType } from "../../../../api/admin/digital-asset-licenses/validators";
-import { useModalStore } from "../../../../store/modal-store";
+import { useModalStore } from "../../../store/modal-store";
 import { CustomerSelector } from "../../../components/customer-selector";
 import { DigitalAssetSelector } from "../../../components/digital-asset-selector";
 import { useCreateLicense } from "../_hooks/use-create-license";

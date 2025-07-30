@@ -1,7 +1,7 @@
 import { Spinner } from "@medusajs/icons";
 import { Container, Text, Toaster } from "@medusajs/ui";
 import { Suspense } from "react";
-import { useModalStore } from "../../../store/modal-store";
+import { useModalStore } from "../../store/modal-store";
 import { TableHeader } from "../../components/table-header";
 import DeferredComponent from "../../layout/deferred-component";
 import { AssetFormModal } from "./_components";

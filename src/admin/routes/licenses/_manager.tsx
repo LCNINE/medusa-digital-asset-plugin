@@ -1,7 +1,7 @@
 import { Container, DataTablePaginationState, DataTableSortingState } from "@medusajs/ui";
 import { useMemo, useState } from "react";
-import { useFilteringStore } from "../../../store/filtering-store";
-import { useModalStore } from "../../../store/modal-store";
+import { useFilteringStore } from "../../store/filtering-store";
+import { useModalStore } from "../../store/modal-store";
 import { TableHeader } from "../../components/table-header";
 import LicenseDetailsModal from "./_components/license-details-modal";
 import LicenseFormModal from "./_components/license-form-modal";

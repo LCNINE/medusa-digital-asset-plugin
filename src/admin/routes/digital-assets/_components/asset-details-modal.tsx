@@ -1,8 +1,8 @@
 import { Badge, Button, FocusModal, Text } from "@medusajs/ui";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import dayjs from "dayjs";
-import { useFilteringStore } from "../../../../store/filtering-store";
-import { useModalStore } from "../../../../store/modal-store";
+import { useFilteringStore } from "../../../store/filtering-store";
+import { useModalStore } from "../../../store/modal-store";
 import { useGetAssetById } from "../_hooks/use-get-asset-by-id";
 
 type AssetDetailsModalProps = {

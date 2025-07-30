@@ -18,7 +18,7 @@ import {
 import dayjs from "dayjs";
 import { useState } from "react";
 import { DigitalAssetLicense } from "../../../../../.medusa/types/query-entry-points";
-import { useModalStore } from "../../../../store/modal-store";
+import { useModalStore } from "../../../store/modal-store";
 import { LicenseResponse } from "../../../../types/license.types";
 import { SingleColumnLayout } from "../../../layout/single-column";
 import { useDeleteLicenseMutation } from "../_hooks/use-delete-license";

@@ -1,6 +1,6 @@
 import { Button, FocusModal, Input, Label, Text } from "@medusajs/ui";
 import { useEffect, useRef, useState } from "react";
-import { useModalStore } from "../../../../store/modal-store";
+import { useModalStore } from "../../../store/modal-store";
 import { useUpdateAssetMutation } from "../_hooks/use-update-asset";
 import { useCreateAssetMutation } from "../_hooks/use-create-asset";
 import { useGetAssetById } from "../_hooks/use-get-asset-by-id";

@@ -1,6 +1,6 @@
 import { DataTableSortingState, toast } from "@medusajs/ui";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useFilteringStore } from "../../../../store/filtering-store";
+import { useFilteringStore } from "../../../store/filtering-store";
 import { DIGITAL_ASSETS_QUERY_KEY } from "../../../constants";
 import { sdk } from "../../../lib/config";
 import { DigitalAssetPaginatedResponse } from "../../../../types/digital-asset.types";

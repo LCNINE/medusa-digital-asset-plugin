@@ -2,8 +2,8 @@ import { Badge, Button, Container, FocusModal, Heading, Text } from "@medusajs/u
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import dayjs from "dayjs";
 import { DigitalAssetLicense } from "../../../../../.medusa/types/query-entry-points";
-import { useFilteringStore } from "../../../../store/filtering-store";
-import { useModalStore } from "../../../../store/modal-store";
+import { useFilteringStore } from "../../../store/filtering-store";
+import { useModalStore } from "../../../store/modal-store";
 
 type LicenseDetailsModalProps = {
   isOpen: boolean;

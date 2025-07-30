@@ -1,5 +1,5 @@
 import { createWorkflow, WorkflowResponse } from "@medusajs/framework/workflows-sdk";
-import { DigitalAssetInputBody } from "../../../types/digital-asset-input-body";
+import { DigitalAssetInputBody } from "@/types/digital-asset-input-body";
 import { createDigitalAssetStep } from "../steps/create-digital-asset";
 import { uploadDigitalAssetStep, uploadThumbnailAssetStep } from "../steps/upload-digital-asset";
 

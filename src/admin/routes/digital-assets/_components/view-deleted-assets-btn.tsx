@@ -1,5 +1,5 @@
 import { Checkbox, Label } from "@medusajs/ui";
-import { useDigitalAssetStore } from "../../../../store/digital-asset-store";
+import { useDigitalAssetStore } from "../../../store/digital-asset-store";
 
 interface IProps {
   includeDeleted: boolean;

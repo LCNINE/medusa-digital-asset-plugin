@@ -23,8 +23,8 @@
     /* Paths */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["../types/*", "./*"]
+      "@/*": ["./*"]
     }
   },
-  "include": [".", "../_constants", "../api/admin/variant-digital-asset.tsx"]
+  "include": ["."]
 }

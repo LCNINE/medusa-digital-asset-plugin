@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { ModalType } from "../types/modal.type";
+import { ModalStatusType } from "../../types";
 
 interface IDetailModalState {
   selectedIds: string[];
@@ -8,8 +8,8 @@ interface IDetailModalState {
   selectedId: string | null;
   setSelectedId: (id: string | null) => void;
 
-  modalType: ModalType;
-  setModalType: (type: ModalType) => void;
+  modalType: ModalStatusType;
+  setModalType: (type: ModalStatusType) => void;
 
   isFormModalOpen: boolean;
   setIsFormModalOpen: (isOpen: boolean) => void;
