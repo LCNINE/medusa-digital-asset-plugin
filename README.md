@@ -34,7 +34,7 @@
 
 ## Compatibility
 
-This starter is compatible with versions >= 2.4.0 of `@medusajs/medusa`. 
+This starter is compatible with versions >= 2.4.0 of `@medusajs/medusa`.
 
 ## Getting Started
 
@@ -74,16 +74,19 @@ Join our [Discord server](https://discord.com/invite/medusajs) to meet other com
 #### 디지털 자산 관리
 
 ##### 1. 디지털 자산 목록 조회
+
 ```http
 GET /admin/digital-assets
 ```
 
 **Query Parameters**
+
 - `limit` (number, optional): 페이지당 항목 수 (기본값: 20)
 - `offset` (number, optional): 시작 오프셋 (기본값: 0)
 - `include_deleted` (boolean, optional): 삭제된 항목 포함 여부
 
 **응답**
+
 ```json
 {
   "digital_assets": [
@@ -104,17 +107,20 @@ GET /admin/digital-assets
 ```
 
 ##### 2. 새 디지털 자산 생성
+
 ```http
 POST /admin/digital-assets
 Content-Type: multipart/form-data
 ```
 
 **Request Body**
+
 - `file`: 디지털 자산 파일 (필수)
 - `thumbnail`: 썸네일 이미지 (선택)
 - `name`: 자산 이름 (필수)
 
 **응답**
+
 ```json
 {
   "id": "asset_01",
@@ -128,20 +134,24 @@ Content-Type: multipart/form-data
 ```
 
 ##### 3. 디지털 자산 수정
+
 ```http
 PATCH /admin/digital-assets/:id
 Content-Type: multipart/form-data
 ```
 
 **Path Parameters**
+
 - `id`: 디지털 자산 ID
 
 **Request Body**
+
 - `file`: 새 디지털 자산 파일 (선택)
 - `thumbnail`: 새 썸네일 이미지 (선택)
 - `name`: 새 자산 이름 (선택)
 
 **응답**
+
 ```json
 {
   "id": "asset_01",
@@ -154,14 +164,40 @@ Content-Type: multipart/form-data
 }
 ```
 
+##### 4. 디지털 자산 다운로드 (관리자)
+
+```http
+GET /admin/digital-assets/:id/download
+```
+
+**Path Parameters**
+
+- `id`: 디지털 자산 ID
+
+**응답**
+
+- 성공 시: 파일 스트림 (파일 직접 다운로드)
+- Content-Type: 파일의 MIME 타입
+- Content-Disposition: attachment; filename="파일명"
+
+**에러 응답**
+
+```json
+{
+  "message": "에러 메시지"
+}
+```
+
 #### 디지털 자산 라이센스 관리
 
 ##### 1. 라이센스 목록 조회
+
 ```http
 GET /admin/digital-asset-licenses
 ```
 
 **Query Parameters**
+
 - `license_id` (string, optional): 라이센스 ID로 필터링
 - `customer_id` (string, optional): 고객 ID로 필터링
 - `order_item_id` (string, optional): 주문 항목 ID로 필터링
@@ -170,6 +206,7 @@ GET /admin/digital-asset-licenses
 - `offset` (number, optional): 시작 오프셋 (기본값: 0)
 
 **응답**
+
 ```json
 {
   "licenses": [
@@ -192,12 +229,14 @@ GET /admin/digital-asset-licenses
 #### 라이브러리 관리
 
 ##### 1. 고객 라이브러리 조회
+
 ```http
 GET /store/library
 Authorization: Bearer {token}
 ```
 
 **응답**
+
 ```json
 {
   "items": [
@@ -214,15 +253,18 @@ Authorization: Bearer {token}
 ```
 
 ##### 2. 특정 디지털 자산 조회
+
 ```http
 GET /store/library/:id
 Authorization: Bearer {token}
 ```
 
 **Path Parameters**
+
 - `id`: 디지털 자산 ID
 
 **응답**
+
 ```json
 {
   "id": "asset_01",
@@ -233,16 +275,44 @@ Authorization: Bearer {token}
 }
 ```
 
-##### 3. 디지털 자산 라이센스 사용
+##### 3. 디지털 자산 다운로드
+
+```http
+GET /store/library/:id/download
+Authorization: Bearer {token}
+```
+
+**Path Parameters**
+
+- `id`: 디지털 자산 ID
+
+**응답**
+
+- 성공 시: 파일 스트림 (파일 직접 다운로드)
+- Content-Type: 파일의 MIME 타입
+- Content-Disposition: attachment; filename="파일명"
+
+**에러 응답**
+
+```json
+{
+  "message": "에러 메시지"
+}
+```
+
+##### 4. 디지털 자산 라이센스 사용
+
 ```http
 GET /store/library/:id/exercise
 Authorization: Bearer {token}
 ```
 
 **Path Parameters**
+
 - `id`: 디지털 자산 ID
 
 **응답**
+
 ```json
 {
   "id": "asset_01",
@@ -256,6 +326,7 @@ Authorization: Bearer {token}
 ## 인증
 
 모든 API 요청에는 Bearer 토큰이 필요합니다:
+
 - Admin API: 관리자 인증 토큰
 - Store API: 고객 인증 토큰
 
