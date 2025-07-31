@@ -9,14 +9,27 @@ import {
   DeleteBatchDigitalAssetSchema,
   UpdateDigitalAssetSchema,
 } from "./digital-assets/validators";
+import { MedusaError } from "@medusajs/utils";
 
 const upload = multer({ storage: multer.memoryStorage() });
+
+const handleAuthError = () => {
+  return (err, req, res, next) => {
+    if (err.status === 401) {
+      throw new MedusaError(
+        MedusaError.Types.UNAUTHORIZED,
+        "인증이 필요합니다. 다시 로그인해주세요.",
+      );
+    }
+    next(err);
+  };
+};
 
 export const adminMiddlewares = {
   routes: [
     {
       matcher: "/admin/*",
-      middlewares: [authenticate("user", ["session", "bearer"])],
+      middlewares: [authenticate("user", ["session", "bearer"]), handleAuthError()],
     },
     {
       matcher: "/admin/digital-assets",

@@ -184,10 +184,11 @@ export async function POST(req: MedusaRequest<CreateDigitalAssetType>, res: Medu
     });
   } catch (error) {
     console.error("디지털 자산 업로드 오류:", error);
-    res.status(500).json({
-      message: error.message || "파일 업로드 중 오류가 발생했습니다",
-      code: error.type || "unknown_error",
-    });
+
+    throw new MedusaError(
+      MedusaError.Types.UNEXPECTED_STATE,
+      error.message || "디지털 자산 업로드 중 오류가 발생했습니다",
+    );
   }
 }
 

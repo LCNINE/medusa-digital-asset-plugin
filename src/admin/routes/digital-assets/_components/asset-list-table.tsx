@@ -121,11 +121,54 @@ const columns = [
         setIsFormModalOpen(true);
       };
 
+      const handleDownloadClick = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+
+        try {
+          const response = await fetch(`/admin/digital-assets/${row.original.id}/download`, {
+            method: "GET",
+            credentials: "include",
+          });
+
+          if (!response.ok) {
+            throw new Error("파일 다운로드 실패");
+          }
+
+          // response의 headers에서 파일 이름 가져오기
+          const contentDisposition = response.headers.get("content-disposition");
+          const filename = contentDisposition
+            ? decodeURIComponent(contentDisposition.split("filename=")[1].replace(/['"]/g, ""))
+            : row.original.name;
+
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+
+          toast.success("다운로드가 시작되었습니다");
+        } catch (error) {
+          console.error("다운로드 오류:", error);
+          toast.error("다운로드에 실패했습니다");
+        }
+      };
+
       return (
-        <Button variant="secondary" size="small" onClick={handleViewClick}>
-          <Eye className="text-ui-fg-subtle" />
-          <span className="ml-1">보기</span>
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="secondary" size="small" onClick={handleViewClick}>
+            <Eye className="text-ui-fg-subtle" />
+            <span className="ml-1">보기</span>
+          </Button>
+          <Button variant="secondary" size="small" onClick={handleDownloadClick}>
+            <span>다운로드</span>
+          </Button>
+        </div>
       );
     },
   }),
