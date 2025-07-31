@@ -1,0 +1,72 @@
+import { authenticate, validateAndTransformBody } from "@medusajs/framework/http";
+import multer from "multer";
+import {
+  CreateDigitalAssetLicenseSchema,
+  UpdateDigitalAssetLicenseSchema,
+} from "./digital-asset-licenses/validators";
+import {
+  CreateDigitalAssetSchema,
+  DeleteBatchDigitalAssetSchema,
+  UpdateDigitalAssetSchema,
+} from "./digital-assets/validators";
+import { MedusaError } from "@medusajs/utils";
+
+const upload = multer({ storage: multer.memoryStorage() });
+
+const handleAuthError = () => {
+  return (err, req, res, next) => {
+    if (err.status === 401) {
+      throw new MedusaError(
+        MedusaError.Types.UNAUTHORIZED,
+        "인증이 필요합니다. 다시 로그인해주세요.",
+      );
+    }
+    next(err);
+  };
+};
+
+export const adminMiddlewares = {
+  routes: [
+    {
+      matcher: "/admin/*",
+      middlewares: [authenticate("user", ["session", "bearer"]), handleAuthError()],
+    },
+    {
+      matcher: "/admin/digital-assets",
+      method: ["POST"],
+      middlewares: [
+        upload.fields([
+          { name: "file", maxCount: 1 },
+          { name: "thumbnail", maxCount: 1 },
+        ]),
+        validateAndTransformBody(CreateDigitalAssetSchema),
+      ],
+    },
+    {
+      matcher: "/admin/digital-assets/batch-delete",
+      method: ["POST"],
+      middlewares: [validateAndTransformBody(DeleteBatchDigitalAssetSchema)],
+    },
+    {
+      matcher: "/admin/digital-assets/:id",
+      method: ["PATCH"],
+      middlewares: [
+        upload.fields([
+          { name: "file", maxCount: 1 },
+          { name: "thumbnail", maxCount: 1 },
+        ]),
+        validateAndTransformBody(UpdateDigitalAssetSchema),
+      ],
+    },
+    {
+      matcher: "/admin/digital-asset-licenses",
+      method: ["POST"],
+      middlewares: [validateAndTransformBody(CreateDigitalAssetLicenseSchema)],
+    },
+    {
+      matcher: "/admin/digital-asset-licenses/*",
+      method: ["PATCH"],
+      middlewares: [validateAndTransformBody(UpdateDigitalAssetLicenseSchema)],
+    },
+  ],
+};

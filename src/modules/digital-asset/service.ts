@@ -4,7 +4,5 @@ import DigitalAssetLicense from "./models/digital-asset-license";
 
 export default class DigitalAssetService extends MedusaService({
   DigitalAsset,
-  DigitalAssetLicense
-}) {
-  
-}
+  DigitalAssetLicense,
+}) {}

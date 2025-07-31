@@ -6,9 +6,16 @@ export default defineLink(
   {
     linkable: DigitalAssetModule.linkable.digitalAsset,
     isList: true,
+    customName: "digital_asset_product_variant",
   },
   {
     linkable: ProductModule.linkable.productVariant,
     isList: true,
-  }
-)
+    customName: "digital_asset_product_variant",
+  },
+  {
+    database: {
+      table: "digital_asset_product_variant",
+    },
+  },
+);

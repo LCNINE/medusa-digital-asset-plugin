@@ -5,7 +5,8 @@
   "author": "Medusa (https://medusajs.com)",
   "license": "MIT",
   "files": [
-    ".medusa/server"
+    ".medusa/server",
+    ".medusa/types"
   ],
   "exports": {
     "./package.json": "./package.json",
@@ -27,8 +28,9 @@
   ],
   "scripts": {
     "build": "medusa plugin:build",
-    "dev": "medusa plugin:develop",
-    "prepublishOnly": "medusa plugin:build"
+    "dev": "NODE_OPTIONS='--require tsconfig-paths/register' medusa plugin:develop",
+    "prepublishOnly": "medusa plugin:build",
+    "start:server": "NODE_OPTIONS='--require tsconfig-paths/register' medusa develop"
   },
   "devDependencies": {
     "@medusajs/admin-sdk": "2.4.0",
@@ -44,16 +46,20 @@
     "@mikro-orm/migrations": "6.4.3",
     "@mikro-orm/postgresql": "6.4.3",
     "@swc/core": "1.5.7",
+    "@types/lodash": "^4.17.16",
+    "@types/multer": "^1.4.12",
     "@types/node": "^20.0.0",
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.2.25",
     "@types/uuid": "^10.0.0",
     "awilix": "^8.0.1",
     "pg": "^8.13.0",
+    "prettier": "^3.5.3",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.6.2",
     "vite": "^5.2.11",
     "yalc": "^1.0.0-pre.53"
@@ -78,6 +84,11 @@
     "node": ">=20"
   },
   "dependencies": {
-    "uuid": "^11.1.0"
+    "@medusajs/js-sdk": "^2.7.1",
+    "@medusajs/types": "^2.7.1",
+    "dayjs": "^1.11.13",
+    "medusa-digital-asset-plugin": "file:.yalc/medusa-digital-asset-plugin",
+    "uuid": "^11.1.0",
+    "zustand": "^5.0.4"
   }
 }
