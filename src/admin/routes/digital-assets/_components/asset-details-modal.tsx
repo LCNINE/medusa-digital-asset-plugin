@@ -1,4 +1,4 @@
-import { Badge, Button, FocusModal, Text } from "@medusajs/ui";
+import { Badge, Button, FocusModal, Text, toast } from "@medusajs/ui";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import dayjs from "dayjs";
 import { useFilteringStore } from "../../../store/filtering-store";
@@ -17,6 +17,35 @@ const AssetDetailsModal = ({ isOpen, onClose, assetId }: AssetDetailsModalProps)
 
   const { data: asset, isLoading } = useGetAssetById(assetId, filtering.deleted_at as boolean);
 
+  const handleDownload = async () => {
+    try {
+      const response = await fetch(`/admin/digital-assets/${assetId}/download`, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error("다운로드 URL 가져오기 실패");
+      }
+
+      const { download_url, filename } = await response.json();
+
+      // 다운로드 링크 생성 및 클릭
+      const link = document.createElement("a");
+      link.href = download_url;
+      link.download = filename;
+      link.target = "_blank";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast.success("다운로드가 시작되었습니다");
+    } catch (error) {
+      console.error("다운로드 오류:", error);
+      toast.error("다운로드에 실패했습니다");
+    }
+  };
+
   if (!asset) return null;
 
   return (
@@ -29,18 +58,23 @@ const AssetDetailsModal = ({ isOpen, onClose, assetId }: AssetDetailsModalProps)
           <Text className="text-xl font-semibold">디지털 자산 상세 정보</Text>
         </FocusModal.Header>
 
-        {!filtering.deleted_at && (
-          <Button
-            variant="secondary"
-            onClick={() => {
-              setSelectedId(asset.id);
-              setIsFormModalOpen(true);
-            }}
-            className="ml-auto mr-4 mt-4 p-4 sm:px-3 sm:py-2"
-          >
-            편집
+        <div className="flex gap-2 ml-auto mr-4 mt-4">
+          {!filtering.deleted_at && (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setSelectedId(asset.id);
+                setIsFormModalOpen(true);
+              }}
+              className="p-4 sm:px-3 sm:py-2"
+            >
+              편집
+            </Button>
+          )}
+          <Button variant="primary" onClick={handleDownload} className="p-4 sm:px-3 sm:py-2">
+            다운로드
           </Button>
-        )}
+        </div>
 
         <FocusModal.Body className="flex flex-col md:flex-row gap-8 py-8 justify-center items-center m-auto px-2">
           {isLoading ? (
