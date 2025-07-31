@@ -33,12 +33,12 @@
     "start:server": "NODE_OPTIONS='--require tsconfig-paths/register' medusa develop"
   },
   "devDependencies": {
-    "@medusajs/admin-sdk": "2.4.0",
-    "@medusajs/cli": "2.4.0",
-    "@medusajs/framework": "2.4.0",
-    "@medusajs/icons": "2.4.0",
-    "@medusajs/medusa": "2.4.0",
-    "@medusajs/test-utils": "2.4.0",
+    "@medusajs/admin-sdk": "2.8.8",
+    "@medusajs/cli": "2.8.8",
+    "@medusajs/framework": "2.8.8",
+    "@medusajs/icons": "2.8.8",
+    "@medusajs/medusa": "2.8.8",
+    "@medusajs/test-utils": "2.8.8",
     "@medusajs/ui": "4.0.4",
     "@mikro-orm/cli": "6.4.3",
     "@mikro-orm/core": "6.4.3",
@@ -65,13 +65,13 @@
     "yalc": "^1.0.0-pre.53"
   },
   "peerDependencies": {
-    "@medusajs/admin-sdk": "2.4.0",
-    "@medusajs/cli": "2.4.0",
-    "@medusajs/framework": "2.4.0",
-    "@medusajs/icons": "2.4.0",
-    "@medusajs/medusa": "2.4.0",
-    "@medusajs/test-utils": "2.4.0",
-    "@medusajs/ui": "4.0.3",
+    "@medusajs/admin-sdk": "2.8.8",
+    "@medusajs/cli": "2.8.8",
+    "@medusajs/framework": "2.8.8",
+    "@medusajs/icons": "2.8.8",
+    "@medusajs/medusa": "2.8.8",
+    "@medusajs/test-utils": "2.8.8",
+    "@medusajs/ui": "4.0.4",
     "@mikro-orm/cli": "6.4.3",
     "@mikro-orm/core": "6.4.3",
     "@mikro-orm/knex": "6.4.3",
@@ -84,10 +84,9 @@
     "node": ">=20"
   },
   "dependencies": {
-    "@medusajs/js-sdk": "^2.7.1",
-    "@medusajs/types": "^2.7.1",
+    "@medusajs/js-sdk": "^2.8.8",
+    "@medusajs/types": "^2.8.8",
     "dayjs": "^1.11.13",
-    "medusa-digital-asset-plugin": "file:.yalc/medusa-digital-asset-plugin",
     "uuid": "^11.1.0",
     "zustand": "^5.0.4"
   }
