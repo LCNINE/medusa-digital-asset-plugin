@@ -1,7 +1,7 @@
 import { Modules } from "@medusajs/framework/utils";
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk";
 import { v4 as uuidv4 } from "uuid";
-import { DigitalAssetInputBody } from "@/types/digital-asset-input-body";
+import { DigitalAssetInputBody } from "../../../types/digital-asset-input-body";
 
 export type UploadDigitalAssetInput = {
   type: "digital-asset" | "digital-asset-thumbnail";

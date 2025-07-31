@@ -1,4 +1,4 @@
-import { UpdateDigitalAssetLicenseType } from "@/api/admin/digital-asset-licenses/validators";
+import { UpdateDigitalAssetLicenseType } from "../../../api/admin/digital-asset-licenses/validators";
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk";
 import { DIGITAL_ASSET } from "../../../modules/digital-asset";
 import DigitalAssetService from "../../../modules/digital-asset/service";

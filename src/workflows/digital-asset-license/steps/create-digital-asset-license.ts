@@ -1,4 +1,4 @@
-import { CreateDigitalAssetLicenseType } from "@/api/admin/digital-asset-licenses/validators";
+import { CreateDigitalAssetLicenseType } from "../../../api/admin/digital-asset-licenses/validators";
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk";
 import { v4 as uuidv4 } from "uuid";
 import { DIGITAL_ASSET } from "../../../modules/digital-asset";

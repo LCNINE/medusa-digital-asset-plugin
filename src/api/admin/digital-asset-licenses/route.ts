@@ -1,7 +1,7 @@
-import { DIGITAL_ASSET } from "@/modules/digital-asset";
-import DigitalAssetService from "@/modules/digital-asset/service";
-import { createDigitalAssetLicenseWorkFlow } from "@/workflows/digital-asset-license/workflows/create-digital-asset-licenses";
-import { updateDigitalAssetLicenseWorkFlow } from "@/workflows/digital-asset-license/workflows/update-digital-asset-licenses";
+import { DIGITAL_ASSET } from "../../../modules/digital-asset";
+import DigitalAssetService from "../../../modules/digital-asset/service";
+import { createDigitalAssetLicenseWorkFlow } from "../../../workflows/digital-asset-license/workflows/create-digital-asset-licenses";
+import { updateDigitalAssetLicenseWorkFlow } from "../../../workflows/digital-asset-license/workflows/update-digital-asset-licenses";
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
 import { CreateDigitalAssetLicenseType, UpdateDigitalAssetLicenseType } from "./validators";
