@@ -1,6 +1,16 @@
 const { defineConfig } = require("@medusajs/framework/utils");
+const path = require("path");
 
 module.exports = defineConfig({
+  admin: {
+    vite: () => ({
+      resolve: {
+        alias: {
+          "@": path.resolve(__dirname, "./src/admin"),
+        },
+      },
+    }),
+  },
   modules: [
     {
       resolve: "./src/modules/digital-asset",

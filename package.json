@@ -1,6 +1,6 @@
 {
   "name": "medusa-digital-asset-plugin",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A starter for Medusa plugins.",
   "author": "Medusa (https://medusajs.com)",
   "license": "MIT",
@@ -32,7 +32,8 @@
     "medusa-plugin-other"
   ],
   "scripts": {
-    "build": "medusa plugin:build",
+    "resolve:aliases": "tsc --showConfig -p tsconfig.json > tsconfig.resolved.json && tsc-alias -p tsconfig.resolved.json && rimraf tsconfig.resolved.json",
+    "build": "medusa plugin:build && npm run resolve:aliases",
     "dev": "NODE_OPTIONS='--require tsconfig-paths/register' medusa plugin:develop",
     "prepublishOnly": "medusa plugin:build",
     "start:server": "NODE_OPTIONS='--require tsconfig-paths/register' medusa develop"
@@ -63,6 +64,7 @@
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.6.2",
@@ -95,7 +97,7 @@
     "@medusajs/types": "^2.8.8",
     "dayjs": "^1.11.13",
     "uuid": "^11.1.0",
-    "zustand": "^5.0.4",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "zustand": "^5.0.4"
   }
 }
