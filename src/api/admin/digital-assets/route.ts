@@ -130,7 +130,7 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
   }
 }
 
-export async function POST(req: MedusaRequest<CreateDigitalAssetType>, res: MedusaResponse) {
+export async function POST(req: AuthenticatedMedusaRequest<CreateDigitalAssetType>, res: MedusaResponse) {
   const files = req.files as { [fieldname: string]: Express.Multer.File[] };
   const file = files?.file?.[0];
   const thumbnail = files?.thumbnail?.[0];
@@ -192,7 +192,7 @@ export async function POST(req: MedusaRequest<CreateDigitalAssetType>, res: Medu
   }
 }
 
-export async function DELETE(req: MedusaRequest<DeleteBatchDigitalAssetType>, res: MedusaResponse) {
+export async function DELETE(req: AuthenticatedMedusaRequest<DeleteBatchDigitalAssetType>, res: MedusaResponse) {
   const { ids } = req.body;
 
   if (!ids) {
