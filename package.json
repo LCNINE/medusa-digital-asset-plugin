@@ -1,6 +1,6 @@
 {
   "name": "medusa-digital-asset-plugin",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A starter for Medusa plugins.",
   "author": "Medusa (https://medusajs.com)",
   "license": "MIT",
@@ -14,6 +14,11 @@
     "./.medusa/server/src/modules/*": "./.medusa/server/src/modules/*/index.js",
     "./modules/*": "./.medusa/server/src/modules/*/index.js",
     "./providers/*": "./.medusa/server/src/providers/*/index.js",
+    "./admin": {
+      "import": "./.medusa/server/src/admin/index.mjs",
+      "require": "./.medusa/server/src/admin/index.js",
+      "default": "./.medusa/server/src/admin/index.js"
+    },
     "./*": "./.medusa/server/src/*.js"
   },
   "keywords": [
@@ -33,12 +38,12 @@
     "start:server": "NODE_OPTIONS='--require tsconfig-paths/register' medusa develop"
   },
   "devDependencies": {
-    "@medusajs/admin-sdk": "2.8.8",
-    "@medusajs/cli": "2.8.8",
-    "@medusajs/framework": "2.8.8",
-    "@medusajs/icons": "2.8.8",
-    "@medusajs/medusa": "2.8.8",
-    "@medusajs/test-utils": "2.8.8",
+    "@medusajs/admin-sdk": "2.8.6",
+    "@medusajs/cli": "2.8.6",
+    "@medusajs/framework": "2.8.6",
+    "@medusajs/icons": "2.8.6",
+    "@medusajs/medusa": "2.8.6",
+    "@medusajs/test-utils": "2.8.6",
     "@medusajs/ui": "4.0.4",
     "@mikro-orm/cli": "6.4.3",
     "@mikro-orm/core": "6.4.3",
@@ -62,15 +67,16 @@
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.6.2",
     "vite": "^5.2.11",
-    "yalc": "^1.0.0-pre.53"
+    "yalc": "^1.0.0-pre.53",
+    "zod": "^3.22.4"
   },
   "peerDependencies": {
-    "@medusajs/admin-sdk": "2.8.8",
-    "@medusajs/cli": "2.8.8",
-    "@medusajs/framework": "2.8.8",
-    "@medusajs/icons": "2.8.8",
-    "@medusajs/medusa": "2.8.8",
-    "@medusajs/test-utils": "2.8.8",
+    "@medusajs/admin-sdk": "2.8.6",
+    "@medusajs/cli": "2.8.6",
+    "@medusajs/framework": "2.8.6",
+    "@medusajs/icons": "2.8.6",
+    "@medusajs/medusa": "2.8.6",
+    "@medusajs/test-utils": "2.8.6",
     "@medusajs/ui": "4.0.4",
     "@mikro-orm/cli": "6.4.3",
     "@mikro-orm/core": "6.4.3",
@@ -78,16 +84,18 @@
     "@mikro-orm/migrations": "6.4.3",
     "@mikro-orm/postgresql": "6.4.3",
     "awilix": "^8.0.1",
-    "pg": "^8.13.0"
+    "pg": "^8.13.0",
+    "zod": "^3.22.4"
   },
   "engines": {
     "node": ">=20"
   },
   "dependencies": {
-    "@medusajs/js-sdk": "^2.8.8",
-    "@medusajs/types": "^2.8.8",
+    "@medusajs/js-sdk": "^2.8.6",
+    "@medusajs/types": "^2.8.6",
     "dayjs": "^1.11.13",
     "uuid": "^11.1.0",
-    "zustand": "^5.0.4"
+    "zustand": "^5.0.4",
+    "zod": "^3.22.4"
   }
 }
