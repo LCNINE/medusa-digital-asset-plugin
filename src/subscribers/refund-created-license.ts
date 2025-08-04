@@ -13,7 +13,7 @@ type ReturnWithCreatedAt = {
   }[];
 };
 
-export default async function refundCreatedRevokeLicense({
+export default async function handleRefundCreatedLicense({
   event: { data },
   container,
 }: SubscriberArgs<{ id: string; order_id: string }>) {
@@ -116,5 +116,5 @@ export default async function refundCreatedRevokeLicense({
 }
 
 export const config: SubscriberConfig = {
-  event: "refund.created",
+  event: "payment.refunded",
 };

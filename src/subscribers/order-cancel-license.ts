@@ -3,7 +3,7 @@ import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
 import { DIGITAL_ASSET } from "../modules/digital-asset";
 import DigitalAssetService from "../modules/digital-asset/service";
 
-export default async function orderCanceledRevokeLicense({
+export default async function handleOrderCanceledLicense({
   event: { data },
   container,
 }: SubscriberArgs<{ id: string }>) {
