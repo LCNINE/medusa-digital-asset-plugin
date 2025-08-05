@@ -4,7 +4,12 @@ export const storeMiddlewares = {
   routes: [
     {
       matcher: "/store/*",
-      middlewares: [authenticate("customer", ["session", "bearer"])],
+      middlewares: [
+        authenticate("customer", ["session", "bearer"], {
+          allowUnauthenticated: true,
+          allowUnregistered: true,
+        }),
+      ],
     },
   ],
 };
