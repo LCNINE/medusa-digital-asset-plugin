@@ -14,12 +14,21 @@ interface DigitalAssetLicense {
   customer_id: string;
   order_item_id: string | null | undefined;
   is_exercised: boolean;
+  created_at: string | Date;
   digital_asset?: {
     id: string;
     name: string;
     mime_type: string;
     file_url: string;
     thumbnail_url: string | null;
+  };
+  order_item?: {
+    id: string;
+    created_at: string | Date;
+    order?: {
+      id: string;
+      created_at: string | Date;
+    };
   };
 }
 
@@ -44,7 +53,12 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
         "customer_id",
         "order_item_id",
         "is_exercised",
+        "created_at",
         "digital_asset.*",
+        "order_item.id",
+        "order_item.created_at",
+        "order_item.order.id",
+        "order_item.order.created_at",
       ],
       filters: {
         customer_id: customerId,
