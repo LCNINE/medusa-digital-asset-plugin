@@ -30,6 +30,7 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
 
   try {
     const customerId = req.auth_context.actor_id;
+    const isExercised = req.query.is_exercised as string | undefined;
 
     if (!customerId) {
       return res.status(401).json({ message: "Unauthorized" });
@@ -47,6 +48,7 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
       ],
       filters: {
         customer_id: customerId,
+        is_exercised: isExercised === "true" ? true : isExercised === "false" ? false : undefined,
       },
       pagination: {
         skip: offset,
