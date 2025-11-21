@@ -1,6 +1,6 @@
 {
   "name": "almond-digital-asset-plugin",
-  "version": "0.0.15",
+  "version": "0.0.17",
   "description": "A starter for Medusa plugins.",
   "author": "Medusa (https://medusajs.com)",
   "license": "MIT",
