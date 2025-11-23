@@ -1,5 +1,5 @@
 import { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/framework/http";
-import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils";
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
 
 interface DigitalAsset {
   id: string;
@@ -14,21 +14,12 @@ interface DigitalAssetLicense {
   customer_id: string;
   order_item_id: string | null | undefined;
   is_exercised: boolean;
-  created_at: string | Date;
   digital_asset?: {
     id: string;
     name: string;
     mime_type: string;
     file_url: string;
     thumbnail_url: string | null;
-  };
-  order_item?: {
-    id: string;
-    created_at: string | Date;
-    order?: {
-      id: string;
-      created_at: string | Date;
-    };
   };
 }
 
@@ -53,12 +44,7 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
         "customer_id",
         "order_item_id",
         "is_exercised",
-        "created_at",
         "digital_asset.*",
-        "order_item.id",
-        "order_item.created_at",
-        "order_item.order.id",
-        "order_item.order.created_at",
       ],
       filters: {
         customer_id: customerId,
@@ -74,6 +60,23 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
       console.log("📦 [DEBUG] First license object:", JSON.stringify(licenses[0], null, 2));
     }
 
+    // order_item_id만 추출
+    const orderItemIds = licenses.map((l) => l.order_item_id).filter(Boolean);
+
+    // order_item 정보 한 번에 조회
+    const { data: orderItems } = await query.graph({
+      entity: "order_item",
+      fields: ["id", "created_at", "updated_at"],
+      filters: { id: orderItemIds as string[] },
+    });
+
+    // order_item 정보를 id로 매핑
+    const orderItemMap = {};
+    orderItems.forEach((item) => {
+      orderItemMap[item.id] = item;
+    });
+
+    // 라이센스 정보 정제
     const sanitizedLicenses = licenses.map((license: DigitalAssetLicense) => {
       if (!license.is_exercised && license.digital_asset) {
         return {
@@ -82,6 +85,7 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
             ...license.digital_asset,
             file_url: null,
           },
+          order_item: license.order_item_id ? orderItemMap[license.order_item_id] : null,
         };
       }
 
