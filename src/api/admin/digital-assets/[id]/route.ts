@@ -79,7 +79,7 @@ export async function PATCH(req: MedusaRequest<UpdateDigitalAssetType>, res: Med
       uploadFiles.push({
         filename: file.originalname,
         mimeType: file.mimetype,
-        content: file.buffer.toString("binary"),
+        content: file.buffer.toString("base64"),
         access: "private" as const,
       });
     }
@@ -88,7 +88,7 @@ export async function PATCH(req: MedusaRequest<UpdateDigitalAssetType>, res: Med
       uploadFiles.push({
         filename: thumbnail.originalname,
         mimeType: thumbnail.mimetype,
-        content: thumbnail.buffer.toString("binary"),
+        content: thumbnail.buffer.toString("base64"),
         access: "public" as const,
       });
     }
