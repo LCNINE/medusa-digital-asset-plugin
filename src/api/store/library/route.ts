@@ -64,7 +64,7 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
       entity: "order_item",
       fields: ["id", "product_variant_id"],
       filters: {
-        id: {
+        item_id: {
           $in: orderItemIds,
         },
       },
