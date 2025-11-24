@@ -56,12 +56,10 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
       },
     });
 
-    if (licenses.length > 0) {
-      console.log("📦 [DEBUG] First license object:", JSON.stringify(licenses[0], null, 2));
-    }
-
     // order_item_id만 추출
     const orderItemIds = licenses.map((l) => l.order_item_id).filter(Boolean);
+
+    console.log("📦 [DEBUG] orderItemIds:", JSON.stringify(orderItemIds, null, 2));
 
     // order_item 정보 한 번에 조회
     const { data: orderItems } = await query.graph({
@@ -70,11 +68,15 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
       filters: { id: orderItemIds as string[] },
     });
 
+    console.log("📦 [DEBUG] orderItems:", JSON.stringify(orderItems, null, 2));
+
     // order_item 정보를 id로 매핑
     const orderItemMap = {};
     orderItems.forEach((item) => {
       orderItemMap[item.id] = item;
     });
+
+    console.log("📦 [DEBUG] orderItemMap:", JSON.stringify(orderItemMap, null, 2));
 
     // 라이센스 정보 정제
     const sanitizedLicenses = licenses.map((license: DigitalAssetLicense) => {
@@ -91,6 +93,8 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
 
       return license;
     });
+
+    console.log("📦 [DEBUG] sanitizedLicenses:", JSON.stringify(sanitizedLicenses, null, 2));
 
     return res.status(200).json({
       licenses: sanitizedLicenses,
