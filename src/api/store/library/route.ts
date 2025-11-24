@@ -62,7 +62,7 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
 
     const { data: orderItems } = await query.graph({
       entity: "order_item",
-      fields: ["id", "created_at", "updated_at", "quantity"],
+      fields: ["id", "created_at"],
       filters: {
         id: {
           $in: orderItemIds,
@@ -71,9 +71,15 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
     });
 
     console.log("DEBUG: orderItems:", orderItems);
-    console.log("DEBUG: orderItems[0]:", orderItems[0]);
+
+    // order_item_id를 키로 하는 맵 생성
+    const orderItemMap = new Map(orderItems.map((item: any) => [item.id, item]));
+
     // 라이센스 정보 정제
     const sanitizedLicenses = licenses.map((license: DigitalAssetLicense) => {
+      const orderItem = license.order_item_id ? orderItemMap.get(license.order_item_id) : null;
+      console.log("DEBUG: license:", license);
+      console.log("DEBUG: orderItem:", orderItem);
       if (!license.is_exercised && license.digital_asset) {
         return {
           ...license,
@@ -81,11 +87,17 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
             ...license.digital_asset,
             file_url: null,
           },
+          orderedAt: orderItem?.created_at || null,
         };
       }
 
-      return license;
+      return {
+        ...license,
+        orderedAt: orderItem?.created_at || null,
+      };
     });
+
+    console.log("DEBUG: sanitizedLicenses:", sanitizedLicenses);
 
     return res.status(200).json({
       licenses: sanitizedLicenses,
