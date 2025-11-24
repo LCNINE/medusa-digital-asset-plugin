@@ -56,6 +56,21 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
       },
     });
 
+    const orderItemIds = licenses
+      .map((license: DigitalAssetLicense) => license.order_item_id)
+      .filter((id): id is string => Boolean(id));
+
+    const { data: orderItems } = await query.graph({
+      entity: "order_item",
+      fields: ["id", "product_variant_id"],
+      filters: {
+        id: {
+          $in: orderItemIds,
+        },
+      },
+    });
+
+    console.log("DEBUG: orderItems:", orderItems);
     // 라이센스 정보 정제
     const sanitizedLicenses = licenses.map((license: DigitalAssetLicense) => {
       if (!license.is_exercised && license.digital_asset) {
