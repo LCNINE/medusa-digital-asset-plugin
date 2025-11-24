@@ -62,15 +62,16 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
 
     const { data: orderItems } = await query.graph({
       entity: "order_item",
-      fields: ["id", "created_at"],
+      fields: ["id", "created_at", "updated_at", "quantity"],
       filters: {
-        item_id: {
+        id: {
           $in: orderItemIds,
         },
       },
     });
 
     console.log("DEBUG: orderItems:", orderItems);
+    console.log("DEBUG: orderItems[0]:", orderItems[0]);
     // 라이센스 정보 정제
     const sanitizedLicenses = licenses.map((license: DigitalAssetLicense) => {
       if (!license.is_exercised && license.digital_asset) {
