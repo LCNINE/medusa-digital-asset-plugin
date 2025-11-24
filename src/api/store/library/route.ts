@@ -62,7 +62,7 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
 
     const { data: orderItems } = await query.graph({
       entity: "order_item",
-      fields: ["id", "created_at"],
+      fields: ["id", "created_at", "updated_at", "quantity"],
       filters: {
         id: {
           $in: orderItemIds,
