@@ -1,4 +1,8 @@
-import { authenticate, validateAndTransformBody } from "@medusajs/framework/http";
+import {
+  authenticate,
+  validateAndTransformBody,
+} from "@medusajs/framework/http";
+import type { MiddlewareRoute } from "@medusajs/framework/http";
 import multer from "multer";
 import {
   CreateDigitalAssetLicenseSchema,
@@ -9,16 +13,27 @@ import {
   DeleteBatchDigitalAssetSchema,
   UpdateDigitalAssetSchema,
 } from "./digital-assets/validators";
-import { MedusaError } from "@medusajs/utils";
 
 const upload = multer({ storage: multer.memoryStorage() });
+const authenticateAdmin = authenticate("user", ["session", "bearer"]);
 
-
-export const adminMiddlewares = {
+export const adminMiddlewares: { routes: MiddlewareRoute[] } = {
   routes: [
     {
-      matcher: "/admin/*",
-      middlewares: [authenticate("user", ["session", "bearer"]), ],
+      matcher: "/admin/digital-assets",
+      middlewares: [authenticateAdmin],
+    },
+    {
+      matcher: "/admin/digital-assets/*",
+      middlewares: [authenticateAdmin],
+    },
+    {
+      matcher: "/admin/digital-asset-licenses",
+      middlewares: [authenticateAdmin],
+    },
+    {
+      matcher: "/admin/digital-asset-licenses/*",
+      middlewares: [authenticateAdmin],
     },
     {
       matcher: "/admin/digital-assets",

@@ -1,4 +1,4 @@
-import { DigitalAssetLicense } from "../../.medusa/types/query-entry-points";
+import type { DigitalAssetLicense } from "./query-entry-points";
 
 export interface LicenseResponse {
   licenses: DigitalAssetLicense[];

@@ -1,4 +1,4 @@
-import { Customer } from ".medusa/types/query-entry-points";
+import type { Customer } from "./query-entry-points";
 
 export interface CustomerPaginatedResponse {
   customers: Customer[];

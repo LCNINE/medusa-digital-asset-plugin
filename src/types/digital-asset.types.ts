@@ -1,4 +1,4 @@
-import { DigitalAsset } from "../../.medusa/types/query-entry-points";
+import type { DigitalAsset } from "./query-entry-points";
 
 export interface DigitalAssetPaginatedResponse {
   digital_assets: DigitalAsset[];
